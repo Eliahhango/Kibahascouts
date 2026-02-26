@@ -40,6 +40,33 @@ function getTranslateCombo() {
   return document.querySelector<HTMLSelectElement>(".goog-te-combo")
 }
 
+function suppressTranslateToolbar() {
+  const selectors = [
+    "iframe.goog-te-banner-frame",
+    "iframe.goog-te-banner-frame.skiptranslate",
+    'iframe[class*="VIpgJd-ZVi9od-ORHb"]',
+    ".goog-te-banner-frame",
+    ".goog-te-banner-frame.skiptranslate",
+    ".VIpgJd-ZVi9od-ORHb-OEVmcd",
+    ".VIpgJd-ZVi9od-aZ2wEe-wOHMyf",
+    "body > .skiptranslate",
+  ]
+
+  selectors.forEach((selector) => {
+    document.querySelectorAll<HTMLElement>(selector).forEach((element) => {
+      element.style.setProperty("display", "none", "important")
+      element.style.setProperty("visibility", "hidden", "important")
+      element.style.setProperty("height", "0", "important")
+      element.style.setProperty("min-height", "0", "important")
+    })
+  })
+
+  document.documentElement.style.setProperty("top", "0px", "important")
+  document.documentElement.style.setProperty("margin-top", "0px", "important")
+  document.body.style.setProperty("top", "0px", "important")
+  document.body.style.setProperty("margin-top", "0px", "important")
+}
+
 function changeLanguage(code: string) {
   setGoogTransCookie(code)
 
@@ -59,6 +86,15 @@ export function GoogleTranslator() {
     () => languageOptions.map((language) => language.code).join(","),
     [],
   )
+
+  useEffect(() => {
+    suppressTranslateToolbar()
+
+    const observer = new MutationObserver(() => suppressTranslateToolbar())
+    observer.observe(document.body, { childList: true, subtree: true })
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     function initWidget() {
@@ -125,6 +161,7 @@ export function GoogleTranslator() {
     const timer = window.setInterval(() => {
       attempts += 1
       if (changeLanguage(targetLanguage) || attempts > 20) {
+        suppressTranslateToolbar()
         window.clearInterval(timer)
       }
     }, 250)
@@ -140,6 +177,7 @@ export function GoogleTranslator() {
     if (!changeLanguage(nextLanguage)) {
       const timer = window.setInterval(() => {
         if (changeLanguage(nextLanguage)) {
+          suppressTranslateToolbar()
           window.clearInterval(timer)
         }
       }, 250)
