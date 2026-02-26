@@ -14,7 +14,7 @@ export function SiteFooter() {
   const { branding, footer, name, organization } = siteConfig
 
   return (
-    <footer className="mt-14 bg-[#113b82] text-primary-foreground" role="contentinfo">
+    <footer className="mt-14 bg-tsa-green-deep text-primary-foreground" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 pb-10 pt-8 lg:pb-12 lg:pt-10">
         <div className="hidden gap-8 lg:grid lg:grid-cols-[repeat(4,minmax(0,1fr))_240px]">
           {footer.sections.map((section) => (
@@ -94,17 +94,17 @@ export function SiteFooter() {
 
         <div className="mt-8 border-t border-[#4f6aa1] pt-8 lg:mt-10 lg:pt-9">
           <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/90">
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground">
               {organization}
             </p>
             <div className="mt-3 flex items-center justify-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-[#5f78ad] bg-[#2a4f90] p-1">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-[#5f78ad] p-1">
                 <Image src={branding.scoutBadge} alt="" fill sizes="40px" className="object-contain p-1" />
               </div>
               <span className="text-2xl font-extrabold tracking-[0.2em] text-primary-foreground sm:text-4xl">SCOUTS</span>
             </div>
-            <p className="mt-1.5 text-sm text-primary-foreground/95 sm:text-base">{branding.footerTagline}</p>
-            <div className="mt-3 rounded-md border border-[#5f78ad] bg-[#2a4f90] px-3 py-2">
+            <p className="mt-1.5 text-sm text-primary-foreground sm:text-base">{branding.footerTagline}</p>
+            <div className="mt-3 px-3 py-2">
               <Image
                 src={branding.footerCenterLogo}
                 alt={branding.footerCenterLogoAlt}
@@ -121,7 +121,7 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href={footer.privacyLink.href}
-            className="text-sm font-semibold text-primary-foreground transition-colors hover:text-primary-foreground/80 focus-visible:ring-2 focus-visible:ring-tsa-gold"
+            className="text-sm font-semibold text-primary-foreground transition-colors hover:text-tsa-cream focus-visible:ring-2 focus-visible:ring-tsa-gold"
           >
             {footer.privacyLink.label}
           </Link>
