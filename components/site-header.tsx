@@ -234,15 +234,6 @@ export function SiteHeader() {
                   <Link
                     href={item.href}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    onClick={(event) => {
-                      if (!item.children) return
-                      if (activeMenu !== item.label) {
-                        event.preventDefault()
-                        setActiveMenu(item.label)
-                      } else {
-                        setActiveMenu(null)
-                      }
-                    }}
                     className={`inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"

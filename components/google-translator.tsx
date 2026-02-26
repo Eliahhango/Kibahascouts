@@ -30,11 +30,19 @@ declare global {
   }
 }
 
+function setGoogTransCookie(code: string) {
+  const value = `/en/${code}`
+  document.cookie = `googtrans=${value};path=/`
+  document.cookie = `googtrans=${value};domain=${window.location.hostname};path=/`
+}
+
 function getTranslateCombo() {
   return document.querySelector<HTMLSelectElement>(".goog-te-combo")
 }
 
 function changeLanguage(code: string) {
+  setGoogTransCookie(code)
+
   const combo = getTranslateCombo()
   if (!combo) return false
 
@@ -62,11 +70,21 @@ export function GoogleTranslator() {
         return
       }
 
-      new window.google.translate.TranslateElement(
+      const translateNamespace = window.google.translate as {
+        TranslateElement: {
+          new (options: Record<string, unknown>, elementId: string): unknown
+          InlineLayout?: {
+            SIMPLE?: unknown
+          }
+        }
+      }
+
+      new translateNamespace.TranslateElement(
         {
           pageLanguage: "en",
           includedLanguages,
           autoDisplay: false,
+          layout: translateNamespace.TranslateElement?.InlineLayout?.SIMPLE,
         },
         "google_translate_element",
       )
@@ -101,6 +119,7 @@ export function GoogleTranslator() {
     const targetLanguage = savedLanguage || (browserCode && browserCode !== "en" ? browserCode : "en")
 
     setSelectedLanguage(targetLanguage)
+    setGoogTransCookie(targetLanguage)
 
     let attempts = 0
     const timer = window.setInterval(() => {
@@ -116,6 +135,7 @@ export function GoogleTranslator() {
   const onChangeLanguage = (nextLanguage: string) => {
     setSelectedLanguage(nextLanguage)
     localStorage.setItem(storageKey, nextLanguage)
+    setGoogTransCookie(nextLanguage)
 
     if (!changeLanguage(nextLanguage)) {
       const timer = window.setInterval(() => {
@@ -123,7 +143,10 @@ export function GoogleTranslator() {
           window.clearInterval(timer)
         }
       }, 250)
-      window.setTimeout(() => window.clearInterval(timer), 5000)
+      window.setTimeout(() => {
+        window.clearInterval(timer)
+        window.location.reload()
+      }, 5000)
     }
   }
 
@@ -142,7 +165,7 @@ export function GoogleTranslator() {
           </option>
         ))}
       </select>
-      <div id="google_translate_element" className="hidden" />
+      <div id="google_translate_element" className="fixed -left-[9999px] top-0 h-0 w-0 overflow-hidden" />
     </div>
   )
 }
