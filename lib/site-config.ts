@@ -25,15 +25,15 @@ export const siteConfig = {
   name: "KIBAHA SCOUTS",
   shortName: "Kibaha Scouts",
   organization: "Tanzania Scouts Association",
-  siteUrl: "https://tsa-kibaha.org",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
   description:
     "Official website of Kibaha Scouts. Building character, confidence, and community through scouting in Coast Region, Tanzania.",
   contact: {
-    address: "P.O. Box 1234, Kibaha, Coast Region, Tanzania",
-    phoneDisplay: "+255 23 240 1234",
-    phoneHref: "tel:+255232401234",
-    email: "info@tsa-kibaha.org",
-    emailHref: "mailto:info@tsa-kibaha.org",
+    address: "[ADD VERIFIED ADDRESS]",
+    phoneDisplay: "[CONFIRM PHONE]",
+    phoneHref: "tel:[CONFIRM PHONE]",
+    email: "[CONFIRM EMAIL]",
+    emailHref: "mailto:[CONFIRM EMAIL]",
   },
   branding: {
     primaryLogo: "/images/branding/kibaha-scouts-logo.jpg",

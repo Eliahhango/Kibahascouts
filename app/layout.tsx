@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { siteConfig } from '@/lib/site-config'
+import { getMetadataBase, getSiteUrl } from '@/lib/site-url'
 import './globals.css'
 
 const manrope = Manrope({
@@ -17,8 +18,10 @@ const sourceSerif = Source_Serif_4({
   variable: '--font-source-serif',
 })
 
+const siteUrl = getSiteUrl()
+
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.siteUrl),
+  metadataBase: getMetadataBase(),
   title: {
     default: `${siteConfig.name} | ${siteConfig.organization}`,
     template: `%s | ${siteConfig.name}`,
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_TZ',
-    url: siteConfig.siteUrl,
+    url: siteUrl,
     siteName: siteConfig.name,
     title: `${siteConfig.name} | ${siteConfig.organization}`,
     description:

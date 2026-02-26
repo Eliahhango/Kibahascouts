@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next"
 import { programmes } from "@/lib/data"
 import { getEventsFromCms, getNewsFromCms, getUnitsFromCms } from "@/lib/cms"
-
-const siteUrl = "https://tsa-kibaha.org"
+import { getSiteUrl } from "@/lib/site-url"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const siteUrl = getSiteUrl()
   const [newsArticles, scoutEvents, scoutUnits] = await Promise.all([
     getNewsFromCms(),
     getEventsFromCms(),
