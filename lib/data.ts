@@ -363,7 +363,7 @@ export const resources: Resource[] = [
   {
     id: "r9",
     title: "Child Safeguarding Policy",
-    summary: "TSA Kibaha District child protection and safeguarding policy document.",
+    summary: "Kibaha Scouts child protection and safeguarding policy document.",
     category: "Policies",
     fileType: "PDF",
     fileSize: "420 KB",
@@ -975,7 +975,7 @@ export const timelineEntries: TimelineEntry[] = [
     year: "2020",
     title: "Community Service Excellence Award",
     description:
-      "TSA Kibaha District received the National Community Service Excellence Award for outstanding youth-led community development projects.",
+      "Kibaha Scouts received the National Community Service Excellence Award for outstanding youth-led community development projects.",
   },
   {
     year: "2026",
@@ -990,7 +990,7 @@ export const timelineEntries: TimelineEntry[] = [
 export const mainNavItems = [
   { label: "Home", href: "/" },
   {
-    label: "About TSA Kibaha",
+    label: "About Kibaha Scouts",
     href: "/about",
     children: [
       { label: "District Overview", href: "/about" },

@@ -6,7 +6,7 @@ import { getEventsFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
   title: "Events",
-  description: "Upcoming and past TSA Kibaha District events, trainings, and district activities.",
+  description: "Upcoming and past Kibaha Scouts events, trainings, and district activities.",
 }
 
 type SearchParams = {

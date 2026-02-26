@@ -6,7 +6,7 @@ import { getUnitsFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
   title: "Scout Units",
-  description: "Directory of TSA Kibaha District scout packs, troops, and rover crews by ward and meeting day.",
+  description: "Directory of Kibaha Scouts packs, troops, and rover crews by ward and meeting day.",
 }
 
 type SearchParams = {

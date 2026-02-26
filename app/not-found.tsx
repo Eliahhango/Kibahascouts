@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Compass, Home, Search } from "lucide-react"
 
 const quickLinks = [
-  { label: "About TSA Kibaha", href: "/about" },
+  { label: "About Kibaha Scouts", href: "/about" },
   { label: "Programmes", href: "/programmes" },
   { label: "Newsroom", href: "/newsroom" },
   { label: "Contact Us", href: "/contact" },

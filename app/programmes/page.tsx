@@ -7,7 +7,7 @@ import { ArrowRight, Users } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Programmes",
-  description: "Explore TSA Kibaha District scout programmes for Cub Scouts, Scouts, and Rover Scouts.",
+  description: "Explore Kibaha Scouts programmes for Cub Scouts, Scouts, and Rover Scouts.",
 }
 
 export default function ProgrammesPage() {
@@ -19,7 +19,7 @@ export default function ProgrammesPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Scout Programmes</h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            TSA Kibaha District offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.
+            Kibaha Scouts offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.
           </p>
 
           <div className="mt-10 grid gap-8 md:grid-cols-3">

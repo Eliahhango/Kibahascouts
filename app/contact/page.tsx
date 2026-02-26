@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact TSA Kibaha District office, send inquiries, and connect through social channels.",
+  description: "Contact Kibaha Scouts office, send inquiries, and connect through social channels.",
 }
 
 export default function ContactPage() {
@@ -14,7 +14,7 @@ export default function ContactPage() {
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Contact TSA Kibaha District</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Contact KIBAHA SCOUTS</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
             Reach the district office for programme inquiries, membership support, partnerships, and media requests.
           </p>
@@ -144,7 +144,7 @@ export default function ContactPage() {
           <h2 className="text-2xl font-bold text-foreground">Map</h2>
           <div className="mt-4 overflow-hidden rounded-lg border border-border">
             <iframe
-              title="TSA Kibaha District office map"
+              title="Kibaha Scouts office map"
               src="https://maps.google.com/maps?q=Kibaha%20District%20Council&t=&z=13&ie=UTF8&iwloc=&output=embed"
               className="h-[320px] w-full"
               loading="lazy"

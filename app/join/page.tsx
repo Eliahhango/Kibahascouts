@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 
 export const metadata: Metadata = {
   title: "Join / Volunteer",
-  description: "Join TSA Kibaha as youth, volunteer as a leader, or support district scouting through donations.",
+  description: "Join Kibaha Scouts as youth, volunteer as a leader, or support district scouting through donations.",
 }
 
 export default function JoinPage() {
@@ -16,7 +16,7 @@ export default function JoinPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Join / Volunteer</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Become part of TSA Kibaha District as a youth member, adult leader, or community supporter.
+            Become part of Kibaha Scouts as a youth member, adult leader, or community supporter.
           </p>
         </div>
       </section>

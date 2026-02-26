@@ -6,7 +6,7 @@ import { getResourcesFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
   title: "Resources",
-  description: "Document library for forms, training materials, policies, badges, and reports for TSA Kibaha District.",
+  description: "Document library for forms, training materials, policies, badges, and reports for Kibaha Scouts.",
 }
 
 const categories = ["All", "Forms", "Training", "Policies", "Badges", "Reports"] as const

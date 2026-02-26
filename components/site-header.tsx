@@ -24,7 +24,7 @@ const districtOptions: DistrictOption[] = [
 ]
 
 const menuDescriptions: Record<string, string> = {
-  "About TSA Kibaha": "Institutional profile, leadership, history, and district governance.",
+  "About Kibaha Scouts": "Institutional profile, leadership, history, and district governance.",
   Programmes: "Age-based sections, badge progression, and training pathways.",
   "Scout Units": "Directory of packs, troops, and crews across Kibaha wards.",
   Newsroom: "Official updates, press resources, and district announcements.",
@@ -205,7 +205,7 @@ export function SiteHeader() {
           <Link
             href="/"
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="TSA Kibaha District - Home"
+            aria-label="Kibaha Scouts - Home"
           >
             <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold/30 shadow-lg" aria-hidden="true">
               <Image
@@ -218,7 +218,7 @@ export function SiteHeader() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold leading-tight text-foreground">TSA Kibaha District</span>
+              <span className="text-sm font-bold leading-tight text-foreground">KIBAHA SCOUTS</span>
               <span className="text-xs leading-tight text-muted-foreground">Tanzania Scouts Association</span>
             </div>
           </Link>

@@ -7,8 +7,8 @@ import { FAQSection } from "./faq-section"
 import { getLeadersFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
-  title: "About TSA Kibaha",
-  description: "Learn about the Tanzania Scouts Association Kibaha District - our mission, leadership, history, and values.",
+  title: "About Kibaha Scouts",
+  description: "Learn about Kibaha Scouts - our mission, leadership, history, and values.",
 }
 
 export default async function AboutPage() {
@@ -16,7 +16,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Breadcrumbs items={[{ label: "About TSA Kibaha" }]} />
+      <Breadcrumbs items={[{ label: "About Kibaha Scouts" }]} />
 
       {/* Hero */}
       <section className="relative bg-tsa-green-deep" aria-label="About hero">
@@ -25,7 +25,7 @@ export default async function AboutPage() {
         </div>
         <div className="relative mx-auto max-w-7xl px-4 py-16 md:py-24">
           <h1 className="text-balance text-3xl font-bold text-primary-foreground md:text-4xl lg:text-5xl">
-            About TSA Kibaha District
+            About KIBAHA SCOUTS
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/90 md:text-lg">
             Building character, confidence, and community through scouting in Coast Region, Tanzania since 1978.
@@ -108,7 +108,7 @@ export default async function AboutPage() {
       <section className="bg-background py-12 md:py-16" id="leadership">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">District Leadership</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Meet the volunteer leaders guiding TSA Kibaha District</p>
+          <p className="mt-2 text-sm text-muted-foreground">Meet the volunteer leaders guiding Kibaha Scouts</p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {leadershipProfiles.map((leader) => (
               <div key={leader.id} className="rounded-lg border border-border bg-card p-5 text-center">

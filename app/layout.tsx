@@ -19,18 +19,18 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   metadataBase: new URL('https://tsa-kibaha.org'),
   title: {
-    default: 'TSA Kibaha District | Tanzania Scouts Association',
-    template: '%s | TSA Kibaha District',
+    default: 'KIBAHA SCOUTS | Tanzania Scouts Association',
+    template: '%s | KIBAHA SCOUTS',
   },
   description:
-    'Official website of the Tanzania Scouts Association, Kibaha District. Building character, confidence, and community through scouting in Coast Region, Tanzania.',
+    'Official website of Kibaha Scouts. Building character, confidence, and community through scouting in Coast Region, Tanzania.',
   keywords: ['Tanzania Scouts', 'Kibaha', 'Scouting', 'Youth Development', 'TSA', 'Coast Region'],
   openGraph: {
     type: 'website',
     locale: 'en_TZ',
     url: 'https://tsa-kibaha.org',
-    siteName: 'TSA Kibaha District',
-    title: 'TSA Kibaha District | Tanzania Scouts Association',
+    siteName: 'KIBAHA SCOUTS',
+    title: 'KIBAHA SCOUTS | Tanzania Scouts Association',
     description:
       'Building character, confidence, and community through scouting in Kibaha District.',
     images: [

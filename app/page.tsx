@@ -36,7 +36,7 @@ const mediaItems = [
 const defaultStory = {
   id: "fallback",
   slug: "newsroom",
-  title: "TSA Kibaha District Official Updates",
+  title: "Kibaha Scouts Official Updates",
   summary: "Follow district highlights, programme milestones, and upcoming opportunities across all scout sections.",
 }
 
@@ -62,6 +62,29 @@ export default async function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
           <div>
+            <div className="mb-4 inline-flex flex-wrap items-center gap-2 rounded-lg border border-primary-foreground/25 bg-primary-foreground/12 p-2.5 backdrop-blur-sm">
+              <Image
+                src="/images/branding/kibaha-scouts-logo.jpg"
+                alt="Kibaha Scouts logo"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded bg-white p-1 object-contain"
+              />
+              <Image
+                src="/images/branding/scout-badge.svg"
+                alt="Scout badge"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded bg-white p-1 object-contain"
+              />
+              <Image
+                src="/images/branding/tanzania-scouts-logo.png"
+                alt="Tanzania Scouts logo"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded bg-white p-1 object-contain"
+              />
+            </div>
             <span className="eyebrow bg-primary-foreground/16 text-primary-foreground">Featured Story</span>
             <h1 className="mt-4 max-w-2xl text-balance text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">
               {featuredNews.title}
@@ -314,7 +337,7 @@ export default async function HomePage() {
       <section className="bg-tsa-gold py-12 md:py-16" aria-label="Call to action">
         <div className="mx-auto max-w-7xl px-4 text-center">
           <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
-            Start Your Scouting Journey with TSA Kibaha District
+            Start Your Scouting Journey with KIBAHA SCOUTS
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground/90 md:text-base">
             Join as a youth member, support as a volunteer leader, or partner with the district to strengthen scouting

@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 
 export const metadata: Metadata = {
   title: "Safety & Youth Protection",
-  description: "Child safeguarding, misconduct reporting, adult screening, and code of conduct for TSA Kibaha District.",
+  description: "Child safeguarding, misconduct reporting, adult screening, and code of conduct for Kibaha Scouts.",
 }
 
 export default function SafetyPage() {

@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* TSA Kibaha District: Refined Purple + White */
+  /* Kibaha Scouts: Refined Purple + White */
   --background: #F7F8FC;
   --foreground: #1F1B2D;
   --card: #FFFFFF;

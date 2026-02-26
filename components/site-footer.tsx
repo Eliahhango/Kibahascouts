@@ -4,7 +4,7 @@ import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const footerLinks = {
-  "About TSA Kibaha": [
+  "About Kibaha Scouts": [
     { label: "District Overview", href: "/about" },
     { label: "Leadership", href: "/about#leadership" },
     { label: "History", href: "/about#history" },
@@ -49,7 +49,7 @@ export function SiteFooter() {
             <Link
               href="/"
               className="inline-flex items-center gap-2 rounded focus-visible:ring-2 focus-visible:ring-tsa-gold"
-              aria-label="TSA Kibaha District Home"
+              aria-label="Kibaha Scouts Home"
             >
               <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-tsa-gold/35" aria-hidden="true">
                 <Image
@@ -61,9 +61,9 @@ export function SiteFooter() {
                 />
               </div>
               <div>
-                <span className="block text-sm font-bold text-primary-foreground">TSA Kibaha District</span>
+                <span className="block text-sm font-bold text-primary-foreground">KIBAHA SCOUTS</span>
                 <span className="block text-[11px] uppercase tracking-[0.12em] text-primary-foreground/65">
-                  Official District Website
+                  Official Scouts Website
                 </span>
               </div>
             </Link>
@@ -173,20 +173,8 @@ export function SiteFooter() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-primary-foreground/70">
-            <span>Badges:</span>
-            <Image src="/images/branding/scout-badge.svg" alt="Scout badge" width={22} height={22} className="h-[22px] w-[22px]" />
-            <Image
-              src="/images/branding/tanzania-scouts-logo.png"
-              alt="Tanzania Scouts Association logo"
-              width={24}
-              height={24}
-              className="h-6 w-6 rounded object-contain"
-            />
-          </div>
-
           <p className="text-xs text-primary-foreground/70">
-            &copy; {new Date().getFullYear()} Tanzania Scouts Association - Kibaha District. All rights reserved.
+            &copy; {new Date().getFullYear()} Kibaha Scouts. All rights reserved.
           </p>
         </div>
       </div>

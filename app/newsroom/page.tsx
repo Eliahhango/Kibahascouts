@@ -7,7 +7,7 @@ import { getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
   title: "Newsroom",
-  description: "Latest announcements, training updates, community service stories, and awards from TSA Kibaha District.",
+  description: "Latest announcements, training updates, community service stories, and awards from Kibaha Scouts.",
 }
 
 const categories = ["All", "Announcements", "Training", "Community Service", "Awards"] as const
@@ -41,7 +41,7 @@ export default async function NewsroomPage({
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Newsroom</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Official updates from TSA Kibaha District, including announcements, training highlights, community service
+            Official updates from Kibaha Scouts, including announcements, training highlights, community service
             impact, and scout achievements.
           </p>
 
