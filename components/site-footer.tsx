@@ -83,42 +83,46 @@ export function SiteFooter() {
               </p>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:hidden">
-              <span className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground">
-                <MapPin className="h-4 w-4 shrink-0 text-tsa-gold" />
-                Kibaha, Coast Region
-              </span>
-              <a
-                href="tel:+255232401234"
-                className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:border-tsa-gold hover:text-tsa-gold"
-              >
-                <Phone className="h-4 w-4 shrink-0 text-tsa-gold" />
-                +255 23 240 1234
-              </a>
+            <div className="mt-5 grid gap-3 lg:hidden">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                  <MapPin className="h-4 w-4 shrink-0 text-primary-foreground/85" />
+                  Kibaha, Coast Region
+                </div>
+
+                <a
+                  href="tel:+255232401234"
+                  className="inline-flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-200 hover:bg-[#365999]"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-primary-foreground/85" />
+                  +255 23 240 1234
+                </a>
+              </div>
+
               <a
                 href="mailto:info@tsa-kibaha.org"
-                className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:border-tsa-gold hover:text-tsa-gold sm:col-span-2"
+                className="inline-flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-200 hover:bg-[#365999]"
               >
-                <Mail className="h-4 w-4 shrink-0 text-tsa-gold" />
+                <Mail className="h-4 w-4 shrink-0 text-primary-foreground/85" />
                 info@tsa-kibaha.org
               </a>
             </div>
           </div>
 
           <div className="lg:hidden">
-            <Accordion type="multiple" className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5">
+            <Accordion type="multiple" className="overflow-hidden rounded-sm border border-[#4f6a9f] bg-[#123675]">
               {footerSections.map(([heading, links]) => (
-                <AccordionItem key={heading} value={heading} className="border-primary-foreground/15 px-4 last:border-b-0">
-                  <AccordionTrigger className="py-3 text-base font-semibold text-tsa-gold hover:no-underline">
-                    {heading}
+                <AccordionItem key={heading} value={heading} className="border-[#4f6a9f] last:border-b-0">
+                  <AccordionTrigger className="!relative !block !rounded-none !py-4 !pl-5 !pr-16 !text-left !text-[1.03rem] !font-semibold !text-primary-foreground hover:!bg-[#1b4385] hover:!no-underline after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-14 after:border-l after:border-[#4f6a9f] after:bg-[#0d2d64] [&>svg]:!absolute [&>svg]:!right-5 [&>svg]:!top-1/2 [&>svg]:!-translate-y-1/2 [&>svg]:!text-primary-foreground/80">
+                    <span className="block leading-tight">{heading}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="pb-3">
-                    <ul className="space-y-2">
+                  <AccordionContent className="bg-[#1b4385] px-5 pb-4">
+                    <ul className="space-y-1">
                       {links.map((link) => (
                         <li key={link.href}>
                           <Link
                             href={link.href}
-                            className="text-sm text-primary-foreground/80 transition-colors hover:text-tsa-gold focus-visible:ring-2 focus-visible:ring-tsa-gold"
+                            className="block rounded-sm px-2 py-1.5 text-sm text-primary-foreground/90 transition-colors hover:bg-primary-foreground/12 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-tsa-gold"
                           >
                             {link.label}
                           </Link>
@@ -129,6 +133,21 @@ export function SiteFooter() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </div>
+
+          <div className="space-y-3 lg:hidden">
+            <Link
+              href="/newsroom"
+              className="inline-flex min-w-52 items-center justify-center rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-6 py-3 text-lg font-semibold text-primary-foreground transition-colors duration-200 hover:bg-[#365999]"
+            >
+              Newsletters
+            </Link>
+            <Link
+              href="/safety"
+              className="inline-flex min-w-64 items-center justify-center rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-6 py-3 text-lg font-semibold text-primary-foreground transition-colors duration-200 hover:bg-[#365999]"
+            >
+              Report misconduct
+            </Link>
           </div>
 
           <div className="hidden lg:col-span-4 lg:grid lg:grid-cols-4 lg:gap-8">
