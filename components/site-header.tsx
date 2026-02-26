@@ -137,7 +137,7 @@ export function SiteHeader() {
         Skip to main content
       </a>
 
-      <div className="border-b border-tsa-green-mid/30 bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
+      <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
           className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 md:flex-nowrap md:gap-4"
           aria-label={utilityLabel}
@@ -149,7 +149,7 @@ export function SiteHeader() {
               aria-expanded={districtOpen}
               aria-haspopup="listbox"
               aria-label="Select district website"
-              className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/25 bg-primary-foreground/10 px-2.5 py-1 text-xs font-medium shadow-sm backdrop-blur transition hover:bg-primary-foreground/20 focus-visible:ring-2 focus-visible:ring-tsa-gold"
+              className="inline-flex items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2.5 py-1 text-xs font-medium text-tsa-green-deep shadow-sm transition hover:bg-tsa-cream focus-visible:ring-2 focus-visible:ring-tsa-gold"
             >
               <MapPin className="h-3.5 w-3.5" />
               {district.label}
@@ -189,7 +189,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-primary-foreground/30 text-primary-foreground transition hover:bg-primary-foreground/15 md:hidden"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-primary-foreground text-primary-foreground transition hover:bg-tsa-green-mid md:hidden"
               aria-label="Open search"
             >
               <Search className="h-4 w-4" />
@@ -200,7 +200,7 @@ export function SiteHeader() {
 
       <header
         ref={navRef}
-        className={`sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur transition-shadow ${scrolled ? "shadow-md" : ""}`}
+        className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
@@ -209,7 +209,7 @@ export function SiteHeader() {
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`${name} - Home`}
           >
-            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold/30 shadow-lg" aria-hidden="true">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg" aria-hidden="true">
               <Image
                 src={branding.primaryLogo}
                 alt=""
@@ -258,7 +258,7 @@ export function SiteHeader() {
 
                   {item.children && isExpanded && (
                     <div
-                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] -translate-x-1/2 rounded-xl border border-border/80 bg-card/98 p-5 shadow-2xl backdrop-blur"
+                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] -translate-x-1/2 rounded-xl border border-border bg-card p-5 shadow-lg"
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}

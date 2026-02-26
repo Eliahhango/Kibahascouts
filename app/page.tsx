@@ -64,7 +64,7 @@ export default async function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
           <div>
-            <div className="mb-4 inline-flex flex-wrap items-center gap-2 rounded-lg border border-primary-foreground/25 bg-primary-foreground/12 p-2.5 backdrop-blur-sm">
+            <div className="mb-4 inline-flex flex-wrap items-center gap-2 rounded-lg border border-tsa-green-light bg-tsa-green-mid p-2.5">
               <Image
                 src={branding.primaryLogo}
                 alt={`${name} logo`}
@@ -87,7 +87,7 @@ export default async function HomePage() {
                 className="h-14 w-14 rounded bg-white p-1 object-contain"
               />
             </div>
-            <span className="eyebrow bg-primary-foreground/16 text-primary-foreground">Featured Story</span>
+            <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Featured Story</span>
             <h1 className="mt-4 max-w-2xl text-balance text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">
               {featuredNews.title}
             </h1>
@@ -103,7 +103,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="section-shell bg-primary-foreground/95 p-5">
+          <div className="section-shell bg-primary-foreground p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {[
@@ -313,13 +313,13 @@ export default async function HomePage() {
 
       <section className="bg-tsa-green-deep py-12 md:py-16" aria-labelledby="campaigns-heading">
         <div className="mx-auto max-w-7xl px-4">
-          <span className="eyebrow bg-primary-foreground/12 text-primary-foreground">Campaigns</span>
+          <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Campaigns</span>
           <h2 id="campaigns-heading" className="mt-3 text-3xl font-bold text-primary-foreground">
             Ongoing District Campaigns
           </h2>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
             {campaigns.map((campaign) => (
-              <Link key={campaign.id} href={campaign.link} className="overflow-hidden rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 card-lift">
+              <Link key={campaign.id} href={campaign.link} className="overflow-hidden rounded-xl border border-tsa-green-mid bg-[#422a76] card-lift">
                 <div className="relative aspect-[16/10]">
                   <Image src={campaign.image} alt={campaign.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
@@ -328,7 +328,7 @@ export default async function HomePage() {
                     {campaign.status}
                   </span>
                   <h3 className="mt-2 text-lg font-semibold text-primary-foreground">{campaign.title}</h3>
-                  <p className="mt-2 text-sm text-primary-foreground/85">{campaign.description}</p>
+                  <p className="mt-2 text-sm text-primary-foreground">{campaign.description}</p>
                 </div>
               </Link>
             ))}
@@ -341,7 +341,7 @@ export default async function HomePage() {
           <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
             Start Your Scouting Journey with {name}
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground/90 md:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground md:text-base">
             Join as a youth member, support as a volunteer leader, or partner with the district to strengthen scouting
             programmes in Kibaha.
           </p>

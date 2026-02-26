@@ -104,10 +104,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(circle at 10% 0%, rgba(94, 61, 196, 0.08), transparent 36%),
-      radial-gradient(circle at 90% 10%, rgba(142, 115, 216, 0.07), transparent 34%);
-    background-attachment: fixed;
     letter-spacing: 0.01em;
   }
   h1, h2, h3, h4 {
@@ -154,17 +150,23 @@
 
 @layer utilities {
   .section-shell {
-    @apply rounded-2xl border border-border/80 bg-card shadow-[0_8px_30px_rgba(28,8,56,0.06)];
+    @apply rounded-2xl border border-border bg-card shadow-sm;
   }
   .eyebrow {
-    @apply inline-flex items-center rounded-full bg-tsa-green-deep/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-tsa-green-deep;
+    @apply inline-flex items-center rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-tsa-green-deep;
   }
   .section-title {
     @apply text-2xl font-bold text-foreground md:text-3xl;
   }
   .card-lift {
-    @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(28,8,56,0.12)];
+    @apply transition-shadow duration-200 hover:shadow-md;
   }
+}
+
+/* Force-disable frosted/glass blur effects */
+[class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 /* Google Translate integration: keep translation logic, hide Google toolbar UI */

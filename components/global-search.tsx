@@ -52,7 +52,7 @@ export function GlobalSearch() {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-lg">
-      <div className="flex items-center rounded-md border border-primary-foreground/25 bg-primary-foreground/95 px-2 shadow-md">
+      <div className="flex items-center rounded-md border border-primary-foreground bg-primary-foreground px-2 shadow-md">
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
           type="search"

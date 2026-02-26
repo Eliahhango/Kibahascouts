@@ -190,12 +190,12 @@ export function GoogleTranslator() {
 
   return (
     <div className="notranslate inline-flex items-center gap-2">
-      <span className="hidden text-[11px] font-medium text-primary-foreground/80 xl:inline">Translate</span>
+      <span className="hidden text-[11px] font-medium text-primary-foreground xl:inline">Translate</span>
       <select
         aria-label="Translate website language"
         value={selectedLanguage}
         onChange={(event) => onChangeLanguage(event.target.value)}
-        className="rounded-md border border-primary-foreground/25 bg-primary-foreground/95 px-2 py-1 text-xs font-medium text-tsa-green-deep outline-none"
+        className="rounded-md border border-primary-foreground bg-primary-foreground px-2 py-1 text-xs font-medium text-tsa-green-deep outline-none"
       >
         {languageOptions.map((language) => (
           <option key={language.code} value={language.code}>

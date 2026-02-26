@@ -19,10 +19,8 @@ export default function GlobalError({
     <html lang="en">
       <body className="min-h-screen bg-tsa-green-deep text-primary-foreground">
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-16">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,115,216,0.35),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(94,61,196,0.3),transparent_40%)]" />
-
-          <section className="relative w-full max-w-3xl rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-6 text-center shadow-2xl md:p-10">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary-foreground/90">
+          <section className="relative w-full max-w-3xl rounded-2xl border border-tsa-green-mid bg-tsa-green-mid p-6 text-center shadow-lg md:p-10">
+            <span className="inline-flex items-center gap-2 rounded-full border border-tsa-green-light bg-tsa-green-light px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary-foreground">
               <AlertTriangle className="h-3.5 w-3.5" />
               Error
             </span>
@@ -30,7 +28,7 @@ export default function GlobalError({
             <h1 className="mt-5 text-balance text-3xl font-bold leading-tight md:text-5xl">
               Something went wrong
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/85 md:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground md:text-lg">
               An unexpected error occurred while loading this page. Please try again.
             </p>
 
@@ -46,7 +44,7 @@ export default function GlobalError({
 
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/25 bg-primary-foreground/10 px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/15"
+                className="inline-flex items-center gap-2 rounded-md border border-tsa-green-light bg-tsa-green-light px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-[#9d85e8]"
               >
                 <Home className="h-4 w-4" />
                 Back to Home
@@ -54,7 +52,7 @@ export default function GlobalError({
             </div>
 
             {error?.digest ? (
-              <p className="mt-6 text-xs text-primary-foreground/70">Reference: {error.digest}</p>
+              <p className="mt-6 text-xs text-primary-foreground">Reference: {error.digest}</p>
             ) : null}
           </section>
         </main>
