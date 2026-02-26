@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import { CalendarDays, FileText, Inbox, Newspaper } from "lucide-react"
 import { DashboardCards } from "@/components/admin/dashboard-cards"
 import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
@@ -59,6 +60,21 @@ export default async function AdminHomePage() {
 
         <section className="mt-6">
           <DashboardCards items={cards} />
+        </section>
+
+        <section className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground">Content Tools</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link href="/admin/news" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary">
+              Manage News
+            </Link>
+            <Link href="/admin/events" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary">
+              Manage Events
+            </Link>
+            <Link href="/admin/resources" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary">
+              Manage Resources
+            </Link>
+          </div>
         </section>
       </main>
     )
