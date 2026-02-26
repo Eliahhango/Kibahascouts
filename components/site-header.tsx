@@ -132,9 +132,9 @@ export function SiteHeader() {
         Skip to main content
       </a>
 
-      <div className="border-b border-tsa-green-mid bg-tsa-green-deep text-primary-foreground">
+      <div className="border-b border-tsa-green-mid/30 bg-gradient-to-r from-tsa-green-deep via-[#5b2ea6] to-tsa-green-mid text-primary-foreground">
         <div
-          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2 md:flex-nowrap md:gap-4"
+          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 md:flex-nowrap md:gap-4"
           aria-label={utilityLabel}
         >
           <div ref={districtRef} className="relative">
@@ -144,7 +144,7 @@ export function SiteHeader() {
               aria-expanded={districtOpen}
               aria-haspopup="listbox"
               aria-label="Select district website"
-              className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/25 bg-primary-foreground/10 px-2.5 py-1 text-xs font-medium transition hover:bg-primary-foreground/20 focus-visible:ring-2 focus-visible:ring-tsa-gold"
+              className="inline-flex items-center gap-1.5 rounded-md border border-primary-foreground/25 bg-primary-foreground/10 px-2.5 py-1 text-xs font-medium shadow-sm backdrop-blur transition hover:bg-primary-foreground/20 focus-visible:ring-2 focus-visible:ring-tsa-gold"
             >
               <MapPin className="h-3.5 w-3.5" />
               {district.label}
@@ -153,7 +153,7 @@ export function SiteHeader() {
             {districtOpen && (
               <div
                 role="listbox"
-                className="absolute left-0 z-50 mt-1 min-w-64 rounded-md border border-border bg-card p-1 text-card-foreground shadow-xl"
+                className="absolute left-0 z-50 mt-1 min-w-64 rounded-lg border border-border bg-card p-1.5 text-card-foreground shadow-2xl"
               >
                 {districtOptions.map((option) => (
                   <button
@@ -166,7 +166,7 @@ export function SiteHeader() {
                       localStorage.setItem("tsa-district", option.id)
                       setDistrictOpen(false)
                     }}
-                    className="block w-full rounded px-3 py-2 text-left text-xs font-medium transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="block w-full rounded-md px-3 py-2 text-left text-xs font-medium transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {option.label}
                   </button>
@@ -183,8 +183,10 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setLang("en")}
-              className={`rounded-md px-2 py-1 text-xs font-medium transition ${
-                lang === "en" ? "bg-primary-foreground text-tsa-green-deep" : "text-primary-foreground/85 hover:bg-primary-foreground/15"
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
+                lang === "en"
+                  ? "bg-primary-foreground text-tsa-green-deep"
+                  : "text-primary-foreground/85 hover:bg-primary-foreground/15"
               }`}
               aria-label="Switch language to English"
             >
@@ -193,8 +195,10 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setLang("sw")}
-              className={`rounded-md px-2 py-1 text-xs font-medium transition ${
-                lang === "sw" ? "bg-primary-foreground text-tsa-green-deep" : "text-primary-foreground/85 hover:bg-primary-foreground/15"
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
+                lang === "sw"
+                  ? "bg-primary-foreground text-tsa-green-deep"
+                  : "text-primary-foreground/85 hover:bg-primary-foreground/15"
               }`}
               aria-label="Switch language to Kiswahili"
             >
@@ -213,7 +217,7 @@ export function SiteHeader() {
       </div>
 
       <header
-        className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
+        className={`sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
@@ -222,7 +226,7 @@ export function SiteHeader() {
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="TSA Kibaha District - Home"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tsa-green-deep" aria-hidden="true">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tsa-green-deep shadow-lg ring-2 ring-tsa-gold/30" aria-hidden="true">
               <svg viewBox="0 0 32 32" className="h-6 w-6 text-tsa-gold" fill="currentColor">
                 <path d="M16 2l3.09 9.51H29l-8.045 5.84L24.045 27 16 21.16 7.955 27l3.09-9.65L3 11.51h9.91z" />
               </svg>
@@ -265,7 +269,7 @@ export function SiteHeader() {
 
                   {item.children && isExpanded && (
                     <div
-                      className="absolute left-1/2 top-full z-50 mt-1 w-[44rem] -translate-x-1/2 rounded-lg border border-border bg-card p-5 shadow-xl"
+                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] -translate-x-1/2 rounded-xl border border-border/80 bg-card/98 p-5 shadow-2xl backdrop-blur"
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}
@@ -330,7 +334,7 @@ function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => voi
   const [expanded, setExpanded] = useState<string | null>(null)
 
   return (
-    <div className="fixed inset-0 top-[64px] z-40 overflow-y-auto bg-background lg:hidden">
+    <div className="fixed inset-0 top-[68px] z-40 overflow-y-auto bg-background lg:hidden">
       <nav className="mx-auto max-w-7xl px-4 py-4" aria-label="Mobile navigation">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))

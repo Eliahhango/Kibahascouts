@@ -52,11 +52,11 @@ export function GlobalSearch() {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-lg">
-      <div className="flex items-center rounded-md border border-tsa-green-mid/30 bg-background/95 px-2">
+      <div className="flex items-center rounded-md border border-primary-foreground/25 bg-primary-foreground/95 px-2 shadow-md">
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
           type="search"
-          className="w-full bg-transparent px-2 py-1.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          className="w-full bg-transparent px-2 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
           placeholder="Search news, events, resources, units"
           value={query}
           onChange={(event) => {
@@ -81,7 +81,7 @@ export function GlobalSearch() {
       </div>
 
       {open && query.trim() && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-md border border-border bg-card shadow-xl">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-border bg-card shadow-2xl">
           {results.length === 0 ? (
             <p className="px-3 py-4 text-sm text-muted-foreground">No results found.</p>
           ) : (

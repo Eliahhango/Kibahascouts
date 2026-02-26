@@ -17,6 +17,7 @@ const sourceSerif = Source_Serif_4({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tsa-kibaha.org'),
   title: {
     default: 'TSA Kibaha District | Tanzania Scouts Association',
     template: '%s | TSA Kibaha District',

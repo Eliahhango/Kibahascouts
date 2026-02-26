@@ -104,6 +104,22 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(124, 58, 237, 0.09), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.08), transparent 36%);
+    background-attachment: fixed;
+    letter-spacing: 0.01em;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-source-serif), Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+  a, button, input, select, textarea {
+    @apply transition-colors duration-200;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 
@@ -134,4 +150,19 @@
 }
 .skip-to-content:focus {
   left: 0;
+}
+
+@layer utilities {
+  .section-shell {
+    @apply rounded-2xl border border-border/80 bg-card shadow-[0_8px_30px_rgba(28,8,56,0.06)];
+  }
+  .eyebrow {
+    @apply inline-flex items-center rounded-full bg-tsa-green-deep/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-tsa-green-deep;
+  }
+  .section-title {
+    @apply text-2xl font-bold text-foreground md:text-3xl;
+  }
+  .card-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(28,8,56,0.12)];
+  }
 }
