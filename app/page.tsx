@@ -270,7 +270,7 @@ export default async function HomePage() {
           <h2 id="media-heading" className="section-title mt-3">
             Videos and Gallery
           </h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {mediaItems.map((item) => (
               <article key={item.title} className="section-shell card-lift overflow-hidden">
                 <div className="group relative aspect-video">
@@ -294,7 +294,7 @@ export default async function HomePage() {
           <h2 id="campaigns-heading" className="mt-3 text-3xl font-bold text-primary-foreground">
             Ongoing District Campaigns
           </h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {campaigns.map((campaign) => (
               <Link key={campaign.id} href={campaign.link} className="overflow-hidden rounded-xl border border-tsa-green-mid bg-[#422a76] card-lift">
                 <div className="relative aspect-[16/10]">

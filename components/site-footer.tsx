@@ -15,7 +15,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-0 bg-tsa-green-deep text-primary-foreground" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 py-8 lg:py-10">
-        <div className="hidden gap-8 lg:grid lg:grid-cols-[repeat(4,minmax(0,1fr))_240px]">
+        <div className="hidden gap-8 xl:grid xl:grid-cols-[repeat(4,minmax(0,1fr))_240px]">
           {footer.sections.map((section) => (
             <div key={section.title}>
               <h2 className="mb-4 text-2xl font-bold text-primary-foreground">{section.title}</h2>
@@ -50,7 +50,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="lg:hidden">
+        <div className="xl:hidden">
           <Accordion
             type="single"
             collapsible
@@ -84,7 +84,7 @@ export function SiteFooter() {
               <Link
                 key={action.label}
                 href={action.href}
-                className="inline-flex min-h-11 min-w-[12rem] items-center justify-center rounded-sm border border-[#6b55ab] bg-[#4a3291] px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[#5a41a5] focus-visible:ring-2 focus-visible:ring-tsa-gold"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-sm border border-[#6b55ab] bg-[#4a3291] px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[#5a41a5] focus-visible:ring-2 focus-visible:ring-tsa-gold sm:min-w-[12rem] sm:w-auto"
               >
                 {action.label}
               </Link>

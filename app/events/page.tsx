@@ -109,42 +109,44 @@ export default async function EventsPage({
             <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
               Calendar View: {monthYearLabel}
             </h2>
-            <div className="mt-6 overflow-hidden rounded-lg border border-border bg-card">
-              <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                  <div key={day} className="px-2 py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7">
-                {Array.from({ length: firstWeekday }).map((_, index) => (
-                  <div key={`offset-${index}`} className="min-h-24 border-b border-r border-border bg-background" />
-                ))}
-                {Array.from({ length: daysInMonth }).map((_, index) => {
-                  const day = index + 1
-                  const dayEvents = eventLookup.get(day) || []
-
-                  return (
-                    <div key={`day-${day}`} className="min-h-24 border-b border-r border-border p-2">
-                      <p className="text-xs font-semibold text-foreground">{day}</p>
-                      <div className="mt-1 space-y-1">
-                        {dayEvents.slice(0, 2).map((event) => (
-                          <Link
-                            key={event.id}
-                            href={`/events/${event.slug}`}
-                            className="block rounded bg-tsa-green-deep/10 px-1.5 py-1 text-[11px] leading-tight text-tsa-green-deep"
-                          >
-                            {event.title}
-                          </Link>
-                        ))}
-                        {dayEvents.length > 2 && (
-                          <p className="text-[11px] text-muted-foreground">+{dayEvents.length - 2} more</p>
-                        )}
-                      </div>
+            <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
+              <div className="min-w-[700px]">
+                <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="px-2 py-2">
+                      {day}
                     </div>
-                  )
-                })}
+                  ))}
+                </div>
+                <div className="grid grid-cols-7">
+                  {Array.from({ length: firstWeekday }).map((_, index) => (
+                    <div key={`offset-${index}`} className="min-h-24 border-b border-r border-border bg-background" />
+                  ))}
+                  {Array.from({ length: daysInMonth }).map((_, index) => {
+                    const day = index + 1
+                    const dayEvents = eventLookup.get(day) || []
+
+                    return (
+                      <div key={`day-${day}`} className="min-h-24 border-b border-r border-border p-2">
+                        <p className="text-xs font-semibold text-foreground">{day}</p>
+                        <div className="mt-1 space-y-1">
+                          {dayEvents.slice(0, 2).map((event) => (
+                            <Link
+                              key={event.id}
+                              href={`/events/${event.slug}`}
+                              className="block rounded bg-tsa-green-deep/10 px-1.5 py-1 text-[11px] leading-tight text-tsa-green-deep"
+                            >
+                              {event.title}
+                            </Link>
+                          ))}
+                          {dayEvents.length > 2 && (
+                            <p className="text-[11px] text-muted-foreground">+{dayEvents.length - 2} more</p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </div>

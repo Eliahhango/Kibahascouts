@@ -126,7 +126,7 @@ export default async function NewsroomPage({
           <p className="mt-2 text-sm text-muted-foreground">
             Media-ready files for official district communication.
           </p>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {pressDownloads.map((resource) => (
               <div key={resource.id} className="rounded-lg border border-border bg-card p-5">
                 <h3 className="text-base font-semibold text-card-foreground">{resource.title}</h3>

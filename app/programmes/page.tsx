@@ -22,7 +22,7 @@ export default function ProgrammesPage() {
             Kibaha Scouts offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.
           </p>
 
-          <div className="mt-10 grid gap-8 md:grid-cols-3">
+          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {programmes.map((prog) => (
               <Link
                 key={prog.slug}

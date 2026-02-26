@@ -258,7 +258,7 @@ export function SiteHeader() {
 
                   {item.children && isExpanded && (
                     <div
-                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] -translate-x-1/2 rounded-xl border border-border bg-card p-5 shadow-lg"
+                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl border border-border bg-card p-5 shadow-lg"
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}

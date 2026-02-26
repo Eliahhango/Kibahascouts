@@ -68,7 +68,7 @@ export default async function AboutPage() {
       <section className="bg-secondary py-12 md:py-16" id="mission">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">Mission, Vision & Values</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg bg-card p-6 border border-border">
               <div className="flex h-12 w-12 items-center justify-center rounded-md bg-tsa-green-deep">
                 <Target className="h-6 w-6 text-primary-foreground" />

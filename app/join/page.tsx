@@ -67,7 +67,7 @@ export default function JoinPage() {
               <HandHeart className="h-5 w-5 text-tsa-green-deep" />
             </div>
             <h2 className="mt-3 text-2xl font-bold text-card-foreground">Donate / Support</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 "Sponsor one scout (uniform + annual registration)",
                 "Support a district training weekend",

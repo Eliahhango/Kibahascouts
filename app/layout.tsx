@@ -59,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${sourceSerif.variable}`}>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased overflow-x-hidden">
         <SiteHeader />
         <main id="main-content">
           {children}

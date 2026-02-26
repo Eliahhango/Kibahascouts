@@ -148,7 +148,7 @@ export default async function EventDetailPage({
       <section className="bg-background py-12">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground">Related Events</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
               <Link
                 key={item.id}
