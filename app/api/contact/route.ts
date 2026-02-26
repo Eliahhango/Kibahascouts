@@ -13,6 +13,7 @@ const contactSchema = z.object({
 
 type ContactPayload = z.infer<typeof contactSchema>
 type RateEntry = { count: number; resetAt: number }
+type PersistPayload = ContactPayload & { ip: string; userAgent: string }
 
 const rateLimitStore = new Map<string, RateEntry>()
 const RATE_LIMIT_WINDOW_MS = Number(process.env.CONTACT_FORM_RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000)
@@ -53,51 +54,19 @@ function checkRateLimit(ip: string) {
   return { allowed: true, retryAfterSeconds: 0 }
 }
 
-async function sendWithResend(payload: ContactPayload) {
-  const apiKey = process.env.RESEND_API_KEY
-  const emailFrom = process.env.CONTACT_EMAIL_FROM
-  const emailTo = process.env.CONTACT_EMAIL_TO
+async function persistContactMessage(payload: PersistPayload) {
+  const { getAdminDb } = await import("@/lib/firebase/admin")
 
-  if (!apiKey || !emailFrom || !emailTo) {
-    return {
-      ok: false as const,
-      code: "missing_email_config" as const,
-      message: "Contact form email is not configured.",
-    }
-  }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: emailFrom,
-      to: [emailTo],
-      reply_to: payload.email,
-      subject: `[Website Contact] ${payload.subject}`,
-      text: [
-        `Name: ${payload.name}`,
-        `Email: ${payload.email}`,
-        `Subject: ${payload.subject}`,
-        "",
-        payload.message,
-      ].join("\n"),
-    }),
+  await getAdminDb().collection("contactMessages").add({
+    name: payload.name,
+    email: payload.email,
+    subject: payload.subject,
+    message: payload.message,
+    ip: payload.ip,
+    userAgent: payload.userAgent,
+    status: "unread",
+    createdAt: new Date().toISOString(),
   })
-
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => "")
-    return {
-      ok: false as const,
-      code: "email_send_failed" as const,
-      message: `Failed to send email via Resend (${response.status}).`,
-      detail: errorBody,
-    }
-  }
-
-  return { ok: true as const }
 }
 
 export async function POST(request: NextRequest) {
@@ -148,29 +117,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const sendResult = await sendWithResend(payload)
+    await persistContactMessage({
+      ...payload,
+      ip,
+      userAgent: request.headers.get("user-agent") ?? "unknown",
+    })
 
-    if (!sendResult.ok) {
-      const fallbackEmail = process.env.CONTACT_EMAIL_TO || "[CONFIRM CONTACT EMAIL]"
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Message could not be delivered at the moment.",
-          fallbackEmail,
-          reason: sendResult.code,
-        },
-        { status: 503 },
-      )
-    }
-
-    return NextResponse.json({ ok: true, message: "Message sent successfully." }, { status: 200 })
+    return NextResponse.json({ ok: true, message: "Message received. We will respond soon." }, { status: 201 })
   } catch {
     return NextResponse.json(
       {
         ok: false,
-        error: "Unexpected server error while sending your message.",
+        error: "Message could not be processed at this time. Please try again later.",
       },
-      { status: 500 },
+      { status: 503 },
     )
   }
 }

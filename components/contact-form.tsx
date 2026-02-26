@@ -6,7 +6,6 @@ type ContactApiResponse = {
   ok: boolean
   message?: string
   error?: string
-  fallbackEmail?: string
 }
 
 const initialForm = {
@@ -22,7 +21,6 @@ export function ContactForm() {
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [fallbackEmail, setFallbackEmail] = useState<string | null>(null)
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -30,7 +28,6 @@ export function ContactForm() {
     setSubmitting(true)
     setSuccessMessage(null)
     setErrorMessage(null)
-    setFallbackEmail(null)
 
     try {
       const response = await fetch("/api/contact", {
@@ -45,9 +42,6 @@ export function ContactForm() {
 
       if (!response.ok || !data?.ok) {
         setErrorMessage(data?.error ?? "Could not send your message. Please try again.")
-        if (data?.fallbackEmail) {
-          setFallbackEmail(data.fallbackEmail)
-        }
         return
       }
 
@@ -71,6 +65,8 @@ export function ContactForm() {
           name="name"
           type="text"
           required
+          minLength={2}
+          maxLength={120}
           value={form.name}
           onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
           className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
@@ -86,6 +82,7 @@ export function ContactForm() {
           name="email"
           type="email"
           required
+          maxLength={160}
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
           className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
@@ -101,6 +98,8 @@ export function ContactForm() {
           name="subject"
           type="text"
           required
+          minLength={3}
+          maxLength={140}
           value={form.subject}
           onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))}
           className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
@@ -129,6 +128,8 @@ export function ContactForm() {
           name="message"
           rows={5}
           required
+          minLength={20}
+          maxLength={3000}
           value={form.message}
           onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
           className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
@@ -149,17 +150,7 @@ export function ContactForm() {
         ) : null}
 
         {errorMessage ? (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">
-            <p>{errorMessage}</p>
-            {fallbackEmail ? (
-              <p className="mt-1">
-                Temporary fallback:{" "}
-                <a href={`mailto:${fallbackEmail}`} className="font-semibold underline">
-                  {fallbackEmail}
-                </a>
-              </p>
-            ) : null}
-          </div>
+          <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">{errorMessage}</p>
         ) : null}
       </div>
     </form>

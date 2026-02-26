@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { AlertTriangle, BadgeCheck, FileText, ShieldCheck } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 
@@ -16,9 +17,16 @@ export default function SafetyPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Safety & Youth Protection</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            The wellbeing of children and young people is our first responsibility in every programme, activity, and
-            district operation.
+            The wellbeing of children and young people is our first responsibility in every programme, activity, and district operation.
           </p>
+          <div className="mt-6">
+            <Link
+              href="/contact#reporting"
+              className="inline-flex rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+            >
+              Report a Concern
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -31,8 +39,8 @@ export default function SafetyPage() {
               </div>
               <h2 className="mt-3 text-xl font-bold text-card-foreground">Child Safeguarding Policy</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                All units follow a district safeguarding framework covering supervision ratios, risk assessments,
-                safe physical contact guidelines, digital communication boundaries, and incident escalation.
+                All units follow a safeguarding framework covering supervision ratios, risk assessments, safe conduct,
+                digital communication boundaries, and incident escalation protocols.
               </p>
             </article>
 
@@ -42,8 +50,8 @@ export default function SafetyPage() {
               </div>
               <h2 className="mt-3 text-xl font-bold text-card-foreground">Adult Screening & Training</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                New leaders complete identity verification, references, background screening, child protection induction,
-                and mandatory annual refresher training before taking responsibility for youth members.
+                New leaders complete identity verification, references, child protection induction, and required refresher
+                training before direct responsibility for youth members.
               </p>
             </article>
           </div>
@@ -56,51 +64,29 @@ export default function SafetyPage() {
             <article className="rounded-lg border border-border bg-card p-6">
               <h2 className="text-2xl font-bold text-card-foreground">Report Misconduct (Confidential)</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Reports can be submitted confidentially. If a child is in immediate danger, contact emergency services first.
+                If a child is in immediate danger, contact emergency services first. For safeguarding concerns, submit a confidential report through our contact reporting form.
               </p>
+
               <div className="mt-3 rounded-md bg-secondary p-3 text-sm text-secondary-foreground">
                 <p>
-                  <span className="font-semibold">Safeguarding Hotline:</span> +255 700 000 111
+                  <span className="font-semibold">Safeguarding Hotline:</span> [CONFIRM SAFEGUARDING HOTLINE]
                 </p>
                 <p className="mt-1">
-                  <span className="font-semibold">Confidential Email:</span> safeguarding@tsa-kibaha.org
+                  <span className="font-semibold">Confidential Email:</span> [CONFIRM SAFEGUARDING EMAIL]
                 </p>
               </div>
-              <form className="mt-4 space-y-3">
-                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="reporter-name">
-                  Your Name (optional)
-                </label>
-                <input id="reporter-name" name="name" type="text" className="w-full rounded-md border border-input px-3 py-2 text-sm" />
 
-                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="reporter-contact">
-                  Contact (optional)
-                </label>
-                <input
-                  id="reporter-contact"
-                  name="contact"
-                  type="text"
-                  className="w-full rounded-md border border-input px-3 py-2 text-sm"
-                />
-
-                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="report-details">
-                  Report Details
-                </label>
-                <textarea
-                  id="report-details"
-                  name="details"
-                  rows={5}
-                  required
-                  className="w-full rounded-md border border-input px-3 py-2 text-sm"
-                  placeholder="Describe what happened, when, and where."
-                />
-
-                <button
-                  type="submit"
-                  className="w-full rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+              <div className="mt-4 rounded-md border border-border bg-card p-4">
+                <p className="text-sm text-muted-foreground">
+                  Use the secure reporting form on the contact page. Include what happened, where it happened, and when it happened.
+                </p>
+                <Link
+                  href="/contact#reporting"
+                  className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
                 >
-                  Submit Confidential Report
-                </button>
-              </form>
+                  Go to Reporting Form
+                </Link>
+              </div>
             </article>
 
             <aside className="space-y-4">
@@ -111,17 +97,17 @@ export default function SafetyPage() {
                 <h2 className="mt-3 text-lg font-bold text-card-foreground">Code of Conduct</h2>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
                   <li>Respect youth dignity and rights at all times.</li>
-                  <li>Use two-adult leadership and transparent communication.</li>
-                  <li>Never tolerate bullying, discrimination, or abuse.</li>
-                  <li>Report concerns promptly through official channels.</li>
+                  <li>Use transparent communication and accountable supervision.</li>
+                  <li>Do not tolerate bullying, discrimination, or abuse.</li>
+                  <li>Report concerns through official channels without delay.</li>
                 </ul>
               </article>
 
               <article id="privacy" className="rounded-lg border border-border bg-card p-5">
                 <h2 className="text-lg font-bold text-card-foreground">Privacy Policy</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Personal data from youth members, guardians, and volunteers is collected only for programme delivery,
-                  legal compliance, and safety management, and is stored with limited authorized access.
+                  Personal data from youth members, guardians, volunteers, and reports is handled only for programme
+                  delivery, legal compliance, and safeguarding responsibilities.
                 </p>
               </article>
 
@@ -131,8 +117,7 @@ export default function SafetyPage() {
                 </div>
                 <h2 className="mt-3 text-lg font-bold text-card-foreground">Terms of Use</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  This website provides official district information. Unauthorized use of TSA trademarks, impersonation,
-                  and misuse of downloadable forms is prohibited.
+                  This website provides official district information. Unauthorized use of TSA trademarks and misuse of reporting channels is prohibited.
                 </p>
               </article>
             </aside>
