@@ -58,8 +58,8 @@ export function SiteFooter() {
           >
             {footer.sections.map((section) => (
               <AccordionItem key={section.title} value={section.title} className="border-[#5b479b] last:border-b-0">
-                <AccordionTrigger className="!relative !block !rounded-none !py-3.5 !pl-4 !pr-12 !text-left !text-[1rem] !font-semibold !text-primary-foreground hover:!bg-[#4e3794] hover:!no-underline after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-11 after:border-l after:border-[#5b479b] after:bg-[#432d86] [&>svg]:!absolute [&>svg]:!right-3.5 [&>svg]:!top-1/2 [&>svg]:!-translate-y-1/2 [&>svg]:!text-primary-foreground">
-                  <span className="block leading-tight">{section.title}</span>
+                <AccordionTrigger className="!relative !block !rounded-none !py-3.5 !pl-4 !pr-12 !text-left !text-[1rem] !font-semibold !text-primary-foreground hover:!bg-[#4e3794] hover:!no-underline after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:z-0 after:w-11 after:border-l after:border-[#5b479b] after:bg-[#432d86] [&>svg]:!absolute [&>svg]:!right-3.5 [&>svg]:!top-1/2 [&>svg]:!z-10 [&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!-translate-y-1/2 [&>svg]:!text-primary-foreground">
+                  <span className="relative z-10 block leading-tight">{section.title}</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-3">
                   <ul className="space-y-1.5">

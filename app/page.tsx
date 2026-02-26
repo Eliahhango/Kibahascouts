@@ -64,29 +64,6 @@ export default async function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
           <div>
-            <div className="mb-4 inline-flex flex-wrap items-center gap-2 rounded-lg border border-tsa-green-light bg-tsa-green-mid p-2.5">
-              <Image
-                src={branding.primaryLogo}
-                alt={`${name} logo`}
-                width={56}
-                height={56}
-                className="h-14 w-14 rounded bg-white p-1 object-contain"
-              />
-              <Image
-                src={branding.scoutBadge}
-                alt="Scout badge"
-                width={56}
-                height={56}
-                className="h-14 w-14 rounded bg-white p-1 object-contain"
-              />
-              <Image
-                src={branding.footerCenterLogo}
-                alt="Tanzania Scouts logo"
-                width={56}
-                height={56}
-                className="h-14 w-14 rounded bg-white p-1 object-contain"
-              />
-            </div>
             <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Featured Story</span>
             <h1 className="mt-4 max-w-2xl text-balance text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">
               {featuredNews.title}
