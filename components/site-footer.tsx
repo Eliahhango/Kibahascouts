@@ -1,5 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
-import { Mail, MapPin, Phone } from "lucide-react"
+import { Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const footerLinks = {
@@ -30,10 +31,8 @@ const footerLinks = {
 }
 
 const socialLinks = [
-  { label: "Facebook", href: "#", icon: "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" },
-  { label: "Twitter / X", href: "#", icon: "M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" },
-  { label: "Instagram", href: "#", icon: "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2z" },
-  { label: "YouTube", href: "#", icon: "m22 8-6 4 6 4V8zM14 6H2v12h12V6z" },
+  { label: "Instagram", href: "https://www.instagram.com/kibahascouts/", icon: Instagram },
+  { label: "YouTube", href: "https://www.youtube.com/channel/UCOdbCJouM-b66bOPjw9V-8Q", icon: Youtube },
 ]
 
 export function SiteFooter() {
@@ -51,10 +50,14 @@ export function SiteFooter() {
               className="inline-flex items-center gap-2 rounded focus-visible:ring-2 focus-visible:ring-tsa-gold"
               aria-label="TSA Kibaha District Home"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-tsa-gold shadow-lg" aria-hidden="true">
-                <svg viewBox="0 0 32 32" className="h-5 w-5 text-tsa-green-deep" fill="currentColor">
-                  <path d="M16 2l3.09 9.51H29l-8.045 5.84L24.045 27 16 21.16 7.955 27l3.09-9.65L3 11.51h9.91z" />
-                </svg>
+              <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-tsa-gold/35" aria-hidden="true">
+                <Image
+                  src="/images/branding/kibaha-scouts-logo.jpg"
+                  alt=""
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
               </div>
               <div>
                 <span className="block text-sm font-bold text-primary-foreground">TSA Kibaha District</span>
@@ -160,21 +163,25 @@ export function SiteFooter() {
                 key={social.label}
                 href={social.href}
                 aria-label={social.label}
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/10 text-primary-foreground/85 hover:bg-tsa-gold hover:text-tsa-green-deep"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d={social.icon} />
-                </svg>
+                <social.icon className="h-4 w-4" />
               </a>
             ))}
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-primary-foreground/70">
+            <span>Badges:</span>
+            <Image src="/images/branding/scout-badge.svg" alt="Scout badge" width={22} height={22} className="h-[22px] w-[22px]" />
+            <Image
+              src="/images/branding/tanzania-scouts-logo.png"
+              alt="Tanzania Scouts Association logo"
+              width={24}
+              height={24}
+              className="h-6 w-6 rounded object-contain"
+            />
           </div>
 
           <p className="text-xs text-primary-foreground/70">

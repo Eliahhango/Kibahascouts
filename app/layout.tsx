@@ -33,7 +33,15 @@ export const metadata: Metadata = {
     title: 'TSA Kibaha District | Tanzania Scouts Association',
     description:
       'Building character, confidence, and community through scouting in Kibaha District.',
-    images: [{ url: '/images/hero-scouts.jpg', width: 1200, height: 630 }],
+    images: [
+      { url: '/images/branding/kibaha-scouts-logo.png', width: 320, height: 320 },
+      { url: '/images/hero-scouts.jpg', width: 1200, height: 630 },
+    ],
+  },
+  icons: {
+    icon: '/images/branding/kibaha-scouts-logo.png',
+    shortcut: '/images/branding/kibaha-scouts-logo.png',
+    apple: '/images/branding/kibaha-scouts-logo.png',
   },
   robots: { index: true, follow: true },
 }

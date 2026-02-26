@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronDown, MapPin, Menu, Search, X } from "lucide-react"
@@ -206,10 +207,15 @@ export function SiteHeader() {
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="TSA Kibaha District - Home"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tsa-green-deep shadow-lg ring-2 ring-tsa-gold/30" aria-hidden="true">
-              <svg viewBox="0 0 32 32" className="h-6 w-6 text-tsa-gold" fill="currentColor">
-                <path d="M16 2l3.09 9.51H29l-8.045 5.84L24.045 27 16 21.16 7.955 27l3.09-9.65L3 11.51h9.91z" />
-              </svg>
+            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold/30 shadow-lg" aria-hidden="true">
+              <Image
+                src="/images/branding/kibaha-scouts-logo.jpg"
+                alt=""
+                fill
+                sizes="40px"
+                className="object-cover"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold leading-tight text-foreground">TSA Kibaha District</span>
