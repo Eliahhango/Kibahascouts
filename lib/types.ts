@@ -4,13 +4,16 @@ export interface NewsArticle {
   title: string
   summary: string
   content: string
-  category: "Announcements" | "Training" | "Community Service" | "Awards"
+  category: "Announcements" | "Training" | "Community Service" | "Awards" | "General"
   image: string
   author: string
   date: string
   readingTime: string
   tags: string[]
   featured?: boolean
+  published?: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ScoutEvent {
@@ -25,18 +28,26 @@ export interface ScoutEvent {
   mapUrl?: string
   image: string
   registrationOpen: boolean
+  registrationUrl?: string
   category: string
+  published?: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface Resource {
   id: string
+  slug?: string
   title: string
   summary: string
-  category: "Forms" | "Training" | "Policies" | "Badges" | "Reports"
-  fileType: "PDF" | "DOCX" | "XLSX" | "ZIP"
+  category: "Forms" | "Training" | "Policies" | "Badges" | "Reports" | "General"
+  fileType: "PDF" | "DOCX" | "XLSX" | "ZIP" | "UNKNOWN"
   fileSize: string
   publishDate: string
   downloadUrl: string
+  published?: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ScoutUnit {
@@ -54,6 +65,7 @@ export interface ScoutUnit {
   established: string
   contactEmail: string
   image: string
+  published?: boolean
 }
 
 export interface LeaderProfile {

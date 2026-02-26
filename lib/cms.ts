@@ -1,52 +1,49 @@
 import { leadershipProfiles, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
 import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
-const cmsBaseUrl = process.env.CMS_BASE_URL
-const cmsApiToken = process.env.CMS_API_TOKEN
+const sampleModeEnabled = process.env.SAMPLE_MODE !== "false"
 
-type CmsCollection = "news" | "events" | "resources" | "units" | "leaders"
-
-async function fetchCollection<T>(collection: CmsCollection, fallback: T[]): Promise<T[]> {
-  if (!cmsBaseUrl) {
+async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback: T[]): Promise<T[]> {
+  if (sampleModeEnabled) {
     return fallback
   }
 
   try {
-    const response = await fetch(`${cmsBaseUrl.replace(/\/$/, "")}/api/${collection}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(cmsApiToken ? { Authorization: `Bearer ${cmsApiToken}` } : {}),
-      },
-      next: { revalidate: 60 },
-    })
-
-    if (!response.ok) {
-      return fallback
-    }
-
-    const payload = (await response.json()) as { data?: T[] }
-    return payload.data && payload.data.length > 0 ? payload.data : fallback
+    const records = await readFirestore()
+    return records.length > 0 ? records : fallback
   } catch {
     return fallback
   }
 }
 
 export async function getNewsFromCms(): Promise<NewsArticle[]> {
-  return fetchCollection("news", newsArticles)
+  return withSampleFallback(async () => {
+    const { getPublishedNewsFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedNewsFromFirestore()
+  }, newsArticles)
 }
 
 export async function getEventsFromCms(): Promise<ScoutEvent[]> {
-  return fetchCollection("events", scoutEvents)
+  return withSampleFallback(async () => {
+    const { getPublishedEventsFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedEventsFromFirestore()
+  }, scoutEvents)
 }
 
 export async function getResourcesFromCms(): Promise<Resource[]> {
-  return fetchCollection("resources", resources)
+  return withSampleFallback(async () => {
+    const { getPublishedResourcesFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedResourcesFromFirestore()
+  }, resources)
 }
 
 export async function getUnitsFromCms(): Promise<ScoutUnit[]> {
-  return fetchCollection("units", scoutUnits)
+  return withSampleFallback(async () => {
+    const { getPublishedUnitsFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedUnitsFromFirestore()
+  }, scoutUnits)
 }
 
 export async function getLeadersFromCms(): Promise<LeaderProfile[]> {
-  return fetchCollection("leaders", leadershipProfiles)
+  return leadershipProfiles
 }

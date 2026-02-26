@@ -3,6 +3,12 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  serverExternalPackages: [
+    "firebase-admin",
+    "@google-cloud/firestore",
+    "@google-cloud/storage",
+    "@opentelemetry/api",
+  ],
   images: {
     unoptimized: true,
   },

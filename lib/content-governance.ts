@@ -1,8 +1,11 @@
+const sampleModeEnabled = process.env.SAMPLE_MODE !== "false"
+
 export const contentGovernance = {
-  homepageMode: "sample",
+  homepageMode: sampleModeEnabled ? "sample" : "live",
   homepageBadge: "Sample / Draft",
-  homepageMessage:
-    "This page currently shows draft content. Replace placeholders with verified district data before publication.",
+  homepageMessage: sampleModeEnabled
+    ? "This page currently shows draft content. Replace placeholders with verified district data before publication."
+    : "",
 } as const
 
 export const districtSnapshotPlaceholders = [
