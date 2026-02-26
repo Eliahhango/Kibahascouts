@@ -43,9 +43,9 @@ export function SiteFooter() {
     <footer className="relative mt-14 overflow-hidden bg-[#261946] text-primary-foreground" role="contentinfo">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,115,216,0.35),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(94,61,196,0.3),transparent_40%)]" />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
-          <div className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-5">
+      <div className="relative mx-auto max-w-7xl px-4 py-10 lg:py-14">
+        <div className="grid gap-5 lg:gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+          <div className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 lg:p-5">
             <Link
               href="/"
               className="inline-flex items-center gap-2 rounded focus-visible:ring-2 focus-visible:ring-tsa-gold"
@@ -64,7 +64,7 @@ export function SiteFooter() {
               </div>
             </Link>
 
-            <p className="mt-4 text-sm leading-relaxed text-primary-foreground/80">
+            <p className="mt-3 text-sm leading-relaxed text-primary-foreground/80">
               Building character, confidence, and community through scouting in Kibaha District, Coast Region, Tanzania.
             </p>
 
@@ -83,46 +83,42 @@ export function SiteFooter() {
               </p>
             </div>
 
-            <div className="mt-5 grid gap-3 lg:hidden">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                  <MapPin className="h-4 w-4 shrink-0 text-primary-foreground/85" />
-                  Kibaha, Coast Region
-                </div>
-
-                <a
-                  href="tel:+255232401234"
-                  className="inline-flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-200 hover:bg-[#365999]"
-                >
-                  <Phone className="h-4 w-4 shrink-0 text-primary-foreground/85" />
-                  +255 23 240 1234
-                </a>
-              </div>
-
+            <div className="mt-4 flex flex-wrap gap-2 lg:hidden">
+              <span className="inline-flex items-center gap-1.5 rounded-sm border border-primary-foreground/20 bg-primary-foreground/8 px-2.5 py-1.5 text-xs font-medium text-primary-foreground/90">
+                <MapPin className="h-3.5 w-3.5 text-tsa-gold" />
+                Kibaha
+              </span>
+              <a
+                href="tel:+255232401234"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-primary-foreground/20 bg-primary-foreground/8 px-2.5 py-1.5 text-xs font-medium text-primary-foreground/90 transition-colors hover:bg-primary-foreground/14"
+              >
+                <Phone className="h-3.5 w-3.5 text-tsa-gold" />
+                Call
+              </a>
               <a
                 href="mailto:info@tsa-kibaha.org"
-                className="inline-flex min-h-13 items-center gap-2.5 rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-4 py-3 text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-200 hover:bg-[#365999]"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-primary-foreground/20 bg-primary-foreground/8 px-2.5 py-1.5 text-xs font-medium text-primary-foreground/90 transition-colors hover:bg-primary-foreground/14"
               >
-                <Mail className="h-4 w-4 shrink-0 text-primary-foreground/85" />
-                info@tsa-kibaha.org
+                <Mail className="h-3.5 w-3.5 text-tsa-gold" />
+                Email
               </a>
             </div>
           </div>
 
           <div className="lg:hidden">
-            <Accordion type="multiple" className="overflow-hidden rounded-sm border border-[#4f6a9f] bg-[#123675]">
+            <Accordion type="single" collapsible className="overflow-hidden rounded-sm border border-primary-foreground/20 bg-primary-foreground/6">
               {footerSections.map(([heading, links]) => (
-                <AccordionItem key={heading} value={heading} className="border-[#4f6a9f] last:border-b-0">
-                  <AccordionTrigger className="!relative !block !rounded-none !py-4 !pl-5 !pr-16 !text-left !text-[1.03rem] !font-semibold !text-primary-foreground hover:!bg-[#1b4385] hover:!no-underline after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-14 after:border-l after:border-[#4f6a9f] after:bg-[#0d2d64] [&>svg]:!absolute [&>svg]:!right-5 [&>svg]:!top-1/2 [&>svg]:!-translate-y-1/2 [&>svg]:!text-primary-foreground/80">
+                <AccordionItem key={heading} value={heading} className="border-primary-foreground/15 last:border-b-0">
+                  <AccordionTrigger className="!relative !block !rounded-none !py-3.5 !pl-4 !pr-12 !text-left !text-[0.98rem] !font-semibold !text-primary-foreground hover:!bg-primary-foreground/10 hover:!no-underline after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-11 after:border-l after:border-primary-foreground/20 after:bg-primary-foreground/8 [&>svg]:!absolute [&>svg]:!right-3.5 [&>svg]:!top-1/2 [&>svg]:!-translate-y-1/2 [&>svg]:!text-primary-foreground/80">
                     <span className="block leading-tight">{heading}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="bg-[#1b4385] px-5 pb-4">
-                    <ul className="space-y-1">
+                  <AccordionContent className="px-4 pb-3">
+                    <ul className="space-y-1.5">
                       {links.map((link) => (
                         <li key={link.href}>
                           <Link
                             href={link.href}
-                            className="block rounded-sm px-2 py-1.5 text-sm text-primary-foreground/90 transition-colors hover:bg-primary-foreground/12 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-tsa-gold"
+                            className="block rounded-sm px-2 py-1 text-sm text-primary-foreground/85 transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-tsa-gold"
                           >
                             {link.label}
                           </Link>
@@ -133,21 +129,6 @@ export function SiteFooter() {
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
-
-          <div className="space-y-3 lg:hidden">
-            <Link
-              href="/newsroom"
-              className="inline-flex min-w-52 items-center justify-center rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-6 py-3 text-lg font-semibold text-primary-foreground transition-colors duration-200 hover:bg-[#365999]"
-            >
-              Newsletters
-            </Link>
-            <Link
-              href="/safety"
-              className="inline-flex min-w-64 items-center justify-center rounded-sm border border-[#4f6a9f] bg-[#2d4c87] px-6 py-3 text-lg font-semibold text-primary-foreground transition-colors duration-200 hover:bg-[#365999]"
-            >
-              Report misconduct
-            </Link>
           </div>
 
           <div className="hidden lg:col-span-4 lg:grid lg:grid-cols-4 lg:gap-8">
@@ -171,7 +152,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-primary-foreground/15 pt-5 lg:mt-10 lg:pt-6">
           <div className="flex items-center gap-2">
             <span className="text-sm text-primary-foreground/70">Follow us:</span>
             {socialLinks.map((social) => (
