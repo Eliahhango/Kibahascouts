@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Mail, MapPin, Phone } from "lucide-react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const footerLinks = {
   "About TSA Kibaha": [
@@ -36,6 +37,8 @@ const socialLinks = [
 ]
 
 export function SiteFooter() {
+  const footerSections = Object.entries(footerLinks)
+
   return (
     <footer className="relative mt-14 overflow-hidden bg-[#261946] text-primary-foreground" role="contentinfo">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,115,216,0.35),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(94,61,196,0.3),transparent_40%)]" />
@@ -65,7 +68,7 @@ export function SiteFooter() {
               Building character, confidence, and community through scouting in Kibaha District, Coast Region, Tanzania.
             </p>
 
-            <div className="mt-4 space-y-2 text-sm text-primary-foreground/80">
+            <div className="mt-4 hidden space-y-2 text-sm text-primary-foreground/80 lg:block">
               <p className="inline-flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-tsa-gold" />
                 P.O. Box 1234, Kibaha, Coast Region, Tanzania
@@ -79,25 +82,74 @@ export function SiteFooter() {
                 info@tsa-kibaha.org
               </p>
             </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:hidden">
+              <span className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground">
+                <MapPin className="h-4 w-4 shrink-0 text-tsa-gold" />
+                Kibaha, Coast Region
+              </span>
+              <a
+                href="tel:+255232401234"
+                className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:border-tsa-gold hover:text-tsa-gold"
+              >
+                <Phone className="h-4 w-4 shrink-0 text-tsa-gold" />
+                +255 23 240 1234
+              </a>
+              <a
+                href="mailto:info@tsa-kibaha.org"
+                className="inline-flex min-h-12 items-center gap-2 rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:border-tsa-gold hover:text-tsa-gold sm:col-span-2"
+              >
+                <Mail className="h-4 w-4 shrink-0 text-tsa-gold" />
+                info@tsa-kibaha.org
+              </a>
+            </div>
           </div>
 
-          {Object.entries(footerLinks).map(([heading, links]) => (
-            <div key={heading}>
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-tsa-gold">{heading}</h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-primary-foreground/80 transition-colors hover:text-tsa-gold focus-visible:ring-2 focus-visible:ring-tsa-gold"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="lg:hidden">
+            <Accordion type="multiple" className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/5">
+              {footerSections.map(([heading, links]) => (
+                <AccordionItem key={heading} value={heading} className="border-primary-foreground/15 px-4 last:border-b-0">
+                  <AccordionTrigger className="py-3 text-base font-semibold text-tsa-gold hover:no-underline">
+                    {heading}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-3">
+                    <ul className="space-y-2">
+                      {links.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="text-sm text-primary-foreground/80 transition-colors hover:text-tsa-gold focus-visible:ring-2 focus-visible:ring-tsa-gold"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="hidden lg:col-span-4 lg:grid lg:grid-cols-4 lg:gap-8">
+            {footerSections.map(([heading, links]) => (
+              <div key={heading}>
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-tsa-gold">{heading}</h3>
+                <ul className="space-y-2">
+                  {links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-primary-foreground/80 transition-colors hover:text-tsa-gold focus-visible:ring-2 focus-visible:ring-tsa-gold"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6">
