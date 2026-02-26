@@ -24,7 +24,7 @@ export default async function EventsPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const scoutEvents = await getEventsFromCms()
+  const scoutEvents = (await getEventsFromCms()).filter((event) => event.published !== false)
   const selectedView = params.view === "calendar" ? "calendar" : "list"
   const showPast = params.past === "true"
   const today = new Date()
@@ -48,6 +48,11 @@ export default async function EventsPage({
       const existing = eventLookup.get(day) || []
       eventLookup.set(day, [...existing, event])
     })
+  const lastUpdated =
+    orderedEvents
+      .map((event) => event.updatedAt || event.date)
+      .filter(Boolean)
+      .sort((a, b) => +new Date(b) - +new Date(a))[0] ?? null
 
   return (
     <>
@@ -59,6 +64,11 @@ export default async function EventsPage({
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
             Browse all district activities, training weekends, and ceremonies. Switch between calendar and list views.
           </p>
+          {lastUpdated ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Last updated: {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <Link

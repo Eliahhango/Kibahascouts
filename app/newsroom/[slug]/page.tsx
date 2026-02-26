@@ -7,7 +7,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { getNewsFromCms } from "@/lib/cms"
 
 export async function generateStaticParams() {
-  const newsArticles = await getNewsFromCms()
+  const newsArticles = (await getNewsFromCms()).filter((article) => article.published !== false)
   return newsArticles.map((article) => ({ slug: article.slug }))
 }
 
@@ -17,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const newsArticles = await getNewsFromCms()
+  const newsArticles = (await getNewsFromCms()).filter((item) => item.published !== false)
   const article = newsArticles.find((item) => item.slug === slug)
 
   if (!article) {
@@ -43,16 +43,16 @@ export default async function NewsArticlePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const newsArticles = await getNewsFromCms()
+  const newsArticles = (await getNewsFromCms()).filter((item) => item.published !== false)
   const article = newsArticles.find((item) => item.slug === slug)
   if (!article) notFound()
 
   const related = newsArticles.filter((item) => item.id !== article.id).slice(0, 3)
-  const contentParagraphs = [
-    article.content,
-    "District leadership thanked local schools, parents, and partner agencies for continued support, noting that youth-led initiatives are shaping stronger and safer communities in Kibaha.",
-    "The district communications office confirmed that follow-up updates, participant resources, and future opportunities will be shared through the Newsroom and Events pages.",
-  ]
+  const contentParagraphs = article.content
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+  const lastUpdated = article.updatedAt || article.date
 
   return (
     <>
@@ -90,6 +90,11 @@ export default async function NewsArticlePage({
                 <Clock3 className="h-4 w-4" />
                 {article.readingTime}
               </span>
+              {lastUpdated ? (
+                <span>
+                  Last updated {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                </span>
+              ) : null}
             </div>
           </header>
 

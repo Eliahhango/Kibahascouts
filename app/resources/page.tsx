@@ -21,7 +21,7 @@ export default async function ResourcesPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const resources = await getResourcesFromCms()
+  const resources = (await getResourcesFromCms()).filter((resource) => resource.published !== false)
   const selectedCategory = params.category
   const filtered =
     selectedCategory && selectedCategory !== "All"
@@ -29,6 +29,11 @@ export default async function ResourcesPage({
       : resources
 
   const sorted = [...filtered].sort((a, b) => +new Date(b.publishDate) - +new Date(a.publishDate))
+  const lastUpdated =
+    sorted
+      .map((resource) => resource.updatedAt || resource.publishDate)
+      .filter(Boolean)
+      .sort((a, b) => +new Date(b) - +new Date(a))[0] ?? null
 
   return (
     <>
@@ -40,6 +45,11 @@ export default async function ResourcesPage({
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
             Search the district document library for forms, training references, policy documents, and reports.
           </p>
+          {lastUpdated ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Last updated: {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-2">
             {categories.map((category) => {
@@ -87,13 +97,19 @@ export default async function ResourcesPage({
                         year: "numeric",
                       })}
                     </p>
-                    <Link
-                      href={resource.downloadUrl}
-                      className="mt-3 inline-flex items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      Download
-                    </Link>
+                    {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                      <Link
+                        href={resource.downloadUrl}
+                        className="mt-3 inline-flex items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Download
+                      </Link>
+                    ) : (
+                      <span className="mt-3 inline-flex items-center gap-1 rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                        Download coming soon
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>

@@ -43,17 +43,21 @@ const defaultStory = {
 }
 
 export default async function HomePage() {
-  const { branding, name } = siteConfig
+  const { name } = siteConfig
   const [newsArticles, scoutEvents, resources] = await Promise.all([
     getNewsFromCms(),
     getEventsFromCms(),
     getResourcesFromCms(),
   ])
 
-  const featuredNews = newsArticles.find((article) => article.featured) ?? newsArticles[0] ?? defaultStory
-  const latestNews = newsArticles.filter((article) => article.id !== featuredNews.id).slice(0, 4)
-  const upcomingEvents = scoutEvents.slice(0, 5)
-  const topResources = resources.slice(0, 6)
+  const publishedNews = newsArticles.filter((article) => article.published !== false)
+  const publishedEvents = scoutEvents.filter((event) => event.published !== false)
+  const publishedResources = resources.filter((resource) => resource.published !== false)
+
+  const featuredNews = publishedNews.find((article) => article.featured) ?? publishedNews[0] ?? defaultStory
+  const latestNews = publishedNews.filter((article) => article.id !== featuredNews.id).slice(0, 4)
+  const upcomingEvents = publishedEvents.slice(0, 5)
+  const topResources = publishedResources.slice(0, 6)
 
   return (
     <>
@@ -257,9 +261,13 @@ export default async function HomePage() {
                     <p className="mt-1 text-xs text-muted-foreground">
                       {resource.fileType} - {resource.fileSize}
                     </p>
-                    <Link href={resource.downloadUrl} className="mt-2 inline-flex text-xs font-semibold text-tsa-green-deep">
-                      Download
-                    </Link>
+                    {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                      <Link href={resource.downloadUrl} className="mt-2 inline-flex text-xs font-semibold text-tsa-green-deep">
+                        Download
+                      </Link>
+                    ) : (
+                      <span className="mt-2 inline-flex text-xs font-semibold text-muted-foreground">Download coming soon</span>
+                    )}
                   </div>
                 </div>
               </article>

@@ -20,18 +20,25 @@ export default async function NewsroomPage({
   const params = await searchParams
   const category = params.category
   const [newsArticles, resources] = await Promise.all([getNewsFromCms(), getResourcesFromCms()])
+  const publishedArticles = newsArticles.filter((article) => article.published !== false)
+  const publishedResources = resources.filter((resource) => resource.published !== false)
 
-  const sortedArticles = [...newsArticles].sort((a, b) => +new Date(b.date) - +new Date(a.date))
+  const sortedArticles = [...publishedArticles].sort((a, b) => +new Date(b.date) - +new Date(a.date))
   const filteredArticles =
     category && category !== "All"
       ? sortedArticles.filter((article) => article.category === category)
       : sortedArticles
 
-  const pressDownloads = resources.filter((resource) =>
+  const pressDownloads = publishedResources.filter((resource) =>
     ["TSA Brand Guidelines for Units", "District Census Report 2025", "Kibaha District Annual Plan 2026"].includes(
       resource.title,
     ),
   )
+  const lastUpdated =
+    sortedArticles
+      .map((article) => article.updatedAt || article.date)
+      .filter(Boolean)
+      .sort((a, b) => +new Date(b) - +new Date(a))[0] ?? null
 
   return (
     <>
@@ -44,6 +51,11 @@ export default async function NewsroomPage({
             Official updates from Kibaha Scouts, including announcements, training highlights, community service
             impact, and scout achievements.
           </p>
+          {lastUpdated ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Last updated: {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-2">
             {categories.map((item) => {
@@ -134,12 +146,18 @@ export default async function NewsroomPage({
                 <p className="mt-2 text-xs text-muted-foreground">
                   {resource.fileType} - {resource.fileSize}
                 </p>
-                <Link
-                  href={resource.downloadUrl}
-                  className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                >
-                  Download
-                </Link>
+                {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                  <Link
+                    href={resource.downloadUrl}
+                    className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                  >
+                    Download
+                  </Link>
+                ) : (
+                  <span className="mt-4 inline-flex rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                    Download coming soon
+                  </span>
+                )}
               </div>
             ))}
           </div>

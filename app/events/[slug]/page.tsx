@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { getEventsFromCms } from "@/lib/cms"
 
 export async function generateStaticParams() {
-  const scoutEvents = await getEventsFromCms()
+  const scoutEvents = (await getEventsFromCms()).filter((event) => event.published !== false)
   return scoutEvents.map((event) => ({ slug: event.slug }))
 }
 
@@ -16,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const scoutEvents = await getEventsFromCms()
+  const scoutEvents = (await getEventsFromCms()).filter((item) => item.published !== false)
   const event = scoutEvents.find((item) => item.slug === slug)
 
   if (!event) {
@@ -39,11 +39,12 @@ export default async function EventDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const scoutEvents = await getEventsFromCms()
+  const scoutEvents = (await getEventsFromCms()).filter((item) => item.published !== false)
   const event = scoutEvents.find((item) => item.slug === slug)
   if (!event) notFound()
 
   const related = scoutEvents.filter((item) => item.id !== event.id).slice(0, 3)
+  const hasRegistrationUrl = Boolean(event.registrationUrl && /^https?:\/\//.test(event.registrationUrl))
   const dateLabel = new Date(event.date).toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
@@ -107,17 +108,20 @@ export default async function EventDetailPage({
                   ? "Registration is open. Secure your place and complete parent/guardian permissions in advance."
                   : "Online registration is currently closed for this event."}
               </p>
-              <button
-                type="button"
-                className={`mt-4 w-full rounded-md px-4 py-2 text-sm font-semibold ${
-                  event.registrationOpen
-                    ? "bg-tsa-green-deep text-primary-foreground hover:bg-tsa-green-mid"
-                    : "cursor-not-allowed bg-secondary text-muted-foreground"
-                }`}
-                disabled={!event.registrationOpen}
-              >
-                {event.registrationOpen ? "Register Now" : "Registration Closed"}
-              </button>
+              {event.registrationOpen && hasRegistrationUrl ? (
+                <Link
+                  href={event.registrationUrl!}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex w-full justify-center rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-tsa-green-mid"
+                >
+                  Register Now
+                </Link>
+              ) : (
+                <p className="mt-4 rounded-md bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
+                  {event.registrationOpen ? "Registration link coming soon" : "Registration Closed"}
+                </p>
+              )}
               <Link
                 href="/resources?category=Forms"
                 className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep hover:text-tsa-green-mid"
