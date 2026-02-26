@@ -37,8 +37,8 @@ const socialLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="relative mt-14 overflow-hidden bg-[#2f1458] text-primary-foreground" role="contentinfo">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(167,139,250,0.3),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(124,58,237,0.22),transparent_40%)]" />
+    <footer className="relative mt-14 overflow-hidden bg-[#261946] text-primary-foreground" role="contentinfo">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,115,216,0.35),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(94,61,196,0.3),transparent_40%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 py-14">
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { ChevronDown, MapPin, Menu, Search, X } from "lucide-react"
 import { mainNavItems } from "@/lib/data"
 import { GlobalSearch } from "@/components/global-search"
+import { GoogleTranslator } from "@/components/google-translator"
 import { SearchModal } from "@/components/search-modal"
 
 type DistrictOption = {
@@ -42,13 +43,11 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [lang, setLang] = useState<"en" | "sw">("en")
   const [district, setDistrict] = useState<DistrictOption>(districtOptions[0])
   const [districtOpen, setDistrictOpen] = useState(false)
   const districtRef = useRef<HTMLDivElement>(null)
+  const navRef = useRef<HTMLElement>(null)
   const menuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const activeLanguageLabel = lang === "en" ? "English" : "Kiswahili"
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -70,37 +69,42 @@ export function SiteHeader() {
 
   useEffect(() => {
     const storedDistrict = localStorage.getItem("tsa-district")
-    const storedLang = localStorage.getItem("tsa-language")
-
-    if (storedLang === "sw" || storedLang === "en") {
-      setLang(storedLang)
-      document.documentElement.lang = storedLang
-    }
-
     if (storedDistrict) {
       const selected = districtOptions.find((option) => option.id === storedDistrict)
-      if (selected) {
-        setDistrict(selected)
-      }
+      if (selected) setDistrict(selected)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("tsa-language", lang)
-    document.documentElement.lang = lang
-  }, [lang])
-
-  useEffect(() => {
     const onDocumentClick = (event: MouseEvent) => {
-      if (!districtRef.current) return
       const target = event.target as Node
+
+      if (!districtRef.current) return
       if (!districtRef.current.contains(target)) {
         setDistrictOpen(false)
+      }
+
+      if (navRef.current && !navRef.current.contains(target)) {
+        setActiveMenu(null)
       }
     }
 
     document.addEventListener("mousedown", onDocumentClick)
     return () => document.removeEventListener("mousedown", onDocumentClick)
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveMenu(null)
+        setDistrictOpen(false)
+        setSearchOpen(false)
+        setMobileOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
   }, [])
 
   useEffect(() => {
@@ -120,10 +124,8 @@ export function SiteHeader() {
 
   const utilityLabel = useMemo(
     () =>
-      lang === "en"
-        ? "District selector, language switch, and global search."
-        : "Kichaguo cha wilaya, kubadilisha lugha, na utafutaji wa tovuti.",
-    [lang],
+      "District selector, language translation, and global search.",
+    [],
   )
 
   return (
@@ -132,7 +134,7 @@ export function SiteHeader() {
         Skip to main content
       </a>
 
-      <div className="border-b border-tsa-green-mid/30 bg-gradient-to-r from-tsa-green-deep via-[#5b2ea6] to-tsa-green-mid text-primary-foreground">
+      <div className="border-b border-tsa-green-mid/30 bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
           className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 md:flex-nowrap md:gap-4"
           aria-label={utilityLabel}
@@ -180,35 +182,12 @@ export function SiteHeader() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
-                lang === "en"
-                  ? "bg-primary-foreground text-tsa-green-deep"
-                  : "text-primary-foreground/85 hover:bg-primary-foreground/15"
-              }`}
-              aria-label="Switch language to English"
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang("sw")}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
-                lang === "sw"
-                  ? "bg-primary-foreground text-tsa-green-deep"
-                  : "text-primary-foreground/85 hover:bg-primary-foreground/15"
-              }`}
-              aria-label="Switch language to Kiswahili"
-            >
-              Kiswahili
-            </button>
+            <GoogleTranslator />
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-primary-foreground/30 text-primary-foreground transition hover:bg-primary-foreground/15 md:hidden"
-              aria-label={`Open search (${activeLanguageLabel})`}
+              aria-label="Open search"
             >
               <Search className="h-4 w-4" />
             </button>
@@ -217,6 +196,7 @@ export function SiteHeader() {
       </div>
 
       <header
+        ref={navRef}
         className={`sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
@@ -253,6 +233,16 @@ export function SiteHeader() {
                 >
                   <Link
                     href={item.href}
+                    onFocus={() => item.children && setActiveMenu(item.label)}
+                    onClick={(event) => {
+                      if (!item.children) return
+                      if (activeMenu !== item.label) {
+                        event.preventDefault()
+                        setActiveMenu(item.label)
+                      } else {
+                        setActiveMenu(null)
+                      }
+                    }}
                     className={`inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
@@ -287,6 +277,7 @@ export function SiteHeader() {
                                 href={child.href}
                                 className="block rounded-md px-3 py-2 text-sm text-card-foreground transition-colors hover:bg-secondary hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
                                 role="menuitem"
+                                onClick={() => setActiveMenu(null)}
                               >
                                 {child.label}
                               </Link>
@@ -334,7 +325,7 @@ function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => voi
   const [expanded, setExpanded] = useState<string | null>(null)
 
   return (
-    <div className="fixed inset-0 top-[68px] z-40 overflow-y-auto bg-background lg:hidden">
+    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-border bg-background shadow-2xl lg:hidden">
       <nav className="mx-auto max-w-7xl px-4 py-4" aria-label="Mobile navigation">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))

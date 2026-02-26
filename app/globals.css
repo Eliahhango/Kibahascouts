@@ -4,49 +4,49 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* TSA Kibaha District: Purple + White */
-  --background: #FFFFFF;
-  --foreground: #190F29;
+  /* TSA Kibaha District: Refined Purple + White */
+  --background: #F7F8FC;
+  --foreground: #1F1B2D;
   --card: #FFFFFF;
-  --card-foreground: #190F29;
+  --card-foreground: #1F1B2D;
   --popover: #FFFFFF;
-  --popover-foreground: #190F29;
-  --primary: #4C1D95;
+  --popover-foreground: #1F1B2D;
+  --primary: #3E2A78;
   --primary-foreground: #FFFFFF;
-  --secondary: #F7F3FF;
-  --secondary-foreground: #190F29;
-  --muted: #F7F3FF;
-  --muted-foreground: #5F5474;
-  --accent: #7C3AED;
+  --secondary: #EEEAF9;
+  --secondary-foreground: #1F1B2D;
+  --muted: #F3F0FD;
+  --muted-foreground: #5F5A74;
+  --accent: #5F3DC4;
   --accent-foreground: #FFFFFF;
   --destructive: #D32F2F;
   --destructive-foreground: #FFFFFF;
-  --border: #E8DDF8;
-  --input: #E8DDF8;
-  --ring: #6D28D9;
-  --chart-1: #4C1D95;
-  --chart-2: #7C3AED;
-  --chart-3: #8B5CF6;
-  --chart-4: #A78BFA;
-  --chart-5: #C4B5FD;
+  --border: #DDD8EF;
+  --input: #DDD8EF;
+  --ring: #5F3DC4;
+  --chart-1: #3E2A78;
+  --chart-2: #5F3DC4;
+  --chart-3: #7D60D6;
+  --chart-4: #A68FE8;
+  --chart-5: #D5C8F7;
   --radius: 0.5rem;
-  --sidebar: #FCFAFF;
-  --sidebar-foreground: #190F29;
-  --sidebar-primary: #4C1D95;
+  --sidebar: #FCFBFF;
+  --sidebar-foreground: #1F1B2D;
+  --sidebar-primary: #3E2A78;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F7F3FF;
-  --sidebar-accent-foreground: #190F29;
-  --sidebar-border: #E8DDF8;
-  --sidebar-ring: #6D28D9;
+  --sidebar-accent: #EEEAF9;
+  --sidebar-accent-foreground: #1F1B2D;
+  --sidebar-border: #DDD8EF;
+  --sidebar-ring: #5F3DC4;
 
   /* Custom TSA tokens */
-  --tsa-green-deep: #4C1D95;
-  --tsa-green-mid: #6D28D9;
-  --tsa-green-light: #A78BFA;
-  --tsa-gold: #8B5CF6;
-  --tsa-gold-light: #C4B5FD;
-  --tsa-cream: #F7F3FF;
-  --tsa-warm-white: #FCFAFF;
+  --tsa-green-deep: #352163;
+  --tsa-green-mid: #4E3294;
+  --tsa-green-light: #8E73D8;
+  --tsa-gold: #6E4BD9;
+  --tsa-gold-light: #8466E4;
+  --tsa-cream: #F1EDFB;
+  --tsa-warm-white: #FCFBFF;
 }
 
 @theme inline {
@@ -105,8 +105,8 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 10% 0%, rgba(124, 58, 237, 0.09), transparent 40%),
-      radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.08), transparent 36%);
+      radial-gradient(circle at 10% 0%, rgba(94, 61, 196, 0.08), transparent 36%),
+      radial-gradient(circle at 90% 10%, rgba(142, 115, 216, 0.07), transparent 34%);
     background-attachment: fixed;
     letter-spacing: 0.01em;
   }
@@ -165,4 +165,30 @@
   .card-lift {
     @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(28,8,56,0.12)];
   }
+}
+
+/* Google Translate integration */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+#goog-gt-tt,
+.goog-text-highlight {
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
