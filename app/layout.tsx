@@ -3,6 +3,7 @@ import { Manrope, Source_Serif_4 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { siteConfig } from '@/lib/site-config'
 import './globals.css'
 
 const manrope = Manrope({
@@ -17,31 +18,30 @@ const sourceSerif = Source_Serif_4({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tsa-kibaha.org'),
+  metadataBase: new URL(siteConfig.siteUrl),
   title: {
-    default: 'KIBAHA SCOUTS | Tanzania Scouts Association',
-    template: '%s | KIBAHA SCOUTS',
+    default: `${siteConfig.name} | ${siteConfig.organization}`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    'Official website of Kibaha Scouts. Building character, confidence, and community through scouting in Coast Region, Tanzania.',
+  description: siteConfig.description,
   keywords: ['Tanzania Scouts', 'Kibaha', 'Scouting', 'Youth Development', 'TSA', 'Coast Region'],
   openGraph: {
     type: 'website',
     locale: 'en_TZ',
-    url: 'https://tsa-kibaha.org',
-    siteName: 'KIBAHA SCOUTS',
-    title: 'KIBAHA SCOUTS | Tanzania Scouts Association',
+    url: siteConfig.siteUrl,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} | ${siteConfig.organization}`,
     description:
       'Building character, confidence, and community through scouting in Kibaha District.',
     images: [
-      { url: '/images/branding/kibaha-scouts-logo.png', width: 320, height: 320 },
+      { url: siteConfig.branding.appIcon, width: 320, height: 320 },
       { url: '/images/hero-scouts.jpg', width: 1200, height: 630 },
     ],
   },
   icons: {
-    icon: '/images/branding/kibaha-scouts-logo.png',
-    shortcut: '/images/branding/kibaha-scouts-logo.png',
-    apple: '/images/branding/kibaha-scouts-logo.png',
+    icon: siteConfig.branding.appIcon,
+    shortcut: siteConfig.branding.appIcon,
+    apple: siteConfig.branding.appIcon,
   },
   robots: { index: true, follow: true },
 }

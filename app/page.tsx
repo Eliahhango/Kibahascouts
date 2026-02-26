@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
 import { campaigns } from "@/lib/data"
 import { getEventsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
+import { siteConfig } from "@/lib/site-config"
 
 const highlights = [
   {
@@ -41,6 +42,7 @@ const defaultStory = {
 }
 
 export default async function HomePage() {
+  const { branding, name } = siteConfig
   const [newsArticles, scoutEvents, resources] = await Promise.all([
     getNewsFromCms(),
     getEventsFromCms(),
@@ -64,21 +66,21 @@ export default async function HomePage() {
           <div>
             <div className="mb-4 inline-flex flex-wrap items-center gap-2 rounded-lg border border-primary-foreground/25 bg-primary-foreground/12 p-2.5 backdrop-blur-sm">
               <Image
-                src="/images/branding/kibaha-scouts-logo.jpg"
-                alt="Kibaha Scouts logo"
+                src={branding.primaryLogo}
+                alt={`${name} logo`}
                 width={56}
                 height={56}
                 className="h-14 w-14 rounded bg-white p-1 object-contain"
               />
               <Image
-                src="/images/branding/scout-badge.svg"
+                src={branding.scoutBadge}
                 alt="Scout badge"
                 width={56}
                 height={56}
                 className="h-14 w-14 rounded bg-white p-1 object-contain"
               />
               <Image
-                src="/images/branding/tanzania-scouts-logo.png"
+                src={branding.footerCenterLogo}
                 alt="Tanzania Scouts logo"
                 width={56}
                 height={56}
@@ -337,7 +339,7 @@ export default async function HomePage() {
       <section className="bg-tsa-gold py-12 md:py-16" aria-label="Call to action">
         <div className="mx-auto max-w-7xl px-4 text-center">
           <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
-            Start Your Scouting Journey with KIBAHA SCOUTS
+            Start Your Scouting Journey with {name}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground/90 md:text-base">
             Join as a youth member, support as a volunteer leader, or partner with the district to strengthen scouting

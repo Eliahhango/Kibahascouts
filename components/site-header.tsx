@@ -9,6 +9,7 @@ import { mainNavItems } from "@/lib/data"
 import { GlobalSearch } from "@/components/global-search"
 import { GoogleTranslator } from "@/components/google-translator"
 import { SearchModal } from "@/components/search-modal"
+import { siteConfig } from "@/lib/site-config"
 
 type DistrictOption = {
   id: string
@@ -39,6 +40,7 @@ function splitIntoColumns<T>(items: T[]) {
 }
 
 export function SiteHeader() {
+  const { branding, name, organization } = siteConfig
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -205,11 +207,11 @@ export function SiteHeader() {
           <Link
             href="/"
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Kibaha Scouts - Home"
+            aria-label={`${name} - Home`}
           >
             <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold/30 shadow-lg" aria-hidden="true">
               <Image
-                src="/images/branding/kibaha-scouts-logo.jpg"
+                src={branding.primaryLogo}
                 alt=""
                 fill
                 sizes="40px"
@@ -218,8 +220,8 @@ export function SiteHeader() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold leading-tight text-foreground">KIBAHA SCOUTS</span>
-              <span className="text-xs leading-tight text-muted-foreground">Tanzania Scouts Association</span>
+              <span className="text-sm font-bold leading-tight text-foreground">{name}</span>
+              <span className="text-xs leading-tight text-muted-foreground">{organization}</span>
             </div>
           </Link>
 
