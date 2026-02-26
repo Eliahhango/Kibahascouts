@@ -27,7 +27,7 @@ export const siteConfig = {
   organization: "Tanzania Scouts Association",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
   description:
-    "Official website of Kibaha Scouts. Building character, confidence, and community through scouting in Coast Region, Tanzania.",
+    "Official website of Kibaha Scouts. Replace placeholder fields with verified district information before production publishing.",
   contact: {
     address: "[ADD VERIFIED ADDRESS]",
     phoneDisplay: "[CONFIRM PHONE]",

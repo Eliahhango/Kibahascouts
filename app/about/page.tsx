@@ -8,7 +8,7 @@ import { getLeadersFromCms } from "@/lib/cms"
 
 export const metadata: Metadata = {
   title: "About Kibaha Scouts",
-  description: "Learn about Kibaha Scouts - our mission, leadership, history, and values.",
+  description: "Learn about Kibaha Scouts mission, leadership structure, history timeline, and key governance information.",
 }
 
 export default async function AboutPage() {
@@ -28,7 +28,8 @@ export default async function AboutPage() {
             About KIBAHA SCOUTS
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/90 md:text-lg">
-            Building character, confidence, and community through scouting in Coast Region, Tanzania since 1978.
+            Official district information, leadership contacts, and programme guidance for members, families, and
+            partners.
           </p>
         </div>
       </section>
@@ -40,18 +41,21 @@ export default async function AboutPage() {
             <div>
               <h2 className="text-2xl font-bold text-foreground md:text-3xl">District Overview</h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">
-                The Tanzania Scouts Association (TSA) Kibaha District is the local scouting body serving young people and adult volunteers in Kibaha District, Coast Region. As part of the national TSA structure, we operate under the World Organization of the Scout Movement (WOSM) and are dedicated to developing the physical, intellectual, emotional, social, and spiritual potential of young people.
+                Kibaha Scouts supports youth development through district-level scouting programmes, safeguarding
+                standards, and volunteer-led community service activities under the Tanzania Scouts Association
+                framework.
               </p>
               <p className="mt-4 leading-relaxed text-muted-foreground">
-                Our district encompasses 10 active scout units across multiple wards, serving over 300 youth members through the Cub Scout, Scout, and Rover Scout programmes. We are supported by more than 50 dedicated adult volunteers who give their time and expertise to guide the next generation of leaders.
+                This page uses placeholders where district values require verification. Update all marked items with
+                approved figures and official records before publishing production content.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                { number: "300+", label: "Youth Members", icon: Users },
-                { number: "10", label: "Active Units", icon: Target },
-                { number: "50+", label: "Adult Volunteers", icon: Heart },
-                { number: "12,000+", label: "Service Hours (2025)", icon: Handshake },
+                { number: "[INSERT REAL STATS]", label: "Youth Members", icon: Users },
+                { number: "[INSERT REAL STATS]", label: "Active Units", icon: Target },
+                { number: "[INSERT REAL STATS]", label: "Adult Volunteers", icon: Heart },
+                { number: "[INSERT REAL STATS]", label: "Annual Service Hours", icon: Handshake },
               ].map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center rounded-lg border border-border bg-card p-6 text-center">
                   <stat.icon className="h-8 w-8 text-tsa-green-deep" />
@@ -108,7 +112,9 @@ export default async function AboutPage() {
       <section className="bg-background py-12 md:py-16" id="leadership">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">District Leadership</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Meet the volunteer leaders guiding Kibaha Scouts</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Leadership records are shown from CMS or sample placeholders until verified district records are published.
+          </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {leadershipProfiles.map((leader) => (
               <div key={leader.id} className="rounded-lg border border-border bg-card p-5 text-center">
@@ -151,17 +157,19 @@ export default async function AboutPage() {
       <section className="bg-background py-12 md:py-16" id="partners">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">Partners & Stakeholders</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Organizations that support scouting in Kibaha</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Confirm and publish only verified partner organizations and signed collaboration records.
+          </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              "Kibaha District Council",
-              "Tanzania Forest Services Agency",
-              "Tanzania Red Cross Society",
-              "University of Dar es Salaam",
-              "World Organization of the Scout Movement (WOSM)",
-              "Coast Region Education Office",
-              "Kibaha Town Council",
-              "National Blood Transfusion Service",
+              "[CONFIRM PARTNER 1]",
+              "[CONFIRM PARTNER 2]",
+              "[CONFIRM PARTNER 3]",
+              "[CONFIRM PARTNER 4]",
+              "[CONFIRM PARTNER 5]",
+              "[CONFIRM PARTNER 6]",
+              "[CONFIRM PARTNER 7]",
+              "[CONFIRM PARTNER 8]",
             ].map((partner) => (
               <div key={partner} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">

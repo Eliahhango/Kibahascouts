@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 
 export const metadata: Metadata = {
   title: "Join / Volunteer",
-  description: "Join Kibaha Scouts as youth, volunteer as a leader, or support district scouting through donations.",
+  description: "Membership, volunteering, and support pathways for Kibaha Scouts.",
 }
 
 export default function JoinPage() {
@@ -16,7 +16,8 @@ export default function JoinPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Join / Volunteer</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Become part of Kibaha Scouts as a youth member, adult leader, or community supporter.
+            Use this page to follow verified joining and volunteering steps. Placeholder fields should be replaced by
+            official district process details.
           </p>
         </div>
       </section>
@@ -32,10 +33,10 @@ export default function JoinPage() {
               <li>Choose a nearby unit from the Scout Units directory.</li>
               <li>Complete membership and parental consent forms.</li>
               <li>Attend one orientation meeting and basic health/safety briefing.</li>
-              <li>Pay annual district and unit membership fees (placeholder range: TZS 10,000 - 25,000).</li>
+              <li>Confirm annual district and unit membership fees: [CONFIRM MEMBERSHIP FEES].</li>
             </ol>
             <p className="mt-3 text-xs text-muted-foreground">
-              Fee waivers and support options are available for eligible families.
+              Fee waiver policy and support options: [CONFIRM DISTRICT POLICY].
             </p>
           </div>
         </div>
@@ -52,8 +53,8 @@ export default function JoinPage() {
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
               <li>Submit volunteer application and references.</li>
               <li>Complete screening and safeguarding checks.</li>
-              <li>Attend Basic Unit Leader Training (BULT).</li>
-              <li>Shadow an active unit leader for 4-6 weeks.</li>
+              <li>Attend required district leader training: [CONFIRM TRAINING NAME].</li>
+              <li>Shadow an active unit leader for the required period: [CONFIRM PERIOD].</li>
               <li>Receive role assignment and annual development goals.</li>
             </ol>
           </div>
@@ -79,7 +80,7 @@ export default function JoinPage() {
               ))}
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Transparency note: annual audited summaries and programme impact reports are published in the Resources section.
+              Donation channels and accountability contacts: [CONFIRM DISTRICT DONATION PROCESS].
             </p>
           </div>
         </div>
