@@ -44,6 +44,16 @@ export default function ContactPage() {
             <h3 className="mt-6 text-lg font-semibold text-card-foreground">Social Media</h3>
             <ul className="mt-2 space-y-1 text-sm text-tsa-green-deep">
               <li>
+                <a
+                  href="https://www.facebook.com/profile.php?id=61588095737784"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-tsa-green-mid"
+                >
+                  Facebook: Kibaha Scouts
+                </a>
+              </li>
+              <li>
                 <a href="https://www.instagram.com/kibahascouts/" target="_blank" rel="noreferrer" className="hover:text-tsa-green-mid">
                   Instagram: @kibahascouts
                 </a>

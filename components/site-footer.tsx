@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const footerLinks = {
@@ -31,6 +31,7 @@ const footerLinks = {
 }
 
 const socialLinks = [
+  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61588095737784", icon: Facebook },
   { label: "Instagram", href: "https://www.instagram.com/kibahascouts/", icon: Instagram },
   { label: "YouTube", href: "https://www.youtube.com/channel/UCOdbCJouM-b66bOPjw9V-8Q", icon: Youtube },
 ]
