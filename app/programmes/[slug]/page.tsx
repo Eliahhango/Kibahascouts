@@ -100,10 +100,10 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
             <TrendingUp className="h-6 w-6 text-tsa-green-deep" />
             Progression Path
           </h2>
-          <div className="relative mt-8 ml-4 border-l-2 border-tsa-gold/30 pl-8">
+          <div className="relative mt-8 ml-2 border-l-2 border-tsa-gold/30 pl-6 sm:ml-4 sm:pl-8">
             {prog.progression.map((step, i) => (
               <div key={i} className="relative pb-8 last:pb-0">
-                <div className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-tsa-green-deep font-bold text-xs">
+                <div className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-tsa-green-deep font-bold text-xs sm:-left-[41px]">
                   {i + 1}
                 </div>
                 <p className="text-sm leading-relaxed text-foreground">{step}</p>

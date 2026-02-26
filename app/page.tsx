@@ -3,27 +3,28 @@ import Link from "next/link"
 import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
 import { campaigns } from "@/lib/data"
 import { getEventsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
+import { contentGovernance, districtSnapshotPlaceholders } from "@/lib/content-governance"
 import { siteConfig } from "@/lib/site-config"
 
 const highlights = [
   {
-    title: "District Membership Drive",
-    description: "Coordinated school outreach with a target of 2,000 active youth members by year-end.",
+    title: "Membership Readiness Plan",
+    description: "District membership priorities and targets are pending confirmation.",
     href: "/join",
   },
   {
-    title: "Community Service Impact",
-    description: "More than 12,000 service hours delivered through health, hygiene, and clean-up campaigns.",
+    title: "Community Service Reporting",
+    description: "Service indicators will be published after district verification.",
     href: "/newsroom?category=Community+Service",
   },
   {
-    title: "Leader Training Pipeline",
-    description: "Quarterly BULT and safeguarding sessions for consistent leadership quality in every unit.",
+    title: "Leader Training Schedule",
+    description: "Upcoming leader development sessions will be posted in the events calendar.",
     href: "/events/leader-training-weekend",
   },
   {
-    title: "District Scout Hall Project",
-    description: "New headquarters and training center development underway for long-term programme growth.",
+    title: "Infrastructure Updates",
+    description: "District facility development updates will be published once confirmed.",
     href: "/newsroom/new-scout-hall-construction-begins",
   },
 ]
@@ -38,7 +39,7 @@ const defaultStory = {
   id: "fallback",
   slug: "newsroom",
   title: "Kibaha Scouts Official Updates",
-  summary: "Follow district highlights, programme milestones, and upcoming opportunities across all scout sections.",
+  summary: "Follow verified district updates, programme notices, and upcoming opportunities across scout sections.",
 }
 
 export default async function HomePage() {
@@ -62,8 +63,16 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,8,47,0.9)_8%,rgba(24,8,47,0.6)_48%,rgba(24,8,47,0.3)_100%)]" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr] md:py-24">
           <div>
+            {contentGovernance.homepageMode === "sample" ? (
+              <div className="mb-4 max-w-2xl rounded-md border border-tsa-gold/50 bg-tsa-gold/20 px-3 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary-foreground">
+                  {contentGovernance.homepageBadge}
+                </p>
+                <p className="mt-1 text-sm text-primary-foreground">{contentGovernance.homepageMessage}</p>
+              </div>
+            ) : null}
             <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Featured Story</span>
             <h1 className="mt-4 max-w-2xl text-balance text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">
               {featuredNews.title}
@@ -83,15 +92,10 @@ export default async function HomePage() {
           <div className="section-shell bg-primary-foreground p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {[
-                ["10", "Active Units"],
-                ["300+", "Youth Members"],
-                ["50+", "Adult Volunteers"],
-                ["12k+", "Service Hours"],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-lg bg-secondary p-3">
-                  <p className="text-2xl font-bold text-tsa-green-deep">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+              {districtSnapshotPlaceholders.map((item) => (
+                <div key={item.label} className="rounded-lg bg-secondary p-3">
+                  <p className="text-base font-bold text-tsa-green-deep md:text-xl">{item.value}</p>
+                  <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{item.label}</p>
                 </div>
               ))}
             </div>
@@ -195,7 +199,7 @@ export default async function HomePage() {
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
-                  className="grid gap-4 border-b border-border px-4 py-4 last:border-b-0 md:grid-cols-[auto_1fr_auto] md:items-center hover:bg-secondary"
+                  className="grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
                 >
                   <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
                     <span className="text-lg font-bold leading-none">{date.getDate()}</span>
@@ -319,8 +323,8 @@ export default async function HomePage() {
             Start Your Scouting Journey with {name}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground md:text-base">
-            Join as a youth member, support as a volunteer leader, or partner with the district to strengthen scouting
-            programmes in Kibaha.
+            Join as a youth member, support as a volunteer leader, or partner with the district to support verified
+            scouting priorities.
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link

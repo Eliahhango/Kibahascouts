@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Mail, MapPin, Phone } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { ContactForm } from "@/components/contact-form"
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -28,17 +29,17 @@ export default function ContactPage() {
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
               <p className="inline-flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                Plot 45, District Office Road, Kibaha Town, Coast Region, Tanzania
+                [ADD VERIFIED ADDRESS]
               </p>
               <p className="inline-flex items-center gap-2">
                 <Phone className="h-4 w-4 text-tsa-green-deep" />
-                +255 23 240 1234
+                [CONFIRM PHONE]
               </p>
               <p className="inline-flex items-center gap-2">
                 <Mail className="h-4 w-4 text-tsa-green-deep" />
-                info@tsa-kibaha.org
+                [CONFIRM EMAIL]
               </p>
-              <p>Office hours: Monday to Friday, 08:00-16:30</p>
+              <p>Office hours: [CONFIRM OFFICE HOURS]</p>
             </div>
 
             <h3 className="mt-6 text-lg font-semibold text-card-foreground">Social Media</h3>
@@ -71,70 +72,13 @@ export default function ContactPage() {
             </ul>
           </article>
 
-          <article className="rounded-lg border border-border bg-card p-6">
+          <article id="reporting" className="rounded-lg border border-border bg-card p-6">
             <h2 className="text-2xl font-bold text-card-foreground">Contact Form</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Include your unit or school name for faster response. Anti-spam protection includes a hidden honeypot field.
+              Include your unit or school name for faster response. This form uses server-side validation, a honeypot
+              field, and IP-based rate limiting.
             </p>
-            <form className="mt-4 space-y-3">
-              <div>
-                <label htmlFor="contact-name" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Full Name
-                </label>
-                <input
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  required
-                  className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label htmlFor="contact-email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Email Address
-                </label>
-                <input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  required
-                  className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label htmlFor="contact-subject" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Subject
-                </label>
-                <input
-                  id="contact-subject"
-                  name="subject"
-                  type="text"
-                  className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="hidden" aria-hidden="true">
-                <label htmlFor="website">Website</label>
-                <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
-              </div>
-              <div>
-                <label htmlFor="contact-message" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Message
-                </label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  rows={5}
-                  required
-                  className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-              >
-                Send Message
-              </button>
-            </form>
+            <ContactForm />
           </article>
         </div>
       </section>

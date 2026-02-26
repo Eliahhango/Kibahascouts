@@ -13,7 +13,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
       className="border-b border-border bg-secondary"
     >
       <div className="mx-auto max-w-7xl px-4 py-2.5">
-        <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+        <ol className="flex min-w-0 flex-wrap items-center gap-1.5 text-sm">
           <li>
             <Link
               href="/"
@@ -25,17 +25,17 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
             </Link>
           </li>
           {items.map((item, i) => (
-            <li key={i} className="flex items-center gap-1.5">
+            <li key={i} className="flex min-w-0 items-center gap-1.5">
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden="true" />
               {item.href ? (
                 <Link
                   href={item.href}
-                  className="text-muted-foreground transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="max-w-[10rem] truncate rounded text-muted-foreground transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring sm:max-w-[14rem] md:max-w-none"
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className="font-medium text-foreground" aria-current="page">
+                <span className="max-w-[11rem] truncate font-medium text-foreground sm:max-w-[16rem] md:max-w-none" aria-current="page">
                   {item.label}
                 </span>
               )}

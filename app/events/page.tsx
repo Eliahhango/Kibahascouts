@@ -109,6 +109,7 @@ export default async function EventsPage({
             <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
               Calendar View: {monthYearLabel}
             </h2>
+            <p className="mt-2 text-xs text-muted-foreground sm:hidden">Swipe horizontally to view all days.</p>
             <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
               <div className="min-w-[700px]">
                 <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">

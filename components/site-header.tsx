@@ -139,7 +139,7 @@ export function SiteHeader() {
 
       <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
-          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 md:flex-nowrap md:gap-4"
+          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 lg:flex-nowrap lg:gap-4"
           aria-label={utilityLabel}
         >
           <div ref={districtRef} className="relative">
@@ -221,11 +221,11 @@ export function SiteHeader() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold leading-tight text-foreground">{name}</span>
-              <span className="text-xs leading-tight text-muted-foreground">{organization}</span>
+              <span className="hidden text-xs leading-tight text-muted-foreground sm:block">{organization}</span>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main navigation">
+          <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Main navigation">
             {mainNavItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
@@ -295,14 +295,14 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
               aria-label="Open search"
             >
               <Search className="h-5 w-5" />
             </button>
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
               onClick={() => setMobileOpen((current) => !current)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -324,7 +324,7 @@ function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => voi
   const [expanded, setExpanded] = useState<string | null>(null)
 
   return (
-    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-border bg-background shadow-2xl lg:hidden">
+    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-border bg-background shadow-2xl xl:hidden">
       <nav className="mx-auto max-w-7xl px-4 py-4" aria-label="Mobile navigation">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))

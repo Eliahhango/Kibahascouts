@@ -46,7 +46,7 @@ export default async function AboutPage() {
                 Our district encompasses 10 active scout units across multiple wards, serving over 300 youth members through the Cub Scout, Scout, and Rover Scout programmes. We are supported by more than 50 dedicated adult volunteers who give their time and expertise to guide the next generation of leaders.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               {[
                 { number: "300+", label: "Youth Members", icon: Users },
                 { number: "10", label: "Active Units", icon: Target },
@@ -130,10 +130,10 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">History & Timeline</h2>
           <p className="mt-2 text-sm text-muted-foreground">Key milestones in Kibaha District scouting</p>
-          <div className="relative mt-8 ml-4 border-l-2 border-tsa-green-deep/20 pl-8">
+          <div className="relative mt-8 ml-2 border-l-2 border-tsa-green-deep/20 pl-6 sm:ml-4 sm:pl-8">
             {timelineEntries.map((entry, i) => (
               <div key={i} className="relative pb-10 last:pb-0">
-                <div className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border-2 border-tsa-green-deep bg-background">
+                <div className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full border-2 border-tsa-green-deep bg-background sm:-left-[41px]">
                   <div className="h-2.5 w-2.5 rounded-full bg-tsa-green-deep" />
                 </div>
                 <span className="inline-block rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-bold text-primary-foreground">
