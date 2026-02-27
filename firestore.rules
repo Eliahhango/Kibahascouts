@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isPublished() {
+      return resource.data.published == true;
+    }
+
+    match /news/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
+    match /events/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
+    match /resources/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
+    match /units/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
+    match /pages/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
+    match /contactMessages/{documentId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
