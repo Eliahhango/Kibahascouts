@@ -25,6 +25,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Link href="/admin/resources" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Resources
           </Link>
+          <span className="text-muted-foreground">/</span>
+          <Link href="/admin/messages" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+            Messages
+          </Link>
           <span className="ml-auto" />
           <Link href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Public Website

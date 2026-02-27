@@ -74,6 +74,9 @@ export default async function AdminHomePage() {
             <Link href="/admin/resources" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary">
               Manage Resources
             </Link>
+            <Link href="/admin/messages" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary">
+              Contact Inbox
+            </Link>
           </div>
         </section>
       </main>
