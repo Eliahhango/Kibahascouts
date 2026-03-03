@@ -5,6 +5,7 @@ import { timelineEntries, faqs } from "@/lib/data"
 import { Users, Target, Eye, Heart, Handshake } from "lucide-react"
 import { FAQSection } from "./faq-section"
 import { getLeadersFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "About Kibaha Scouts",
@@ -45,17 +46,13 @@ export default async function AboutPage() {
                 standards, and volunteer-led community service activities under the Tanzania Scouts Association
                 framework.
               </p>
-              <p className="mt-4 leading-relaxed text-muted-foreground">
-                This page uses placeholders where district values require verification. Update all marked items with
-                approved figures and official records before publishing production content.
-              </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                { number: "[INSERT REAL STATS]", label: "Youth Members", icon: Users },
-                { number: "[INSERT REAL STATS]", label: "Active Units", icon: Target },
-                { number: "[INSERT REAL STATS]", label: "Adult Volunteers", icon: Heart },
-                { number: "[INSERT REAL STATS]", label: "Annual Service Hours", icon: Handshake },
+                { number: "Coming soon", label: "Youth Members", icon: Users },
+                { number: "Coming soon", label: "Active Units", icon: Target },
+                { number: "Coming soon", label: "Adult Volunteers", icon: Heart },
+                { number: "Coming soon", label: "Annual Service Hours", icon: Handshake },
               ].map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center rounded-lg border border-border bg-card p-6 text-center">
                   <stat.icon className="h-8 w-8 text-tsa-green-deep" />
@@ -113,21 +110,31 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">District Leadership</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Leadership records are shown from CMS or sample placeholders until verified district records are published.
+            Leadership records are published from district updates and will continue to expand as profiles are shared.
           </p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {leadershipProfiles.map((leader) => (
-              <div key={leader.id} className="rounded-lg border border-border bg-card p-5 text-center">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-tsa-green-deep/10">
-                  <Users className="h-8 w-8 text-tsa-green-deep" />
+          {leadershipProfiles.length > 0 ? (
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {leadershipProfiles.map((leader) => (
+                <div key={leader.id} className="rounded-lg border border-border bg-card p-5 text-center">
+                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-tsa-green-deep/10">
+                    <Users className="h-8 w-8 text-tsa-green-deep" />
+                  </div>
+                  <h3 className="mt-3 text-sm font-bold text-card-foreground">
+                    {normalizePublicText(leader.name, "Leader profile coming soon")}
+                  </h3>
+                  <p className="text-xs font-medium text-tsa-green-deep">{normalizePublicText(leader.role)}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{normalizePublicText(leader.bio)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Serving since {normalizePublicText(leader.since)}
+                  </p>
                 </div>
-                <h3 className="mt-3 text-sm font-bold text-card-foreground">{leader.name}</h3>
-                <p className="text-xs font-medium text-tsa-green-deep">{leader.role}</p>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{leader.bio}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Serving since {leader.since}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 rounded-lg border border-border bg-card p-5 text-sm text-muted-foreground">
+              Leadership profiles will be published soon.
+            </div>
+          )}
         </div>
       </section>
 
@@ -143,10 +150,10 @@ export default async function AboutPage() {
                   <div className="h-2.5 w-2.5 rounded-full bg-tsa-green-deep" />
                 </div>
                 <span className="inline-block rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-bold text-primary-foreground">
-                  {entry.year}
+                  {normalizePublicText(entry.year, "Coming soon")}
                 </span>
-                <h3 className="mt-2 text-base font-bold text-foreground">{entry.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{entry.description}</p>
+                <h3 className="mt-2 text-base font-bold text-foreground">{normalizePublicText(entry.title)}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{normalizePublicText(entry.description)}</p>
               </div>
             ))}
           </div>
@@ -158,20 +165,20 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">Partners & Stakeholders</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Confirm and publish only verified partner organizations and signed collaboration records.
+            Verified partner profiles are being added and more details will be published soon.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              "[CONFIRM PARTNER 1]",
-              "[CONFIRM PARTNER 2]",
-              "[CONFIRM PARTNER 3]",
-              "[CONFIRM PARTNER 4]",
-              "[CONFIRM PARTNER 5]",
-              "[CONFIRM PARTNER 6]",
-              "[CONFIRM PARTNER 7]",
-              "[CONFIRM PARTNER 8]",
-            ].map((partner) => (
-              <div key={partner} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+              "District government partners",
+              "Education sector partners",
+              "Community health partners",
+              "Youth development partners",
+              "Environmental partners",
+              "Emergency response partners",
+              "Faith and community partners",
+              "Private sector supporters",
+            ].map((partner, index) => (
+              <div key={`${partner}-${index}`} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
                   <Handshake className="h-5 w-5 text-tsa-green-deep" />
                 </div>

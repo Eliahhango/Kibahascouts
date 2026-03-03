@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { programmes } from "@/lib/data"
 import { CheckCircle2, Award, TrendingUp, Shirt } from "lucide-react"
+import { normalizePublicText } from "@/lib/public-text"
 
 export async function generateStaticParams() {
   return programmes.map((p) => ({ slug: p.slug }))
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const prog = programmes.find((p) => p.slug === slug)
   if (!prog) return { title: "Programme Not Found" }
-  return { title: prog.title, description: prog.description.slice(0, 160) }
+  return { title: prog.title, description: normalizePublicText(prog.description).slice(0, 160) }
 }
 
 export default async function ProgrammeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -39,7 +40,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
             {prog.title}
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/90">
-            {prog.description}
+            {normalizePublicText(prog.description)}
           </p>
         </div>
       </section>
@@ -86,7 +87,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
                 key={i}
                 className="rounded-full border border-tsa-green-deep/20 bg-tsa-green-deep/5 px-4 py-2 text-sm font-medium text-tsa-green-deep"
               >
-                {badge}
+                {normalizePublicText(badge, "Badge details coming soon")}
               </span>
             ))}
           </div>
@@ -106,7 +107,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
                 <div className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-tsa-green-deep font-bold text-xs sm:-left-[41px]">
                   {i + 1}
                 </div>
-                <p className="text-sm leading-relaxed text-foreground">{step}</p>
+                <p className="text-sm leading-relaxed text-foreground">{normalizePublicText(step)}</p>
               </div>
             ))}
           </div>
@@ -121,7 +122,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
             Uniform Guidance
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            {prog.uniformGuidance}
+            {normalizePublicText(prog.uniformGuidance)}
           </p>
         </div>
       </section>

@@ -3,13 +3,16 @@ import "server-only"
 import { Timestamp } from "firebase-admin/firestore"
 import { z } from "zod"
 import { getAdminDb } from "@/lib/firebase/admin"
-import type { NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import { hasMeaningfulText, normalizePublicText } from "@/lib/public-text"
+import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
 const newsDocSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
   summary: z.string().min(1),
   body: z.string().min(1),
+  author: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   category: z.string().optional(),
   image: z.string().optional(),
   date: z.string().min(1),
@@ -66,6 +69,15 @@ const unitDocSchema = z.object({
   published: z.boolean().optional(),
 })
 
+const leaderDocSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  image: z.string().optional(),
+  bio: z.string().min(1),
+  since: z.string().min(1),
+  published: z.boolean().optional(),
+})
+
 type ParsedDoc<T> = { id: string; data: T }
 
 function toIsoString(value: unknown) {
@@ -114,6 +126,16 @@ function normalizeFileType(value: string | undefined): Resource["fileType"] {
   return "UNKNOWN"
 }
 
+function normalizeTagList(value: string[] | undefined) {
+  if (!value || value.length === 0) {
+    return []
+  }
+
+  return value
+    .map((tag) => normalizePublicText(tag, ""))
+    .filter((tag) => hasMeaningfulText(tag))
+}
+
 async function readPublishedCollection<T>(collectionName: string, schema: z.ZodType<T>): Promise<ParsedDoc<T>[]> {
   const snapshot = await getAdminDb().collection(collectionName).where("published", "==", true).get()
 
@@ -139,15 +161,15 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
       return {
         id,
         slug: data.slug,
-        title: data.title,
-        summary: data.summary,
-        content: data.body,
+        title: normalizePublicText(data.title, "News update"),
+        summary: normalizePublicText(data.summary),
+        content: normalizePublicText(data.body),
         category: normalizeNewsCategory(data.category),
         image: data.image || "/images/news/placeholder.jpg",
-        author: "[CONFIRM AUTHOR]",
+        author: normalizePublicText(data.author, "Kibaha Scouts Communications"),
         date: data.date,
         readingTime: estimateReadingTime(data.body),
-        tags: [],
+        tags: normalizeTagList(data.tags),
         featured: Boolean(data.featured),
         published: true,
         createdAt,
@@ -168,15 +190,15 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
       return {
         id,
         slug: data.slug,
-        title: data.title,
-        description: data.description,
+        title: normalizePublicText(data.title, "Event update"),
+        description: normalizePublicText(data.description),
         date: data.date,
-        time: data.time,
-        location: data.location,
+        time: normalizePublicText(data.time),
+        location: normalizePublicText(data.location),
         image: data.image || "/images/events/placeholder.jpg",
         registrationOpen: Boolean(data.registrationOpen),
         registrationUrl: data.registrationUrl || "",
-        category: data.category || "General",
+        category: normalizePublicText(data.category, "General"),
         published: true,
         createdAt,
         updatedAt,
@@ -196,11 +218,11 @@ export async function getPublishedResourcesFromFirestore(): Promise<Resource[]> 
       return {
         id,
         slug: data.slug,
-        title: data.title,
-        summary: data.description,
+        title: normalizePublicText(data.title, "Resource update"),
+        summary: normalizePublicText(data.description),
         category: normalizeResourceCategory(data.category),
         fileType: normalizeFileType(data.fileType),
-        fileSize: data.fileSize || "[CONFIRM FILE SIZE]",
+        fileSize: normalizePublicText(data.fileSize, "File details will be shared soon."),
         publishDate: data.publishDate,
         downloadUrl: data.downloadUrl || "",
         published: true,
@@ -217,18 +239,34 @@ export async function getPublishedUnitsFromFirestore(): Promise<ScoutUnit[]> {
   return docs.map(({ id, data }) => ({
     id,
     slug: data.slug,
-    name: data.name,
+    name: normalizePublicText(data.name, "Scout unit"),
     type: data.type,
     section: data.section,
-    ward: data.ward,
-    meetingDay: data.meetingDay,
-    meetingTime: data.meetingTime,
-    meetingLocation: data.meetingLocation,
-    leaders: data.leaders,
+    ward: normalizePublicText(data.ward),
+    meetingDay: normalizePublicText(data.meetingDay),
+    meetingTime: normalizePublicText(data.meetingTime),
+    meetingLocation: normalizePublicText(data.meetingLocation),
+    leaders: data.leaders.map((leader) => ({
+      name: normalizePublicText(leader.name, "Leader information coming soon"),
+      role: normalizePublicText(leader.role, "Role details coming soon"),
+    })),
     memberCount: data.memberCount,
-    established: data.established,
-    contactEmail: data.contactEmail,
+    established: normalizePublicText(data.established),
+    contactEmail: normalizePublicText(data.contactEmail),
     image: data.image || "/images/units/placeholder.jpg",
     published: true,
+  }))
+}
+
+export async function getPublishedLeadersFromFirestore(): Promise<LeaderProfile[]> {
+  const docs = await readPublishedCollection("leaders", leaderDocSchema)
+
+  return docs.map(({ id, data }) => ({
+    id,
+    name: normalizePublicText(data.name, "Leader profile coming soon"),
+    role: normalizePublicText(data.role),
+    image: data.image || "/images/leaders/dc.jpg",
+    bio: normalizePublicText(data.bio),
+    since: normalizePublicText(data.since),
   }))
 }

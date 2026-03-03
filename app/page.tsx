@@ -123,35 +123,44 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {latestNews.map((article) => (
-              <Link key={article.id} href={`/newsroom/${article.slug}`} className="section-shell card-lift group overflow-hidden">
-                <div className="relative aspect-[16/10]">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <span className="absolute left-3 top-3 rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-medium text-primary-foreground">
-                    {article.category}
-                  </span>
-                </div>
-                <div className="p-4">
-                  <time className="text-xs text-muted-foreground" dateTime={article.date}>
-                    {new Date(article.date).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </time>
-                  <h3 className="mt-2 line-clamp-2 text-base font-semibold text-card-foreground group-hover:text-tsa-green-deep">
-                    {article.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{article.summary}</p>
-                </div>
-              </Link>
-            ))}
+            {latestNews.length > 0 ? (
+              latestNews.map((article) => (
+                <Link key={article.id} href={`/newsroom/${article.slug}`} className="section-shell card-lift group overflow-hidden">
+                  <div className="relative aspect-[16/10]">
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <span className="absolute left-3 top-3 rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                      {article.category}
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <time className="text-xs text-muted-foreground" dateTime={article.date}>
+                      {new Date(article.date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </time>
+                    <h3 className="mt-2 line-clamp-2 text-base font-semibold text-card-foreground group-hover:text-tsa-green-deep">
+                      {article.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{article.summary}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-4">
+                <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Published district stories will appear here automatically once they are posted from the admin dashboard.
+                </p>
+              </article>
+            )}
           </div>
         </div>
       </section>
@@ -197,39 +206,45 @@ export default async function HomePage() {
           </div>
 
           <div className="section-shell overflow-hidden">
-            {upcomingEvents.map((event) => {
-              const date = new Date(event.date)
-              return (
-                <Link
-                  key={event.id}
-                  href={`/events/${event.slug}`}
-                  className="grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
-                >
-                  <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
-                    <span className="text-lg font-bold leading-none">{date.getDate()}</span>
-                    <span className="text-xs uppercase">{date.toLocaleDateString("en-GB", { month: "short" })}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-card-foreground">{event.title}</h3>
-                    <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <Clock3 className="h-3.5 w-3.5" />
-                        {event.time}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {event.location}
-                      </span>
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => {
+                const date = new Date(event.date)
+                return (
+                  <Link
+                    key={event.id}
+                    href={`/events/${event.slug}`}
+                    className="grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
+                  >
+                    <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
+                      <span className="text-lg font-bold leading-none">{date.getDate()}</span>
+                      <span className="text-xs uppercase">{date.toLocaleDateString("en-GB", { month: "short" })}</span>
                     </div>
-                  </div>
-                  {event.registrationOpen && (
-                    <span className="inline-flex h-fit rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
-                      Registration Open
-                    </span>
-                  )}
-                </Link>
-              )
-            })}
+                    <div>
+                      <h3 className="text-base font-semibold text-card-foreground">{event.title}</h3>
+                      <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <Clock3 className="h-3.5 w-3.5" />
+                          {event.time}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {event.location}
+                        </span>
+                      </div>
+                    </div>
+                    {event.registrationOpen && (
+                      <span className="inline-flex h-fit rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
+                        Registration Open
+                      </span>
+                    )}
+                  </Link>
+                )
+              })
+            ) : (
+              <div className="px-4 py-5 text-sm text-muted-foreground">
+                Upcoming events will appear here soon after publication from the admin dashboard.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -250,28 +265,39 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {topResources.map((resource) => (
-              <article key={resource.id} className="section-shell card-lift p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
-                    <Download className="h-5 w-5 text-tsa-green-deep" />
+            {topResources.length > 0 ? (
+              topResources.map((resource) => (
+                <article key={resource.id} className="section-shell card-lift p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
+                      <Download className="h-5 w-5 text-tsa-green-deep" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-card-foreground">{resource.title}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {resource.fileType} - {resource.fileSize}
+                      </p>
+                      {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                        <Link href={resource.downloadUrl} className="mt-2 inline-flex text-xs font-semibold text-tsa-green-deep">
+                          Download
+                        </Link>
+                      ) : (
+                        <span className="mt-2 inline-flex text-xs font-semibold text-muted-foreground">
+                          Download will be available soon
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-card-foreground">{resource.title}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {resource.fileType} - {resource.fileSize}
-                    </p>
-                    {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                      <Link href={resource.downloadUrl} className="mt-2 inline-flex text-xs font-semibold text-tsa-green-deep">
-                        Download
-                      </Link>
-                    ) : (
-                      <span className="mt-2 inline-flex text-xs font-semibold text-muted-foreground">Download coming soon</span>
-                    )}
-                  </div>
-                </div>
+                </article>
+              ))
+            ) : (
+              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-3">
+                <h3 className="text-base font-semibold text-card-foreground">Resource downloads are coming soon</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  As soon as files are published from the admin dashboard, they will appear here automatically.
+                </p>
               </article>
-            ))}
+            )}
           </div>
         </div>
       </section>

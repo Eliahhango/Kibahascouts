@@ -69,10 +69,10 @@ export default function SafetyPage() {
 
               <div className="mt-3 rounded-md bg-secondary p-3 text-sm text-secondary-foreground">
                 <p>
-                  <span className="font-semibold">Safeguarding Hotline:</span> [CONFIRM SAFEGUARDING HOTLINE]
+                  <span className="font-semibold">Safeguarding Hotline:</span> Hotline details will be shared soon.
                 </p>
                 <p className="mt-1">
-                  <span className="font-semibold">Confidential Email:</span> [CONFIRM SAFEGUARDING EMAIL]
+                  <span className="font-semibold">Confidential Email:</span> Confidential email details will be shared soon.
                 </p>
               </div>
 

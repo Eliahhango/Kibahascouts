@@ -76,45 +76,54 @@ export default async function ResourcesPage({
 
       <section className="bg-secondary py-12">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sorted.map((resource) => (
-              <article key={resource.id} className="rounded-lg border border-border bg-card p-5">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
-                    <FileText className="h-5 w-5 text-tsa-green-deep" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
-                      {resource.category}
-                    </span>
-                    <h2 className="mt-2 text-base font-semibold text-card-foreground">{resource.title}</h2>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{resource.summary}</p>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {resource.fileType} - {resource.fileSize} - Published{" "}
-                      {new Date(resource.publishDate).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                    {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                      <Link
-                        href={resource.downloadUrl}
-                        className="mt-3 inline-flex items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Download
-                      </Link>
-                    ) : (
-                      <span className="mt-3 inline-flex items-center gap-1 rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                        Download coming soon
+          {sorted.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {sorted.map((resource) => (
+                <article key={resource.id} className="rounded-lg border border-border bg-card p-5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
+                      <FileText className="h-5 w-5 text-tsa-green-deep" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
+                        {resource.category}
                       </span>
-                    )}
+                      <h2 className="mt-2 text-base font-semibold text-card-foreground">{resource.title}</h2>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{resource.summary}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {resource.fileType} - {resource.fileSize} - Published{" "}
+                        {new Date(resource.publishDate).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                        <Link
+                          href={resource.downloadUrl}
+                          className="mt-3 inline-flex items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Download
+                        </Link>
+                      ) : (
+                        <span className="mt-3 inline-flex items-center gap-1 rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                          Download will be available soon
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h2 className="text-base font-semibold text-card-foreground">Resource library updates are coming soon</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Published resources will appear here automatically once they are posted from the admin dashboard.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </>

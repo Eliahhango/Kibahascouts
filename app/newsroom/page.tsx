@@ -85,50 +85,59 @@ export default async function NewsroomPage({
           <h2 id="news-list" className="sr-only">
             News list
           </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredArticles.map((article) => (
-              <article key={article.id} className="overflow-hidden rounded-lg border border-border bg-card">
-                <Link href={`/newsroom/${article.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
-                  <div className="relative aspect-[16/10]">
-                    <Image
-                      src={article.image || "/placeholder.jpg"}
-                      alt={article.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
-                      {article.category}
-                    </span>
-                    <h3 className="mt-3 text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
-                      {article.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.summary}</p>
-                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <CalendarDays className="h-3.5 w-3.5" />
-                        {new Date(article.date).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+          {filteredArticles.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredArticles.map((article) => (
+                <article key={article.id} className="overflow-hidden rounded-lg border border-border bg-card">
+                  <Link href={`/newsroom/${article.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
+                    <div className="relative aspect-[16/10]">
+                      <Image
+                        src={article.image || "/placeholder.jpg"}
+                        alt={article.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
+                        {article.category}
                       </span>
-                      <span className="inline-flex items-center gap-1">
-                        <User className="h-3.5 w-3.5" />
-                        {article.author}
+                      <h3 className="mt-3 text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
+                        {article.title}
+                      </h3>
+                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.summary}</p>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <CalendarDays className="h-3.5 w-3.5" />
+                          {new Date(article.date).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <User className="h-3.5 w-3.5" />
+                          {article.author}
+                        </span>
+                      </div>
+                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
+                        Read article
+                        <ArrowRight className="h-4 w-4" />
                       </span>
                     </div>
-                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
-                      Read article
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Articles will appear here automatically after they are published from the admin dashboard.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -139,27 +148,36 @@ export default async function NewsroomPage({
             Media-ready files for official district communication.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {pressDownloads.map((resource) => (
-              <div key={resource.id} className="rounded-lg border border-border bg-card p-5">
-                <h3 className="text-base font-semibold text-card-foreground">{resource.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{resource.summary}</p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {resource.fileType} - {resource.fileSize}
+            {pressDownloads.length > 0 ? (
+              pressDownloads.map((resource) => (
+                <div key={resource.id} className="rounded-lg border border-border bg-card p-5">
+                  <h3 className="text-base font-semibold text-card-foreground">{resource.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{resource.summary}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {resource.fileType} - {resource.fileSize}
+                  </p>
+                  {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                    <Link
+                      href={resource.downloadUrl}
+                      className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                    >
+                      Download
+                    </Link>
+                  ) : (
+                    <span className="mt-4 inline-flex rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                      Download will be available soon
+                    </span>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
+                <h3 className="text-base font-semibold text-card-foreground">Press resources are coming soon</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Media files will be listed here once they are published from the admin dashboard.
                 </p>
-                {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                  <Link
-                    href={resource.downloadUrl}
-                    className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                  >
-                    Download
-                  </Link>
-                ) : (
-                  <span className="mt-4 inline-flex rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                    Download coming soon
-                  </span>
-                )}
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

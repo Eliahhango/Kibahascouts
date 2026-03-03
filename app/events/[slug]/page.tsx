@@ -119,7 +119,7 @@ export default async function EventDetailPage({
                 </Link>
               ) : (
                 <p className="mt-4 rounded-md bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
-                  {event.registrationOpen ? "Registration link coming soon" : "Registration Closed"}
+                  {event.registrationOpen ? "Registration link will be available soon" : "Registration Closed"}
                 </p>
               )}
               <Link

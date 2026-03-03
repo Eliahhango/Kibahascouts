@@ -104,34 +104,43 @@ export default async function UnitsPage({
 
       <section className="bg-secondary py-12">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((unit) => (
-              <article key={unit.id} className="rounded-lg border border-border bg-card p-5">
-                <h2 className="text-base font-bold text-card-foreground">{unit.name}</h2>
-                <p className="mt-1 text-xs font-medium uppercase tracking-wide text-tsa-green-deep">{unit.section}</p>
-                <p className="mt-3 text-sm text-muted-foreground">{unit.meetingLocation}</p>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {unit.ward}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Users className="h-3.5 w-3.5" />
-                    {unit.memberCount} members
-                  </span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Meetings: {unit.meetingDay}, {unit.meetingTime}
-                </p>
-                <Link
-                  href={`/units/${unit.slug}`}
-                  className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                >
-                  View Unit Profile
-                </Link>
-              </article>
-            ))}
-          </div>
+          {filtered.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((unit) => (
+                <article key={unit.id} className="rounded-lg border border-border bg-card p-5">
+                  <h2 className="text-base font-bold text-card-foreground">{unit.name}</h2>
+                  <p className="mt-1 text-xs font-medium uppercase tracking-wide text-tsa-green-deep">{unit.section}</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{unit.meetingLocation}</p>
+                  <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {unit.ward}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Users className="h-3.5 w-3.5" />
+                      {unit.memberCount} members
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Meetings: {unit.meetingDay}, {unit.meetingTime}
+                  </p>
+                  <Link
+                    href={`/units/${unit.slug}`}
+                    className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                  >
+                    View Unit Profile
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h2 className="text-base font-semibold text-card-foreground">Unit directory updates are coming soon</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Published scout units will appear here automatically once they are available.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

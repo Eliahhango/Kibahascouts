@@ -36,16 +36,43 @@ type ApiResponse<T> = {
   error?: string
 }
 
+function createSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
 export function NewsManager() {
   const [items, setItems] = useState<NewsAdminRecord[]>([])
   const [form, setForm] = useState<NewsFormState>(initialFormState)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [slugTouched, setSlugTouched] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [actionState, setActionState] = useState<{ id: string; type: "publish" | "delete" } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all")
 
   const submitLabel = useMemo(() => (editingId ? "Update News Item" : "Create News Item"), [editingId])
+  const filteredItems = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase()
+
+    return items.filter((item) => {
+      if (publishFilter === "published" && !item.published) return false
+      if (publishFilter === "draft" && item.published) return false
+
+      if (!normalizedQuery) return true
+
+      const searchText = `${item.title} ${item.slug} ${item.category}`.toLowerCase()
+      return searchText.includes(normalizedQuery)
+    })
+  }, [items, publishFilter, searchQuery])
 
   useEffect(() => {
     void loadNews()
@@ -74,6 +101,7 @@ export function NewsManager() {
   function resetForm() {
     setForm(initialFormState)
     setEditingId(null)
+    setSlugTouched(false)
   }
 
   function startEdit(item: NewsAdminRecord) {
@@ -89,6 +117,7 @@ export function NewsManager() {
       published: item.published,
     })
     setEditingId(item.id)
+    setSlugTouched(true)
     setSuccess(null)
     setError(null)
   }
@@ -127,6 +156,7 @@ export function NewsManager() {
   async function handleTogglePublished(item: NewsAdminRecord) {
     setError(null)
     setSuccess(null)
+    setActionState({ id: item.id, type: "publish" })
 
     try {
       const response = await fetch(`/api/admin/news/${item.id}`, {
@@ -144,6 +174,8 @@ export function NewsManager() {
       await loadNews()
     } catch (toggleError) {
       setError(toggleError instanceof Error ? toggleError.message : "Unable to update publish status.")
+    } finally {
+      setActionState(null)
     }
   }
 
@@ -153,6 +185,7 @@ export function NewsManager() {
 
     setError(null)
     setSuccess(null)
+    setActionState({ id: item.id, type: "delete" })
 
     try {
       const response = await fetch(`/api/admin/news/${item.id}`, { method: "DELETE" })
@@ -168,6 +201,8 @@ export function NewsManager() {
       await loadNews()
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unable to delete news item.")
+    } finally {
+      setActionState(null)
     }
   }
 
@@ -185,7 +220,14 @@ export function NewsManager() {
             <input
               required
               value={form.title}
-              onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+              onChange={(event) => {
+                const nextTitle = event.target.value
+                setForm((current) => ({
+                  ...current,
+                  title: nextTitle,
+                  slug: slugTouched ? current.slug : createSlug(nextTitle),
+                }))
+              }}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
@@ -195,8 +237,12 @@ export function NewsManager() {
             <input
               required
               value={form.slug}
-              onChange={(event) => setForm((current) => ({ ...current, slug: event.target.value }))}
+              onChange={(event) => {
+                setSlugTouched(true)
+                setForm((current) => ({ ...current, slug: event.target.value }))
+              }}
               placeholder="example-news-item"
+              pattern="[a-z0-9-]+"
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
@@ -307,11 +353,55 @@ export function NewsManager() {
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-card-foreground">Existing News</h3>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-lg font-semibold text-card-foreground">Existing News</h3>
+          <button
+            type="button"
+            onClick={() => void loadNews()}
+            disabled={isLoading}
+            className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
+          >
+            {isLoading ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <label className="text-xs text-muted-foreground">
+            Search
+            <input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Title, slug, category..."
+              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            />
+          </label>
+
+          <label className="text-xs text-muted-foreground">
+            Status
+            <select
+              value={publishFilter}
+              onChange={(event) => setPublishFilter(event.target.value as "all" | "published" | "draft")}
+              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            >
+              <option value="all">All</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
+          </label>
+        </div>
+
         {isLoading ? <p className="mt-3 text-sm text-muted-foreground">Loading...</p> : null}
         {!isLoading && items.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No news items yet.</p> : null}
+        {!isLoading && items.length > 0 && filteredItems.length === 0 ? (
+          <p className="mt-3 text-sm text-muted-foreground">No news items match your filters.</p>
+        ) : null}
+        {!isLoading && filteredItems.length > 0 ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Showing {filteredItems.length} of {items.length} item(s).
+          </p>
+        ) : null}
 
-        {!isLoading && items.length > 0 ? (
+        {!isLoading && filteredItems.length > 0 ? (
           <div className="mt-4 overflow-x-auto">
             <table className="min-w-full divide-y divide-border text-sm">
               <thead>
@@ -324,7 +414,7 @@ export function NewsManager() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {items.map((item) => (
+                {filteredItems.map((item) => (
                   <tr key={item.id}>
                     <td className="py-2 pr-3">
                       <p className="font-medium text-card-foreground">{item.title}</p>
@@ -338,6 +428,7 @@ export function NewsManager() {
                         <button
                           type="button"
                           onClick={() => startEdit(item)}
+                          disabled={Boolean(actionState)}
                           className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
                         >
                           Edit
@@ -345,16 +436,18 @@ export function NewsManager() {
                         <button
                           type="button"
                           onClick={() => handleTogglePublished(item)}
+                          disabled={actionState?.id === item.id}
                           className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
                         >
-                          {item.published ? "Unpublish" : "Publish"}
+                          {actionState?.id === item.id && actionState.type === "publish" ? "Updating..." : item.published ? "Unpublish" : "Publish"}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(item)}
+                          disabled={actionState?.id === item.id}
                           className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
                         >
-                          Delete
+                          {actionState?.id === item.id && actionState.type === "delete" ? "Deleting..." : "Delete"}
                         </button>
                       </div>
                     </td>

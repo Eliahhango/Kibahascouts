@@ -27,13 +27,14 @@ export const siteConfig = {
   organization: "Tanzania Scouts Association",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
   description:
-    "Official website of Kibaha Scouts. Replace placeholder fields with verified district information before production publishing.",
+    "Official website of Kibaha Scouts with district updates, events, resources, and safeguarding information.",
   contact: {
-    address: "[ADD VERIFIED ADDRESS]",
-    phoneDisplay: "[CONFIRM PHONE]",
-    phoneHref: "tel:[CONFIRM PHONE]",
-    email: "[CONFIRM EMAIL]",
-    emailHref: "mailto:[CONFIRM EMAIL]",
+    address: "Office location details will be shared soon.",
+    phoneDisplay: "Phone contact will be shared soon.",
+    phoneHref: "",
+    email: "Email contact will be shared soon.",
+    emailHref: "",
+    officeHours: "Office hours will be shared soon.",
   },
   branding: {
     primaryLogo: "/images/branding/kibaha-scouts-logo.jpg",

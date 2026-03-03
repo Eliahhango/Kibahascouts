@@ -16,8 +16,8 @@ export default function JoinPage() {
         <div className="mx-auto max-w-7xl px-4">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">Join / Volunteer</h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Use this page to follow verified joining and volunteering steps. Placeholder fields should be replaced by
-            official district process details.
+            Use this page to follow verified joining and volunteering steps. Additional district-specific details will
+            be published as soon as they are approved.
           </p>
         </div>
       </section>
@@ -33,10 +33,10 @@ export default function JoinPage() {
               <li>Choose a nearby unit from the Scout Units directory.</li>
               <li>Complete membership and parental consent forms.</li>
               <li>Attend one orientation meeting and basic health/safety briefing.</li>
-              <li>Confirm annual district and unit membership fees: [CONFIRM MEMBERSHIP FEES].</li>
+              <li>Annual district and unit membership fees will be published soon.</li>
             </ol>
             <p className="mt-3 text-xs text-muted-foreground">
-              Fee waiver policy and support options: [CONFIRM DISTRICT POLICY].
+              Fee waiver policy and support options will be shared soon.
             </p>
           </div>
         </div>
@@ -49,12 +49,12 @@ export default function JoinPage() {
               <CheckCircle2 className="h-5 w-5 text-tsa-green-deep" />
             </div>
             <h2 className="mt-3 text-2xl font-bold text-card-foreground">Volunteer as Leader</h2>
-            <p className="mt-2 text-sm text-muted-foreground">Leader pathway (placeholder):</p>
+            <p className="mt-2 text-sm text-muted-foreground">Leader pathway:</p>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
               <li>Submit volunteer application and references.</li>
               <li>Complete screening and safeguarding checks.</li>
-              <li>Attend required district leader training: [CONFIRM TRAINING NAME].</li>
-              <li>Shadow an active unit leader for the required period: [CONFIRM PERIOD].</li>
+              <li>Attend required district leader training when the next intake is announced.</li>
+              <li>Shadow an active unit leader for the required onboarding period.</li>
               <li>Receive role assignment and annual development goals.</li>
             </ol>
           </div>
@@ -80,7 +80,7 @@ export default function JoinPage() {
               ))}
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Donation channels and accountability contacts: [CONFIRM DISTRICT DONATION PROCESS].
+              Donation channels and accountability contacts will be shared soon.
             </p>
           </div>
         </div>

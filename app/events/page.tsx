@@ -119,6 +119,11 @@ export default async function EventsPage({
             <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
               Calendar View: {monthYearLabel}
             </h2>
+            {visibleEvents.length === 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">
+                No published events are available yet. Upcoming events will appear here automatically.
+              </p>
+            ) : null}
             <p className="mt-2 text-xs text-muted-foreground sm:hidden">Swipe horizontally to view all days.</p>
             <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
               <div className="min-w-[700px]">
@@ -168,41 +173,50 @@ export default async function EventsPage({
             <h2 id="list-view" className="sr-only">
               Event list
             </h2>
-            <div className="space-y-4">
-              {visibleEvents.map((event) => {
-                const eventDate = toDate(event.date)
-                return (
-                  <article key={event.id} className="rounded-lg border border-border bg-card p-5">
-                    <Link href={`/events/${event.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
-                      <div className="flex flex-wrap items-start gap-4">
-                        <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
-                          <span className="text-lg font-bold leading-none">{eventDate.getDate()}</span>
-                          <span className="text-xs uppercase">
-                            {eventDate.toLocaleDateString("en-GB", { month: "short" })}
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
-                            {event.title}
-                          </h3>
-                          <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
-                          <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                              <Clock3 className="h-3.5 w-3.5" />
-                              {event.time}
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <MapPin className="h-3.5 w-3.5" />
-                              {event.location}
+            {visibleEvents.length > 0 ? (
+              <div className="space-y-4">
+                {visibleEvents.map((event) => {
+                  const eventDate = toDate(event.date)
+                  return (
+                    <article key={event.id} className="rounded-lg border border-border bg-card p-5">
+                      <Link href={`/events/${event.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
+                        <div className="flex flex-wrap items-start gap-4">
+                          <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
+                            <span className="text-lg font-bold leading-none">{eventDate.getDate()}</span>
+                            <span className="text-xs uppercase">
+                              {eventDate.toLocaleDateString("en-GB", { month: "short" })}
                             </span>
                           </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
+                              {event.title}
+                            </h3>
+                            <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
+                            <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                              <span className="inline-flex items-center gap-1">
+                                <Clock3 className="h-3.5 w-3.5" />
+                                {event.time}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <MapPin className="h-3.5 w-3.5" />
+                                {event.location}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  </article>
-                )
-              })}
-            </div>
+                      </Link>
+                    </article>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="text-base font-semibold text-card-foreground">Events are coming soon</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Published events will appear here automatically after they are posted from the admin dashboard.
+                </p>
+              </div>
+            )}
           </div>
         </section>
       )}

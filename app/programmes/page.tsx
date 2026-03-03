@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { programmes } from "@/lib/data"
 import { ArrowRight, Users } from "lucide-react"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Programmes",
@@ -42,7 +43,7 @@ export default function ProgrammesPage() {
                     {prog.title}
                   </h2>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                    {prog.description}
+                    {normalizePublicText(prog.description)}
                   </p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-tsa-green-deep">
                     Learn more <ArrowRight className="h-4 w-4" />

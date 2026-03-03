@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Mail, MapPin, Phone } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { ContactForm } from "@/components/contact-form"
+import { siteConfig } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -9,6 +10,10 @@ export const metadata: Metadata = {
 }
 
 export default function ContactPage() {
+  const { contact } = siteConfig
+  const hasPhoneLink = Boolean(contact.phoneHref)
+  const hasEmailLink = Boolean(contact.emailHref)
+
   return (
     <>
       <Breadcrumbs items={[{ label: "Contact" }]} />
@@ -29,17 +34,29 @@ export default function ContactPage() {
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
               <p className="inline-flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                [ADD VERIFIED ADDRESS]
+                {contact.address}
               </p>
               <p className="inline-flex items-center gap-2">
                 <Phone className="h-4 w-4 text-tsa-green-deep" />
-                [CONFIRM PHONE]
+                {hasPhoneLink ? (
+                  <a href={contact.phoneHref} className="hover:text-tsa-green-mid">
+                    {contact.phoneDisplay}
+                  </a>
+                ) : (
+                  contact.phoneDisplay
+                )}
               </p>
               <p className="inline-flex items-center gap-2">
                 <Mail className="h-4 w-4 text-tsa-green-deep" />
-                [CONFIRM EMAIL]
+                {hasEmailLink ? (
+                  <a href={contact.emailHref} className="hover:text-tsa-green-mid">
+                    {contact.email}
+                  </a>
+                ) : (
+                  contact.email
+                )}
               </p>
-              <p>Office hours: [CONFIRM OFFICE HOURS]</p>
+              <p>Office hours: {contact.officeHours}</p>
             </div>
 
             <h3 className="mt-6 text-lg font-semibold text-card-foreground">Social Media</h3>

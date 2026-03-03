@@ -1,7 +1,7 @@
 import { leadershipProfiles, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
 import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
-const sampleModeEnabled = process.env.SAMPLE_MODE !== "false"
+const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
 async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback: T[]): Promise<T[]> {
   if (sampleModeEnabled) {
@@ -9,10 +9,9 @@ async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback
   }
 
   try {
-    const records = await readFirestore()
-    return records.length > 0 ? records : fallback
+    return await readFirestore()
   } catch {
-    return fallback
+    return []
   }
 }
 
@@ -45,5 +44,8 @@ export async function getUnitsFromCms(): Promise<ScoutUnit[]> {
 }
 
 export async function getLeadersFromCms(): Promise<LeaderProfile[]> {
-  return leadershipProfiles
+  return withSampleFallback(async () => {
+    const { getPublishedLeadersFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedLeadersFromFirestore()
+  }, leadershipProfiles)
 }

@@ -4,13 +4,13 @@ export const contentGovernance = {
   homepageMode: sampleModeEnabled ? "sample" : "live",
   homepageBadge: "Sample / Draft",
   homepageMessage: sampleModeEnabled
-    ? "This page currently shows draft content. Replace placeholders with verified district data before publication."
+    ? "This page is displaying draft content while verified district records are being finalized."
     : "",
 } as const
 
 export const districtSnapshotPlaceholders = [
-  { label: "Active Units", value: "[INSERT REAL STATS]" },
-  { label: "Youth Members", value: "[INSERT REAL STATS]" },
-  { label: "Adult Volunteers", value: "[INSERT REAL STATS]" },
-  { label: "Service Hours", value: "[INSERT REAL STATS]" },
+  { label: "Active Units", value: "Coming soon" },
+  { label: "Youth Members", value: "Coming soon" },
+  { label: "Adult Volunteers", value: "Coming soon" },
+  { label: "Service Hours", value: "Coming soon" },
 ] as const

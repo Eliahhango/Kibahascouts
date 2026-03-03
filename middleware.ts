@@ -23,14 +23,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const hasAdminSession = Boolean(request.cookies.get(getAdminSessionCookieName())?.value)
-
   if (pathname === ADMIN_LOGIN_PATH) {
-    if (hasAdminSession) {
-      return NextResponse.redirect(new URL(ADMIN_ROOT_PATH, request.url))
-    }
+    // Always allow login route so stale/invalid cookies cannot cause redirect loops.
     return NextResponse.next()
   }
+
+  const hasAdminSession = Boolean(request.cookies.get(getAdminSessionCookieName())?.value)
 
   if (!hasAdminSession) {
     return NextResponse.redirect(buildLoginRedirectUrl(request))
