@@ -43,10 +43,15 @@ function setGoogTransCookie(code: string) {
   const value = `/en/${code}`
   document.cookie = `googtrans=${value};path=/`
   document.cookie = `googtrans=${value};domain=${window.location.hostname};path=/`
+  document.cookie = `googtrans=${value};domain=.${window.location.hostname};path=/`
 }
 
 function getTranslateCombo() {
   return document.querySelector<HTMLSelectElement>(".goog-te-combo")
+}
+
+function hasTranslateApplied() {
+  return document.body.classList.contains("translated-ltr") || document.body.classList.contains("translated-rtl")
 }
 
 function suppressTranslateToolbar() {
@@ -99,9 +104,13 @@ function applyLanguage(code: string) {
   const combo = getTranslateCombo()
   if (!combo) return false
 
+  const optionExists = Array.from(combo.options).some((option) => option.value === code)
+  if (!optionExists) return false
+
   const currentScrollY = window.scrollY
   combo.value = code
   combo.dispatchEvent(new Event("change", { bubbles: true }))
+  combo.dispatchEvent(new Event("input", { bubbles: true }))
 
   window.requestAnimationFrame(() => {
     window.scrollTo({ top: currentScrollY, behavior: "auto" })
@@ -131,6 +140,7 @@ export function GoogleTranslator() {
   const applyTimerRef = useRef<number | null>(null)
   const observerRef = useRef<MutationObserver | null>(null)
   const pendingLanguageRef = useRef<string | null>(null)
+  const applyAttemptsRef = useRef(0)
 
   const languageOptions = useMemo(createLanguageOptions, [])
   const languageLabelByCode = useMemo(
@@ -149,15 +159,19 @@ export function GoogleTranslator() {
       window.clearInterval(applyTimerRef.current)
       applyTimerRef.current = null
     }
+    applyAttemptsRef.current = 0
   }
 
   const attemptApplyLanguage = (code: string) => {
     const applied = applyLanguage(code)
-    if (applied) {
+    const translationActive = hasTranslateApplied()
+    const done = code === "en" ? applied && !translationActive : applied && translationActive
+
+    if (done) {
       pendingLanguageRef.current = null
       startGuard()
     }
-    return applied
+    return done
   }
 
   const applyLanguageWhenReady = (code: string) => {
@@ -173,6 +187,7 @@ export function GoogleTranslator() {
     }
 
     applyTimerRef.current = window.setInterval(() => {
+      applyAttemptsRef.current += 1
       const pending = pendingLanguageRef.current
       if (!pending) {
         clearApplyTimer()
@@ -180,6 +195,12 @@ export function GoogleTranslator() {
       }
 
       if (attemptApplyLanguage(pending)) {
+        clearApplyTimer()
+        return
+      }
+
+      if (applyAttemptsRef.current >= 60) {
+        // Keep selected value and cookie even if Google widget did not respond in time.
         clearApplyTimer()
       }
     }, 250)
