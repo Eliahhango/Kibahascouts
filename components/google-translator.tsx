@@ -128,6 +128,9 @@ export function GoogleTranslator() {
   const [ready, setReady] = useState(false)
   const [suggestedLanguage, setSuggestedLanguage] = useState<LocaleDetectResponse | null>(null)
   const toolbarGuardCleanupRef = useRef<null | (() => void)>(null)
+  const applyTimerRef = useRef<number | null>(null)
+  const observerRef = useRef<MutationObserver | null>(null)
+  const pendingLanguageRef = useRef<string | null>(null)
 
   const languageOptions = useMemo(createLanguageOptions, [])
   const languageLabelByCode = useMemo(
@@ -141,20 +144,76 @@ export function GoogleTranslator() {
     toolbarGuardCleanupRef.current = startToolbarGuard()
   }
 
-  const applyLanguageWithRetry = (code: string) => {
-    let attempts = 0
-    const timer = window.setInterval(() => {
-      attempts += 1
-      if (applyLanguage(code) || attempts > 24) {
-        startGuard()
-        window.clearInterval(timer)
+  const clearApplyTimer = () => {
+    if (applyTimerRef.current !== null) {
+      window.clearInterval(applyTimerRef.current)
+      applyTimerRef.current = null
+    }
+  }
+
+  const attemptApplyLanguage = (code: string) => {
+    const applied = applyLanguage(code)
+    if (applied) {
+      pendingLanguageRef.current = null
+      startGuard()
+    }
+    return applied
+  }
+
+  const applyLanguageWhenReady = (code: string) => {
+    pendingLanguageRef.current = code
+
+    if (attemptApplyLanguage(code)) {
+      clearApplyTimer()
+      return
+    }
+
+    if (applyTimerRef.current !== null) {
+      return
+    }
+
+    applyTimerRef.current = window.setInterval(() => {
+      const pending = pendingLanguageRef.current
+      if (!pending) {
+        clearApplyTimer()
+        return
+      }
+
+      if (attemptApplyLanguage(pending)) {
+        clearApplyTimer()
       }
     }, 250)
   }
 
+  const startComboObserver = () => {
+    if (observerRef.current) {
+      return
+    }
+
+    observerRef.current = new MutationObserver(() => {
+      const pending = pendingLanguageRef.current
+      if (!pending) {
+        return
+      }
+      attemptApplyLanguage(pending)
+    })
+
+    observerRef.current.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+  }
+
   useEffect(() => {
     startGuard()
-    return () => toolbarGuardCleanupRef.current?.()
+    startComboObserver()
+
+    return () => {
+      toolbarGuardCleanupRef.current?.()
+      clearApplyTimer()
+      observerRef.current?.disconnect()
+      observerRef.current = null
+    }
   }, [])
 
   useEffect(() => {
@@ -210,7 +269,7 @@ export function GoogleTranslator() {
     const savedLanguage = normalizeLanguageCode(localStorage.getItem(storageKey))
     if (savedLanguage) {
       setSelectedLanguage(savedLanguage)
-      applyLanguageWithRetry(savedLanguage)
+      applyLanguageWhenReady(savedLanguage)
       return
     }
 
@@ -226,7 +285,7 @@ export function GoogleTranslator() {
 
         const detectedLanguage = normalizeLanguageCode(data.language) ?? "en"
         setSelectedLanguage(detectedLanguage)
-        applyLanguageWithRetry(detectedLanguage)
+        applyLanguageWhenReady(detectedLanguage)
 
         const dismissedLanguage = localStorage.getItem(dismissKey)
         if (detectedLanguage !== "en" && dismissedLanguage !== detectedLanguage) {
@@ -234,7 +293,7 @@ export function GoogleTranslator() {
         }
       } catch {
         setSelectedLanguage("en")
-        applyLanguageWithRetry("en")
+        applyLanguageWhenReady("en")
       }
     }
 
@@ -250,7 +309,7 @@ export function GoogleTranslator() {
     setSelectedLanguage(normalized)
     if (persist) localStorage.setItem(storageKey, normalized)
     setSuggestedLanguage(null)
-    applyLanguageWithRetry(normalized)
+    applyLanguageWhenReady(normalized)
   }
 
   return (
