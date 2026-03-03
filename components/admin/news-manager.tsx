@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
+import { adminFetch } from "@/lib/auth/admin-fetch"
 
 type NewsAdminRecord = {
   id: string
@@ -83,7 +84,7 @@ export function NewsManager() {
     setError(null)
 
     try {
-      const response = await fetch("/api/admin/news", { method: "GET", cache: "no-store" })
+      const response = await adminFetch("/api/admin/news", { method: "GET", cache: "no-store" })
       const payload = (await response.json()) as ApiResponse<NewsAdminRecord[]>
 
       if (!response.ok || !payload.ok) {
@@ -132,7 +133,7 @@ export function NewsManager() {
       const endpoint = editingId ? `/api/admin/news/${editingId}` : "/api/admin/news"
       const method = editingId ? "PATCH" : "POST"
 
-      const response = await fetch(endpoint, {
+      const response = await adminFetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -159,7 +160,7 @@ export function NewsManager() {
     setActionState({ id: item.id, type: "publish" })
 
     try {
-      const response = await fetch(`/api/admin/news/${item.id}`, {
+      const response = await adminFetch(`/api/admin/news/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: !item.published }),
@@ -188,7 +189,7 @@ export function NewsManager() {
     setActionState({ id: item.id, type: "delete" })
 
     try {
-      const response = await fetch(`/api/admin/news/${item.id}`, { method: "DELETE" })
+      const response = await adminFetch(`/api/admin/news/${item.id}`, { method: "DELETE" })
       const payload = (await response.json()) as ApiResponse<null>
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || "Unable to delete news item.")

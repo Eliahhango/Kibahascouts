@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { adminFetch } from "@/lib/auth/admin-fetch"
 
 type MessageStatus = "unread" | "read" | "replied"
 
@@ -88,7 +89,7 @@ export function MessagesManager() {
     setError(null)
 
     try {
-      const response = await fetch("/api/admin/messages", { method: "GET", cache: "no-store" })
+      const response = await adminFetch("/api/admin/messages", { method: "GET", cache: "no-store" })
       const payload = (await response.json()) as ApiResponse<ContactMessage[]>
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || "Unable to load messages.")
@@ -109,7 +110,7 @@ export function MessagesManager() {
     setSuccess(null)
 
     try {
-      const response = await fetch(`/api/admin/messages/${selectedMessage.id}/status`, {
+      const response = await adminFetch(`/api/admin/messages/${selectedMessage.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),

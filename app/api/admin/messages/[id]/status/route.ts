@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { assertAdminRequest, toApiErrorResponse } from "../../../_utils"
+import { assertAdminMutationRequest, toApiErrorResponse } from "../../../_utils"
 
 export const runtime = "nodejs"
 
@@ -14,7 +14,7 @@ type Params = {
 
 export async function PATCH(request: Request, { params }: Params) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminMutationRequest(request, "messages:write")
     const { id } = await params
     const rawBody = await request.json().catch(() => null)
     const parsedBody = messageStatusSchema.safeParse(rawBody)

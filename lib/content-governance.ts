@@ -1,4 +1,6 @@
-const sampleModeEnabled = process.env.SAMPLE_MODE !== "false"
+import { serverEnv } from "@/lib/env/server"
+
+const sampleModeEnabled = serverEnv.SAMPLE_MODE
 
 export const contentGovernance = {
   homepageMode: sampleModeEnabled ? "sample" : "live",

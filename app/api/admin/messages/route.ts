@@ -14,7 +14,7 @@ function normalizeStatus(value: unknown): MessageStatus {
 
 export async function GET(request: Request) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminRequest(request, "messages:read")
     const { getAdminDb } = await import("@/lib/firebase/admin")
     const snapshot = await getAdminDb().collection("contactMessages").get()
 

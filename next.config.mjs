@@ -1,3 +1,7 @@
+import { validateEnv } from "./scripts/validate-env.mjs"
+
+validateEnv()
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {

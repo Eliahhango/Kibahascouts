@@ -1,5 +1,6 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
+import { publicEnv } from "@/lib/env/public"
 
 type FirebaseClientConfig = {
   apiKey: string
@@ -13,24 +14,14 @@ type FirebaseClientConfig = {
 let cachedApp: FirebaseApp | null = null
 
 function getFirebaseClientConfig(): FirebaseClientConfig {
-  const config = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  return {
+    apiKey: publicEnv.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: publicEnv.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: publicEnv.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: publicEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: publicEnv.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: publicEnv.NEXT_PUBLIC_FIREBASE_APP_ID,
   }
-
-  const missing = Object.entries(config)
-    .filter(([, value]) => !value)
-    .map(([key]) => key)
-
-  if (missing.length > 0) {
-    throw new Error(`Missing Firebase client env vars: ${missing.join(", ")}`)
-  }
-
-  return config
 }
 
 export function getFirebaseClientApp() {

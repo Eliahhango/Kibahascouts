@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
+import { serverEnv } from "@/lib/env/server"
 
 export const runtime = "nodejs"
 
@@ -16,8 +17,8 @@ type RateEntry = { count: number; resetAt: number }
 type PersistPayload = ContactPayload & { ip: string; userAgent: string }
 
 const rateLimitStore = new Map<string, RateEntry>()
-const RATE_LIMIT_WINDOW_MS = Number(process.env.CONTACT_FORM_RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000)
-const RATE_LIMIT_MAX = Number(process.env.CONTACT_FORM_RATE_LIMIT_MAX ?? 5)
+const RATE_LIMIT_WINDOW_MS = serverEnv.CONTACT_FORM_RATE_LIMIT_WINDOW_MS
+const RATE_LIMIT_MAX = serverEnv.CONTACT_FORM_RATE_LIMIT_MAX
 
 function getClientIp(request: NextRequest) {
   const forwardedFor = request.headers.get("x-forwarded-for")

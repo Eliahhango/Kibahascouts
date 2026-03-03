@@ -1,3 +1,5 @@
+import { publicEnv } from "@/lib/env/public"
+
 const fallbackSiteUrl = "http://localhost:3000"
 
 function stripTrailingSlash(value: string) {
@@ -5,7 +7,7 @@ function stripTrailingSlash(value: string) {
 }
 
 export function getSiteUrl() {
-  const publicUrl = process.env.NEXT_PUBLIC_SITE_URL
+  const publicUrl = publicEnv.NEXT_PUBLIC_SITE_URL
   const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
 
   return stripTrailingSlash(publicUrl || vercelUrl || fallbackSiteUrl)

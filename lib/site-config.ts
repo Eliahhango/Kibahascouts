@@ -1,3 +1,5 @@
+import { publicEnv } from "@/lib/env/public"
+
 export type FooterSocialIcon = "facebook" | "instagram" | "youtube"
 
 type FooterLink = {
@@ -25,7 +27,7 @@ export const siteConfig = {
   name: "KIBAHA SCOUTS",
   shortName: "Kibaha Scouts",
   organization: "Tanzania Scouts Association",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
+  siteUrl: publicEnv.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
   description:
     "Official website of Kibaha Scouts with district updates, events, resources, and safeguarding information.",
   contact: {

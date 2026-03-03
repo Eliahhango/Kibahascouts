@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { assertAdminRequest, toApiErrorResponse } from "../../_utils"
+import { assertAdminMutationRequest, toApiErrorResponse } from "../../_utils"
 import { newsUpdateSchema } from "@/lib/validation/admin-content"
 
 export const runtime = "nodejs"
@@ -11,7 +11,7 @@ type Params = {
 
 export async function PATCH(request: Request, { params }: Params) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminMutationRequest(request, "content:write")
     const { id } = await params
     const rawBody = await request.json().catch(() => null)
     const parsedBody = newsUpdateSchema.safeParse(rawBody)
@@ -56,7 +56,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminMutationRequest(request, "content:write")
     const { id } = await params
     const { getAdminDb } = await import("@/lib/firebase/admin")
     const docRef = getAdminDb().collection("news").doc(id)

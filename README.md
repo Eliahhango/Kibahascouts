@@ -42,9 +42,14 @@ Copy `.env.example` to `.env.local` and fill all required values.
 - `FIREBASE_ADMIN_PROJECT_ID`
 - `FIREBASE_ADMIN_CLIENT_EMAIL`
 - `FIREBASE_ADMIN_PRIVATE_KEY` (keep escaped `\n` in env var value)
-- `ADMIN_EMAILS` (comma-separated allowlist, example: `admin1@example.com,admin2@example.com`)
 - `ADMIN_SESSION_COOKIE_NAME`
 - `ADMIN_SESSION_MAX_AGE_DAYS`
+- `ADMIN_MAX_CONCURRENT_SESSIONS`
+- `ADMIN_LOGIN_MAX_ATTEMPTS`
+- `ADMIN_LOGIN_WINDOW_MINUTES`
+- `ADMIN_SESSION_REFRESH_BEFORE_MINUTES`
+- `ADMIN_SECURITY_ALERT_THRESHOLD`
+- `ADMIN_SECURITY_ALERT_WINDOW_MINUTES`
 - `CONTACT_FORM_RATE_LIMIT_MAX`
 - `CONTACT_FORM_RATE_LIMIT_WINDOW_MS`
 
@@ -52,6 +57,7 @@ Optional legacy vars (kept for compatibility):
 
 - `CMS_BASE_URL`
 - `CMS_API_TOKEN`
+- `ADMIN_EMAILS` (optional bootstrap seeding only when `adminUsers` collection is empty)
 
 ## 3. Local Development
 
@@ -70,10 +76,10 @@ npm run start
 ## 4. Create First Admin User
 
 1. In Firebase Console -> Authentication, create a user with email/password.
-2. Add that email to `ADMIN_EMAILS`.
+2. Seed first admin access by setting `ADMIN_EMAILS` for initial bootstrap, or insert a document into Firestore `adminUsers` collection keyed by lowercase email.
 3. Start app and go to `/admin/login`.
 4. Sign in with that account.
-5. Session cookie is issued by `/api/admin/session` only if email is allowlisted.
+5. Use `/admin/admins` to manage admin users and roles in Firestore (`super_admin`, `content_admin`, `viewer`).
 
 ## 5. Firestore Rules and Indexes
 
@@ -115,7 +121,7 @@ firebase deploy --only firestore:rules,firestore:indexes
 - Footer/header links resolve to valid routes.
 - `/contact` form submits and stores data in Firestore.
 - `/admin` redirects to `/admin/login` when not authenticated.
-- Non-allowlisted emails are rejected for admin session creation.
+- Non-allowlisted emails in Firestore `adminUsers` are rejected for admin session creation.
 - Admin CRUD works for news, events, resources.
 - Admin inbox status updates work (`unread` / `read` / `replied`).
 - `npm run build` passes.

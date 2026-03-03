@@ -3,28 +3,23 @@ import "server-only"
 import { App, cert, getApp, getApps, initializeApp } from "firebase-admin/app"
 import { getAuth } from "firebase-admin/auth"
 import { getFirestore } from "firebase-admin/firestore"
-
-function getFirebaseAdminPrivateKey() {
-  return process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n")
-}
+import { serverEnv } from "@/lib/env/server"
 
 function getFirebaseAdminOptions() {
-  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID
-  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL
-  const privateKey = getFirebaseAdminPrivateKey()
+  const { FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, FIREBASE_ADMIN_PRIVATE_KEY } = serverEnv
 
-  if (projectId && clientEmail && privateKey) {
-    return {
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
-      projectId,
-    }
+  if (!FIREBASE_ADMIN_PROJECT_ID || !FIREBASE_ADMIN_CLIENT_EMAIL || !FIREBASE_ADMIN_PRIVATE_KEY) {
+    throw new Error("Firebase Admin credentials are incomplete.")
   }
 
-  return projectId ? { projectId } : {}
+  return {
+    credential: cert({
+      projectId: FIREBASE_ADMIN_PROJECT_ID,
+      clientEmail: FIREBASE_ADMIN_CLIENT_EMAIL,
+      privateKey: FIREBASE_ADMIN_PRIVATE_KEY,
+    }),
+    projectId: FIREBASE_ADMIN_PROJECT_ID,
+  }
 }
 
 export function getFirebaseAdminApp(): App {

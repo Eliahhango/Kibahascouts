@@ -1,7 +1,8 @@
 import { leadershipProfiles, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
+import { serverEnv } from "@/lib/env/server"
 import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
-const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
+const sampleModeEnabled = serverEnv.SAMPLE_MODE
 
 async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback: T[]): Promise<T[]> {
   if (sampleModeEnabled) {

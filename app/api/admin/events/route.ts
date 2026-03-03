@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { assertAdminRequest, toApiErrorResponse } from "../_utils"
+import { assertAdminMutationRequest, assertAdminRequest, toApiErrorResponse } from "../_utils"
 import { eventInputSchema } from "@/lib/validation/admin-content"
 
 export const runtime = "nodejs"
@@ -26,7 +26,7 @@ function normalizeEventDoc(id: string, data: Record<string, unknown>) {
 
 export async function GET(request: Request) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminRequest(request, "content:read")
     const { getAdminDb } = await import("@/lib/firebase/admin")
     const snapshot = await getAdminDb().collection("events").get()
 
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await assertAdminRequest(request)
+    await assertAdminMutationRequest(request, "content:write")
     const rawBody = await request.json().catch(() => null)
     const parsedBody = eventInputSchema.safeParse(rawBody)
 
