@@ -1,69 +1,66 @@
-# Kibaha Backend + Frontend Configuration Guide
+# Kibaha Backend + Frontend Setup (Vercel First)
 
-This guide explains exactly how to configure the project so backend logic works correctly and the frontend is connected end-to-end.
+This guide is rewritten for your current state:
 
-## 1. What is already Kibaha-only
+- Your app is already deployed on Vercel.
+- Firestore rules/indexes are already deployed.
+- You have not added environment variables in Vercel yet.
 
-The header district selector is now fixed to `Kibaha District` only.
-No Bagamoyo/Kisarawe/Mkuranga selector options remain.
+Follow this guide from top to bottom.
 
-## 2. Prerequisites
+## 1. Where You Are Right Now
 
-1. Install Node.js `22+` and npm.
-2. Install Firebase CLI:
-   ```powershell
-   npm install -g firebase-tools
-   ```
-3. Have access to a Firebase project dedicated to Kibaha.
+As of this setup step, you already completed:
 
-## 3. Firebase project setup (required)
+1. `firebase login`
+2. `firebase use <your-project-id>`
+3. `firebase deploy --only firestore:rules,firestore:indexes`
 
-### 3.1 Authentication
+That part is done. The next blocker is Vercel environment variables.
+
+## 2. Create Firebase Resources (If Not Done Yet)
+
+### 2.1 Authentication
 
 1. Open Firebase Console -> `Authentication`.
 2. Enable `Email/Password`.
-3. Create at least one admin user email/password.
+3. Create at least one admin user (email + password).
 
-### 3.2 Firestore
+### 2.2 Firestore
 
 1. Open `Firestore Database`.
-2. Create database in Native mode.
-3. Deploy rules/indexes from this repo:
-   ```powershell
-   firebase login
-   firebase use <your-project-id>
-   firebase deploy --only firestore:rules,firestore:indexes
-   ```
+2. Ensure database is created in Native mode.
 
-### 3.3 Service account
+### 2.3 Service Account Key
 
 1. Firebase Console -> Project settings -> `Service accounts`.
-2. Generate a private key JSON.
-3. Copy:
-   - `project_id` -> `FIREBASE_ADMIN_PROJECT_ID`
-   - `client_email` -> `FIREBASE_ADMIN_CLIENT_EMAIL`
-   - `private_key` -> `FIREBASE_ADMIN_PRIVATE_KEY` (keep `\n` escaped in `.env.local`)
+2. Click `Generate new private key`.
+3. Download the JSON key file.
 
-## 4. Environment variables (required)
+You will copy these fields from the JSON:
 
-Copy `.env.example` to `.env.local` and fill all values.
+- `project_id` -> `FIREBASE_ADMIN_PROJECT_ID`
+- `client_email` -> `FIREBASE_ADMIN_CLIENT_EMAIL`
+- `private_key` -> `FIREBASE_ADMIN_PRIVATE_KEY`
 
-```powershell
-Copy-Item .env.example .env.local
-```
+## 3. Add Variables In Vercel (Most Important Step)
 
-### 4.1 Public app vars (frontend + server)
+Open Vercel -> your project -> `Settings` -> `Environment Variables`.
+
+Add these variables for `Production`, `Preview`, and `Development`:
+
+### 3.1 Required app + Firebase client vars
 
 - `NEXT_PUBLIC_SITE_URL`
+- `SAMPLE_MODE`
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
 - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `SAMPLE_MODE` (`false` for production)
 
-### 4.2 Server vars (backend)
+### 3.2 Required server vars
 
 - `FIREBASE_ADMIN_PROJECT_ID`
 - `FIREBASE_ADMIN_CLIENT_EMAIL`
@@ -79,14 +76,92 @@ Copy-Item .env.example .env.local
 - `CONTACT_FORM_RATE_LIMIT_MAX`
 - `CONTACT_FORM_RATE_LIMIT_WINDOW_MS`
 
-### 4.3 Optional bootstrap var
+### 3.3 Optional vars
 
-- `ADMIN_EMAILS`
-  - Used only to seed first admin records when `adminUsers` collection is empty.
+- `ADMIN_EMAILS` (optional bootstrap, only when `adminUsers` collection is empty)
+- `CMS_BASE_URL` (optional)
+- `CMS_API_TOKEN` (optional)
 
-## 5. Firestore collections expected by backend
+## 4. Correct Value Format (Avoid Common Failures)
 
-These collections are used by backend logic:
+### 4.1 `SAMPLE_MODE`
+
+Use:
+
+```env
+SAMPLE_MODE=false
+```
+
+### 4.2 `NEXT_PUBLIC_SITE_URL`
+
+For production, use your live URL, for example:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
+
+If you do not have custom domain yet:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://<your-vercel-project>.vercel.app
+```
+
+### 4.3 `FIREBASE_ADMIN_PRIVATE_KEY`
+
+Use the private key from service account JSON in one line with `\n`.
+
+Example:
+
+```env
+FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEv...<rest-of-key>...\n-----END PRIVATE KEY-----\n"
+```
+
+Do not paste with real line breaks in Vercel. Keep `\n` escaped.
+
+### 4.4 Safe defaults for security/rate-limit vars
+
+```env
+ADMIN_SESSION_COOKIE_NAME=kibaha_admin_session
+ADMIN_SESSION_MAX_AGE_DAYS=5
+ADMIN_MAX_CONCURRENT_SESSIONS=3
+ADMIN_LOGIN_MAX_ATTEMPTS=5
+ADMIN_LOGIN_WINDOW_MINUTES=15
+ADMIN_SESSION_REFRESH_BEFORE_MINUTES=20
+ADMIN_SECURITY_ALERT_THRESHOLD=8
+ADMIN_SECURITY_ALERT_WINDOW_MINUTES=30
+CONTACT_FORM_RATE_LIMIT_MAX=5
+CONTACT_FORM_RATE_LIMIT_WINDOW_MS=900000
+```
+
+## 5. Local `.env.local` (Recommended for Testing Before Vercel Redeploy)
+
+In project root:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Fill the same values locally, then run:
+
+```powershell
+npm install
+npm run validate-env
+npm run build
+```
+
+If this passes locally, Vercel build will usually pass after vars are set.
+
+## 6. Redeploy On Vercel
+
+After adding/changing env vars:
+
+1. Go to Vercel -> `Deployments`.
+2. Trigger `Redeploy` on the latest commit.
+3. Wait for build to finish.
+
+## 7. Firestore Collections Used By Backend
+
+Expected collections:
 
 - `news`
 - `events`
@@ -98,9 +173,9 @@ These collections are used by backend logic:
 - `adminAuditLogs`
 - `adminSecurityAlerts`
 
-### 5.1 Minimum `adminUsers` record format
+### 7.1 First admin record (`adminUsers`)
 
-Document ID should be lowercase email, for example `admin@kibahascouts.org`.
+Document ID must be lowercase email (example: `admin@kibahascouts.org`).
 
 ```json
 {
@@ -116,104 +191,50 @@ Document ID should be lowercase email, for example `admin@kibahascouts.org`.
 ```
 
 Valid roles:
+
 - `super_admin`
 - `content_admin`
 - `viewer`
 
-## 6. Start and validate configuration
+## 8. Verify End-To-End
 
-### 6.1 Validate env
+1. Open `/admin/login` and sign in with Firebase Auth user.
+2. Confirm redirect to `/admin`.
+3. Submit `/contact` form on frontend.
+4. Confirm new doc appears in `contactMessages`.
+5. Open `/admin/messages` and confirm message appears.
+6. Add a published `news` doc and confirm it shows in `/newsroom`.
 
-```powershell
-npm run validate-env
-```
+## 9. Troubleshooting (Vercel-Focused)
 
-If anything is missing, build is blocked by design.
+### Build fails with `Environment validation failed`
 
-### 6.2 Run locally
+- At least one required env var is missing or invalid in Vercel.
+- Re-check all required keys in section 3.
+- Confirm numeric vars are numbers, not text labels.
 
-```powershell
-npm install
-npm run dev
-```
+### Runtime error around Firebase Admin credentials
 
-### 6.3 Build check (production-safe)
+- `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, or `FIREBASE_ADMIN_PRIVATE_KEY` is wrong.
+- Regenerate service account key and paste again.
+- Ensure private key contains `BEGIN PRIVATE KEY` and uses `\n`.
 
-```powershell
-npm run build
-```
+### Login works in Firebase Auth but blocked in app
 
-## 7. Backend <-> frontend connection checks
+- User must also exist in `adminUsers`.
+- `adminUsers` doc ID must be lowercase email.
+- `active` must be `true`.
 
-### 7.1 Public content flow
+### `Invalid CSRF token` on admin write actions
 
-1. Add a published `news` document in Firestore.
-2. Open `/newsroom`.
-3. Confirm item appears on frontend.
+- Refresh page and try again.
+- Ensure requests are sent through frontend admin helper.
 
-### 7.2 Contact pipeline
+## 10. Production Checklist
 
-1. Submit `/contact` form.
-2. Confirm new document in `contactMessages`.
-3. Open `/admin/messages` and confirm message appears.
-
-### 7.3 Admin login/session
-
-1. Open `/admin/login`.
-2. Login with Firebase Auth user that exists in `adminUsers` and is `active: true`.
-3. Confirm redirect to `/admin`.
-4. Confirm dashboard counts load.
-
-### 7.4 CSRF protection
-
-All admin write endpoints require CSRF token (handled automatically by frontend helper).
-If token is missing/invalid, API returns `403 Invalid CSRF token`.
-
-### 7.5 RBAC checks
-
-- `viewer`: read-only areas only.
-- `content_admin`: content + messages management.
-- `super_admin`: full access including `/admin/admins`.
-
-## 8. Security behaviors now active
-
-- Firebase Admin credentials validated on startup.
-- Env validation fails build if required vars are missing.
-- Login attempts are rate-limited and persisted in Firestore.
-- Admin sessions are tracked (`adminSessions`) with device/IP/user-agent.
-- Concurrent sessions per admin are limited.
-- Logout invalidates tracked session.
-- Auth and admin API activity is audited.
-- Repeated failures can create security alerts.
-
-## 9. Troubleshooting
-
-### Error: `Environment validation failed`
-
-- Check `.env.local` keys against `.env.example`.
-- Re-run `npm run validate-env`.
-
-### Error: `Email not found in admin allowlist`
-
-- Add the email in `adminUsers` collection.
-- Ensure document ID and `emailLower` are lowercase.
-- Ensure `active` is `true`.
-
-### Error: `Invalid CSRF token`
-
-- Confirm request goes through frontend `adminFetch` helper.
-- Refresh browser to renew CSRF cookie if needed.
-
-### Error: login blocked by too many attempts
-
-- Wait for lock window to expire, or clear `adminLoginAttempts` doc for that email+IP.
-
-## 10. Recommended production checklist
-
-1. `SAMPLE_MODE=false`.
-2. Real Kibaha-only branding/content confirmed.
-3. At least 2 active `super_admin` users.
-4. Firestore rules/indexes deployed.
-5. `npm run build` passes.
-6. Test login, CRUD, logout, and session refresh on production URL.
-
+1. `SAMPLE_MODE=false` on Vercel.
+2. All required env vars set in Vercel for `Production`.
+3. Firestore rules/indexes deployed.
+4. At least 2 active `super_admin` users.
+5. Latest Vercel deployment is successful.
+6. Admin login, CRUD, logout, and contact flow all tested on live URL.

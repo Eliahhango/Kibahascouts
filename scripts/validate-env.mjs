@@ -1,5 +1,8 @@
 import { z } from "zod"
 import { pathToFileURL } from "url"
+import nextEnv from "@next/env"
+
+const { loadEnvConfig } = nextEnv
 
 const positiveInt = (field, min, max) =>
   z.coerce
@@ -60,6 +63,8 @@ export function validateEnv(rawEnv = process.env) {
 const isDirectExecution = process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url
 
 if (isDirectExecution) {
+  // Load .env files like Next.js does, so local validation matches build/runtime behavior.
+  loadEnvConfig(process.cwd())
   validateEnv()
   console.log("Environment validation passed.")
 }
