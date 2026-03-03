@@ -1,26 +1,19 @@
 import "server-only"
 
+import { createHash } from "crypto"
 import { serverEnv } from "@/lib/env/server"
 import { createSecurityAlert } from "@/lib/security/audit-log"
 
-type AttemptState = {
+type AttemptRecord = {
+  email: string
+  ip: string
   count: number
-  resetAt: number
+  resetAt: string
+  updatedAt: string
 }
-
-const ATTEMPT_STORE = new Map<string, AttemptState>()
 
 function buildAttemptKey(email: string, ip: string) {
-  return `${email}|${ip}`
-}
-
-function pruneExpiredAttempts() {
-  const now = Date.now()
-  for (const [key, state] of ATTEMPT_STORE.entries()) {
-    if (state.resetAt <= now) {
-      ATTEMPT_STORE.delete(key)
-    }
-  }
+  return createHash("sha256").update(`${email}|${ip}`).digest("hex")
 }
 
 function getWindowMs() {
@@ -31,12 +24,37 @@ function getMaxAttempts() {
   return serverEnv.ADMIN_LOGIN_MAX_ATTEMPTS
 }
 
-export function checkLoginAttemptLimit(email: string, ip: string) {
-  pruneExpiredAttempts()
+function nowIso() {
+  return new Date().toISOString()
+}
 
-  const key = buildAttemptKey(email, ip)
-  const state = ATTEMPT_STORE.get(key)
-  if (!state) {
+function toRetryAfterSeconds(resetAtIso: string) {
+  return Math.max(1, Math.ceil((new Date(resetAtIso).getTime() - Date.now()) / 1000))
+}
+
+async function getAttemptsCollection() {
+  const { getAdminDb } = await import("@/lib/firebase/admin")
+  return getAdminDb().collection("adminLoginAttempts")
+}
+
+async function readAttempt(email: string, ip: string) {
+  const collection = await getAttemptsCollection()
+  const attemptKey = buildAttemptKey(email, ip)
+  const docRef = collection.doc(attemptKey)
+  const doc = await docRef.get()
+
+  if (!doc.exists) {
+    return { docRef, record: null as AttemptRecord | null }
+  }
+
+  const data = doc.data() as AttemptRecord
+  return { docRef, record: data }
+}
+
+export async function checkLoginAttemptLimit(email: string, ip: string) {
+  const { docRef, record } = await readAttempt(email, ip)
+
+  if (!record) {
     return {
       allowed: true,
       attemptsRemaining: getMaxAttempts(),
@@ -44,34 +62,54 @@ export function checkLoginAttemptLimit(email: string, ip: string) {
     }
   }
 
-  if (state.count >= getMaxAttempts()) {
-    const now = Date.now()
+  const resetAtTime = new Date(record.resetAt).getTime()
+  if (resetAtTime <= Date.now()) {
+    await docRef.delete()
+    return {
+      allowed: true,
+      attemptsRemaining: getMaxAttempts(),
+      retryAfterSeconds: 0,
+    }
+  }
+
+  if (record.count >= getMaxAttempts()) {
     return {
       allowed: false,
       attemptsRemaining: 0,
-      retryAfterSeconds: Math.max(1, Math.ceil((state.resetAt - now) / 1000)),
+      retryAfterSeconds: toRetryAfterSeconds(record.resetAt),
     }
   }
 
   return {
     allowed: true,
-    attemptsRemaining: Math.max(0, getMaxAttempts() - state.count),
+    attemptsRemaining: Math.max(0, getMaxAttempts() - record.count),
     retryAfterSeconds: 0,
   }
 }
 
 export async function recordFailedLoginAttempt(email: string, ip: string, reason: string) {
-  pruneExpiredAttempts()
-
-  const key = buildAttemptKey(email, ip)
-  const existing = ATTEMPT_STORE.get(key)
+  const { docRef, record } = await readAttempt(email, ip)
   const now = Date.now()
+  const nowIsoValue = nowIso()
 
-  const next: AttemptState = existing && existing.resetAt > now
-    ? { ...existing, count: existing.count + 1 }
-    : { count: 1, resetAt: now + getWindowMs() }
+  let next: AttemptRecord
+  if (!record || new Date(record.resetAt).getTime() <= now) {
+    next = {
+      email,
+      ip,
+      count: 1,
+      resetAt: new Date(now + getWindowMs()).toISOString(),
+      updatedAt: nowIsoValue,
+    }
+  } else {
+    next = {
+      ...record,
+      count: record.count + 1,
+      updatedAt: nowIsoValue,
+    }
+  }
 
-  ATTEMPT_STORE.set(key, next)
+  await docRef.set(next)
 
   if (next.count >= getMaxAttempts()) {
     await createSecurityAlert("Admin login attempts exceeded threshold", {
@@ -85,10 +123,12 @@ export async function recordFailedLoginAttempt(email: string, ip: string, reason
 
   return {
     attemptsRemaining: Math.max(0, getMaxAttempts() - next.count),
-    retryAfterSeconds: Math.max(1, Math.ceil((next.resetAt - now) / 1000)),
+    retryAfterSeconds: toRetryAfterSeconds(next.resetAt),
   }
 }
 
-export function clearLoginAttempts(email: string, ip: string) {
-  ATTEMPT_STORE.delete(buildAttemptKey(email, ip))
+export async function clearLoginAttempts(email: string, ip: string) {
+  const collection = await getAttemptsCollection()
+  const attemptKey = buildAttemptKey(email, ip)
+  await collection.doc(attemptKey).delete()
 }

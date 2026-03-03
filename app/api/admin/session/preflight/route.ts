@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const action = parsedBody.data.action
 
     if (action === "success") {
-      clearLoginAttempts(email, ip)
+      await clearLoginAttempts(email, ip)
       return NextResponse.json({ ok: true })
     }
 
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       })
     }
 
-    const limitResult = checkLoginAttemptLimit(email, ip)
+    const limitResult = await checkLoginAttemptLimit(email, ip)
     if (!limitResult.allowed) {
       const retryMinutes = toMinutes(limitResult.retryAfterSeconds)
       return NextResponse.json(

@@ -110,7 +110,7 @@ export async function POST(request: Request) {
     }
 
     if (mode === "login") {
-      const limitResult = checkLoginAttemptLimit(email, ip)
+      const limitResult = await checkLoginAttemptLimit(email, ip)
       if (!limitResult.allowed) {
         const retryMinutes = toMinutes(limitResult.retryAfterSeconds)
         await logAuthEvent({
@@ -182,7 +182,7 @@ export async function POST(request: Request) {
     })
 
     await markAdminLogin(adminUser.email, ip)
-    clearLoginAttempts(adminUser.email, ip)
+    await clearLoginAttempts(adminUser.email, ip)
 
     await logAuthEvent({
       outcome: "success",

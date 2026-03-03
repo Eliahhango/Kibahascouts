@@ -39,7 +39,7 @@ function buildLoginRedirectUrl(request: NextRequest) {
   return loginUrl
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAdminPagePath = pathname.startsWith(ADMIN_ROOT_PATH)
