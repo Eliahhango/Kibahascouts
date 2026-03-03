@@ -2,6 +2,21 @@ import "server-only"
 
 import { z } from "zod"
 
+function stripWrappingQuotes(value: string) {
+  const trimmed = value.trim()
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
+
+function normalizePrivateKey(value: string) {
+  return stripWrappingQuotes(value).replace(/\r\n/g, "\n").replace(/\\n/g, "\n")
+}
+
 const positiveInt = (field: string, min: number, max: number) =>
   z.coerce
     .number({ invalid_type_error: `${field} must be a number.` })
@@ -38,7 +53,11 @@ const serverEnvSchema = z
     CMS_API_TOKEN: z.string().optional().default(""),
   })
   .superRefine((env, ctx) => {
-    if (!env.FIREBASE_ADMIN_PRIVATE_KEY.includes("PRIVATE KEY")) {
+    const normalizedPrivateKey = normalizePrivateKey(env.FIREBASE_ADMIN_PRIVATE_KEY)
+    if (
+      !normalizedPrivateKey.includes("-----BEGIN PRIVATE KEY-----") ||
+      !normalizedPrivateKey.includes("-----END PRIVATE KEY-----")
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["FIREBASE_ADMIN_PRIVATE_KEY"],
@@ -60,5 +79,5 @@ if (!parsed.success) {
 export const serverEnv = {
   ...parsed.data,
   SAMPLE_MODE: parsed.data.SAMPLE_MODE === "true",
-  FIREBASE_ADMIN_PRIVATE_KEY: parsed.data.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, "\n"),
+  FIREBASE_ADMIN_PRIVATE_KEY: normalizePrivateKey(parsed.data.FIREBASE_ADMIN_PRIVATE_KEY),
 }
