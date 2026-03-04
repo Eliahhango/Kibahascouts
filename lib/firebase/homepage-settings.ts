@@ -39,6 +39,33 @@ export const DEFAULT_PRIORITY_INITIATIVES = [
   },
 ] as const
 
+export const DEFAULT_CAMPAIGNS = [
+  {
+    id: "c1",
+    title: "District Environmental Campaign",
+    description: "Verified campaign scope and targets pending confirmation.",
+    image: "/images/campaigns/trees.jpg",
+    status: "Active",
+    link: "/newsroom/district-programme-update",
+  },
+  {
+    id: "c2",
+    title: "Community Health Campaign",
+    description: "Verified campaign implementation details pending confirmation.",
+    image: "/images/campaigns/hygiene.jpg",
+    status: "Active",
+    link: "/newsroom/community-service-planning",
+  },
+  {
+    id: "c3",
+    title: "Membership Awareness Campaign",
+    description: "Verified campaign plan pending confirmation.",
+    image: "/images/campaigns/membership.jpg",
+    status: "Upcoming",
+    link: "/join",
+  },
+] as const
+
 const districtSnapshotItemSchema = z.object({
   label: z.string().trim().min(1, "Snapshot label is required.").max(40, "Snapshot label must be at most 40 characters."),
   value: z.string().trim().min(1, "Snapshot value is required.").max(80, "Snapshot value must be at most 80 characters."),
@@ -60,6 +87,25 @@ const priorityInitiativeSchema = z.object({
     }),
 })
 
+const campaignSchema = z.object({
+  id: z.string().trim().min(1, "Campaign id is required.").max(40, "Campaign id must be at most 40 characters."),
+  title: z.string().trim().min(3, "Campaign title is required.").max(100, "Campaign title must be at most 100 characters."),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Campaign description is required.")
+    .max(240, "Campaign description must be at most 240 characters."),
+  image: z.string().trim().min(1, "Campaign image is required.").max(500, "Campaign image must be at most 500 characters."),
+  status: z.enum(["Active", "Upcoming", "Completed"]),
+  link: z
+    .string()
+    .trim()
+    .min(1, "Campaign link is required.")
+    .refine((value) => value.startsWith("/") || hrefPattern.test(value), {
+      message: "Campaign link must start with '/' or be a valid http(s) URL.",
+    }),
+})
+
 export const homepageSettingsInputSchema = z.object({
   districtSnapshot: z
     .array(districtSnapshotItemSchema)
@@ -67,9 +113,13 @@ export const homepageSettingsInputSchema = z.object({
   priorityInitiatives: z
     .array(priorityInitiativeSchema)
     .length(DEFAULT_PRIORITY_INITIATIVES.length, `Priority Initiatives must contain exactly ${DEFAULT_PRIORITY_INITIATIVES.length} items.`),
+  campaigns: z.array(campaignSchema).length(DEFAULT_CAMPAIGNS.length, `Campaigns must contain exactly ${DEFAULT_CAMPAIGNS.length} items.`),
 })
 
-const homepageSettingsDocSchema = homepageSettingsInputSchema.extend({
+const homepageSettingsDocSchema = z.object({
+  districtSnapshot: z.array(districtSnapshotItemSchema).optional(),
+  priorityInitiatives: z.array(priorityInitiativeSchema).optional(),
+  campaigns: z.array(campaignSchema).optional(),
   updatedAt: z.string().optional(),
   updatedBy: z.string().optional(),
 })
@@ -78,6 +128,7 @@ function cloneDefaults(): HomepageSettings {
   return {
     districtSnapshot: DEFAULT_DISTRICT_SNAPSHOT.map((item) => ({ ...item })),
     priorityInitiatives: DEFAULT_PRIORITY_INITIATIVES.map((item) => ({ ...item })),
+    campaigns: DEFAULT_CAMPAIGNS.map((item) => ({ ...item })),
     updatedAt: "",
     updatedBy: "",
   }
@@ -105,9 +156,25 @@ export async function getHomepageSettingsFromFirestore(): Promise<HomepageSettin
     return cloneDefaults()
   }
 
+  const districtSnapshot =
+    parsed.data.districtSnapshot && parsed.data.districtSnapshot.length === DEFAULT_DISTRICT_SNAPSHOT.length
+      ? parsed.data.districtSnapshot.map((item) => ({ ...item }))
+      : DEFAULT_DISTRICT_SNAPSHOT.map((item) => ({ ...item }))
+
+  const priorityInitiatives =
+    parsed.data.priorityInitiatives && parsed.data.priorityInitiatives.length === DEFAULT_PRIORITY_INITIATIVES.length
+      ? parsed.data.priorityInitiatives.map((item) => ({ ...item }))
+      : DEFAULT_PRIORITY_INITIATIVES.map((item) => ({ ...item }))
+
+  const campaigns =
+    parsed.data.campaigns && parsed.data.campaigns.length === DEFAULT_CAMPAIGNS.length
+      ? parsed.data.campaigns.map((item) => ({ ...item }))
+      : DEFAULT_CAMPAIGNS.map((item) => ({ ...item }))
+
   return {
-    districtSnapshot: parsed.data.districtSnapshot.map((item) => ({ ...item })),
-    priorityInitiatives: parsed.data.priorityInitiatives.map((item) => ({ ...item })),
+    districtSnapshot,
+    priorityInitiatives,
+    campaigns,
     updatedAt: parsed.data.updatedAt || "",
     updatedBy: parsed.data.updatedBy || "",
   }
@@ -124,6 +191,7 @@ export async function upsertHomepageSettingsInFirestore(
   const payload = {
     districtSnapshot: parsedSettings.districtSnapshot.map((item) => ({ ...item })),
     priorityInitiatives: parsedSettings.priorityInitiatives.map((item) => ({ ...item })),
+    campaigns: parsedSettings.campaigns.map((item) => ({ ...item })),
     updatedAt: now,
     updatedBy: normalizedActorEmail,
   }

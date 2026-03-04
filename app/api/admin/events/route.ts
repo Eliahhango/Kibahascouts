@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, assertAdminRequest, toApiErrorResponse } from "../_utils"
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text"
 import { eventInputSchema } from "@/lib/validation/admin-content"
 import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 
@@ -64,6 +65,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: message }, { status: 400 })
     }
 
+    const sanitizedDescription = sanitizeRichTextHtml(parsedBody.data.description)
+    const descriptionPlain = richTextToPlainText(sanitizedDescription)
+    if (descriptionPlain.length < 10) {
+      return NextResponse.json({ ok: false, error: "Description must be at least 10 characters." }, { status: 400 })
+    }
+
     const { getAdminDb } = await import("@/lib/firebase/admin")
     const db = getAdminDb()
     const existingSlug = await db.collection("events").where("slug", "==", parsedBody.data.slug).limit(1).get()
@@ -74,6 +81,7 @@ export async function POST(request: Request) {
     const now = new Date().toISOString()
     const payload = {
       ...parsedBody.data,
+      description: sanitizedDescription,
       createdAt: now,
       updatedAt: now,
     }

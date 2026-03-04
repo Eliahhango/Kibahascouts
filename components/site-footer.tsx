@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Facebook, Instagram, Youtube, type LucideIcon } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { getCurrentYear, siteConfig, type FooterSocialIcon } from "@/lib/site-config"
@@ -10,7 +13,53 @@ const socialIconMap: Record<FooterSocialIcon, LucideIcon> = {
 }
 
 export function SiteFooter() {
+  const pathname = usePathname()
   const { footer, name } = siteConfig
+  const isAdminRoute = pathname.startsWith("/admin")
+
+  if (isAdminRoute) {
+    return (
+      <footer className="border-t border-border bg-background" role="contentinfo">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Kibaha Scouts Admin Panel</p>
+            <p className="text-xs text-muted-foreground">
+              Manage content, navigation, users, security logs, and message inbox.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <Link
+              href="/admin"
+              className="rounded-md border border-border px-2 py-1 font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/admin/site-content"
+              className="rounded-md border border-border px-2 py-1 font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              Site Content
+            </Link>
+            <Link
+              href="/admin/security"
+              className="rounded-md border border-border px-2 py-1 font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              Security
+            </Link>
+            <Link
+              href="/"
+              className="rounded-md border border-border px-2 py-1 font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              Public Website
+            </Link>
+          </div>
+
+          <p className="text-xs text-muted-foreground">&copy; {getCurrentYear()} {name} Admin</p>
+        </div>
+      </footer>
+    )
+  }
 
   return (
     <footer className="mt-0 bg-tsa-green-deep text-primary-foreground" role="contentinfo">

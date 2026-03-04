@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { EventLocationMap } from "@/components/events/event-location-map"
 import { getEventsFromCms } from "@/lib/cms"
 import { hasValidCoordinates } from "@/lib/maps"
+import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
 
 export async function generateStaticParams() {
   const scoutEvents = (await getEventsFromCms()).filter((event) => event.published !== false)
@@ -56,6 +57,8 @@ export default async function EventDetailPage({
     month: "long",
     year: "numeric",
   })
+  const sanitizedDescriptionHtml = sanitizeRichTextHtml(event.descriptionHtml || event.description)
+  const hasRichDescription = hasRichTextMarkup(sanitizedDescriptionHtml)
 
   return (
     <>
@@ -79,7 +82,14 @@ export default async function EventDetailPage({
           <div className="mt-4 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <article>
               <h1 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{event.title}</h1>
-              <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">{event.description}</p>
+              {hasRichDescription ? (
+                <div
+                  className="prose prose-sm mt-4 max-w-3xl text-muted-foreground"
+                  dangerouslySetInnerHTML={{ __html: sanitizedDescriptionHtml }}
+                />
+              ) : (
+                <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">{event.description}</p>
+              )}
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-lg border border-border bg-card p-4">

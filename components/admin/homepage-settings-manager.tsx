@@ -15,9 +15,19 @@ type PriorityInitiative = {
   href: string
 }
 
+type CampaignItem = {
+  id: string
+  title: string
+  description: string
+  image: string
+  status: "Active" | "Upcoming" | "Completed"
+  link: string
+}
+
 type HomepageSettings = {
   districtSnapshot: DistrictSnapshotItem[]
   priorityInitiatives: PriorityInitiative[]
+  campaigns: CampaignItem[]
   updatedAt?: string
   updatedBy?: string
 }
@@ -57,6 +67,32 @@ const defaultSettings: HomepageSettings = {
       href: "/newsroom/new-scout-hall-construction-begins",
     },
   ],
+  campaigns: [
+    {
+      id: "c1",
+      title: "District Environmental Campaign",
+      description: "Verified campaign scope and targets pending confirmation.",
+      image: "/images/campaigns/trees.jpg",
+      status: "Active",
+      link: "/newsroom/district-programme-update",
+    },
+    {
+      id: "c2",
+      title: "Community Health Campaign",
+      description: "Verified campaign implementation details pending confirmation.",
+      image: "/images/campaigns/hygiene.jpg",
+      status: "Active",
+      link: "/newsroom/community-service-planning",
+    },
+    {
+      id: "c3",
+      title: "Membership Awareness Campaign",
+      description: "Verified campaign plan pending confirmation.",
+      image: "/images/campaigns/membership.jpg",
+      status: "Upcoming",
+      link: "/join",
+    },
+  ],
   updatedAt: "",
   updatedBy: "",
 }
@@ -65,6 +101,7 @@ function cloneSettings(settings: HomepageSettings): HomepageSettings {
   return {
     districtSnapshot: settings.districtSnapshot.map((item) => ({ ...item })),
     priorityInitiatives: settings.priorityInitiatives.map((item) => ({ ...item })),
+    campaigns: settings.campaigns.map((item) => ({ ...item })),
     updatedAt: settings.updatedAt || "",
     updatedBy: settings.updatedBy || "",
   }
@@ -126,10 +163,21 @@ export function HomepageSettingsManager() {
     })
   }
 
+  function updateCampaignItem(index: number, key: keyof CampaignItem, value: string) {
+    setSettings((current) => {
+      const next = cloneSettings(current)
+      next.campaigns[index] = {
+        ...next.campaigns[index],
+        [key]: key === "status" ? (value as CampaignItem["status"]) : value,
+      }
+      return next
+    })
+  }
+
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!window.confirm("Are you sure you want to update homepage snapshot and priority initiatives?")) {
+    if (!window.confirm("Are you sure you want to update homepage snapshot, initiatives, and campaign cards?")) {
       return
     }
 
@@ -144,6 +192,7 @@ export function HomepageSettingsManager() {
         body: JSON.stringify({
           districtSnapshot: settings.districtSnapshot,
           priorityInitiatives: settings.priorityInitiatives,
+          campaigns: settings.campaigns,
         }),
       })
       const payload = (await response.json()) as ApiResponse<HomepageSettings>
@@ -253,6 +302,84 @@ export function HomepageSettingsManager() {
                     required
                     value={item.href}
                     onChange={(event) => updatePriorityItem(index, "href", event.target.value)}
+                    placeholder="/newsroom"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-card-foreground">Homepage Campaigns</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            These cards are displayed in the public campaigns section on the homepage.
+          </p>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {settings.campaigns.map((item, index) => (
+              <div key={`campaign-${item.id}-${index}`} className="rounded-lg border border-border bg-secondary/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Campaign {index + 1}</p>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">ID</span>
+                  <input
+                    required
+                    maxLength={40}
+                    value={item.id}
+                    onChange={(event) => updateCampaignItem(index, "id", event.target.value)}
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">Title</span>
+                  <input
+                    required
+                    maxLength={100}
+                    value={item.title}
+                    onChange={(event) => updateCampaignItem(index, "title", event.target.value)}
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">Description</span>
+                  <textarea
+                    required
+                    rows={3}
+                    maxLength={240}
+                    value={item.description}
+                    onChange={(event) => updateCampaignItem(index, "description", event.target.value)}
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">Image URL or local path</span>
+                  <input
+                    required
+                    maxLength={500}
+                    value={item.image}
+                    onChange={(event) => updateCampaignItem(index, "image", event.target.value)}
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">Status</span>
+                  <select
+                    value={item.status}
+                    onChange={(event) => updateCampaignItem(index, "status", event.target.value)}
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="font-medium text-card-foreground">Link</span>
+                  <input
+                    required
+                    value={item.link}
+                    onChange={(event) => updateCampaignItem(index, "link", event.target.value)}
                     placeholder="/newsroom"
                     className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   />

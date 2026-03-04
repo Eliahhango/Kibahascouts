@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, toApiErrorResponse } from "../../_utils"
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text"
 import { eventUpdateSchema } from "@/lib/validation/admin-content"
 import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 
@@ -73,6 +74,16 @@ export async function PATCH(request: Request, { params }: Params) {
     const payload = {
       ...parsedBody.data,
       updatedAt: new Date().toISOString(),
+    }
+
+    if (typeof parsedBody.data.description === "string") {
+      const sanitizedDescription = sanitizeRichTextHtml(parsedBody.data.description)
+      const descriptionPlain = richTextToPlainText(sanitizedDescription)
+      if (descriptionPlain.length < 10) {
+        return NextResponse.json({ ok: false, error: "Description must be at least 10 characters." }, { status: 400 })
+      }
+
+      payload.description = sanitizedDescription
     }
 
     await docRef.update(payload)

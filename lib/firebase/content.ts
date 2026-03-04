@@ -5,6 +5,7 @@ import { z } from "zod"
 import { getAdminDb } from "@/lib/firebase/admin"
 import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 import { hasMeaningfulText, normalizePublicText } from "@/lib/public-text"
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text"
 import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
 const newsDocSchema = z.object({
@@ -273,7 +274,7 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
         image: normalizeAssetSrc(data.image, "/images/news/placeholder.jpg"),
         author: normalizePublicText(data.author, "Kibaha Scouts Communications"),
         date,
-        readingTime: estimateReadingTime(data.body),
+        readingTime: estimateReadingTime(richTextToPlainText(data.body)),
         tags: normalizeTagList(data.tags),
         featured: Boolean(data.featured),
         published: true,
@@ -302,12 +303,16 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
         ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
         : normalizePublicUrl(typeof data.mapUrl === "string" ? data.mapUrl : "")
       const slugValue = normalizeSlug(hasMeaningfulText(data.slug) ? String(data.slug) : "", `event-${id}`)
+      const descriptionSource = normalizePublicText(data.description)
+      const descriptionHtml = sanitizeRichTextHtml(descriptionSource)
+      const descriptionPlain = richTextToPlainText(descriptionHtml) || descriptionSource
 
       return {
         id,
         slug: slugValue,
         title: normalizePublicText(data.title, "Event update"),
-        description: normalizePublicText(data.description),
+        description: descriptionPlain,
+        descriptionHtml,
         date: dateValue,
         time: normalizePublicText(data.time, "Time will be shared soon."),
         location: normalizePublicText(data.location, "Location details will be shared soon."),

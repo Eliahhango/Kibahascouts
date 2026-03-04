@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { RichTextEditor } from "@/components/admin/rich-text-editor"
 
 type NewsAdminRecord = {
   id: string
@@ -268,16 +269,15 @@ export function NewsManager() {
             />
           </label>
 
-          <label className="text-sm md:col-span-2">
-            <span className="font-medium text-card-foreground">Body</span>
-            <textarea
-              required
+          <div className="md:col-span-2">
+            <RichTextEditor
+              label="Body"
               value={form.body}
-              onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
-              rows={6}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              onChange={(nextValue) => setForm((current) => ({ ...current, body: nextValue }))}
+              placeholder="Write the full story content with formatting..."
+              minHeight={260}
             />
-          </label>
+          </div>
 
           <label className="text-sm">
             <span className="font-medium text-card-foreground">Category</span>

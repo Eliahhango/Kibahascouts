@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, toApiErrorResponse } from "../../_utils"
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text"
 import { newsUpdateSchema } from "@/lib/validation/admin-content"
 
 export const runtime = "nodejs"
@@ -41,6 +42,16 @@ export async function PATCH(request: Request, { params }: Params) {
     const payload = {
       ...parsedBody.data,
       updatedAt: new Date().toISOString(),
+    }
+
+    if (typeof parsedBody.data.body === "string") {
+      const sanitizedBody = sanitizeRichTextHtml(parsedBody.data.body)
+      const plainBody = richTextToPlainText(sanitizedBody)
+      if (plainBody.length < 20) {
+        return NextResponse.json({ ok: false, error: "Body content must be at least 20 characters." }, { status: 400 })
+      }
+
+      payload.body = sanitizedBody
     }
 
     if (parsedBody.data.featured === true) {

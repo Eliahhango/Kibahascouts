@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, Clock3, Tag, User } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { getNewsFromCms } from "@/lib/cms"
+import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
 
 export async function generateStaticParams() {
   const newsArticles = (await getNewsFromCms()).filter((article) => article.published !== false)
@@ -48,6 +49,8 @@ export default async function NewsArticlePage({
   if (!article) notFound()
 
   const related = newsArticles.filter((item) => item.id !== article.id).slice(0, 3)
+  const sanitizedContentHtml = sanitizeRichTextHtml(article.content)
+  const shouldRenderRichText = hasRichTextMarkup(sanitizedContentHtml)
   const contentParagraphs = article.content
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
@@ -109,11 +112,15 @@ export default async function NewsArticlePage({
           </div>
 
           <div className="prose prose-slate mt-8 max-w-none">
-            {contentParagraphs.map((paragraph, index) => (
-              <p key={index} className="mb-5 text-base leading-relaxed text-foreground/90">
-                {paragraph}
-              </p>
-            ))}
+            {shouldRenderRichText ? (
+              <div dangerouslySetInnerHTML={{ __html: sanitizedContentHtml }} />
+            ) : (
+              contentParagraphs.map((paragraph, index) => (
+                <p key={index} className="mb-5 text-base leading-relaxed text-foreground/90">
+                  {paragraph}
+                </p>
+              ))
+            )}
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">

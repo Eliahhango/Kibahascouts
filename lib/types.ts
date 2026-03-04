@@ -21,6 +21,7 @@ export interface ScoutEvent {
   slug: string
   title: string
   description: string
+  descriptionHtml?: string
   date: string
   endDate?: string
   time: string
@@ -109,6 +110,7 @@ export interface PriorityInitiative {
 export interface HomepageSettings {
   districtSnapshot: DistrictSnapshotItem[]
   priorityInitiatives: PriorityInitiative[]
+  campaigns: Campaign[]
   updatedAt?: string
   updatedBy?: string
 }

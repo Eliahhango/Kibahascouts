@@ -14,7 +14,7 @@ export default async function AdminHomepageSettingsPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Homepage Content Settings</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Configure District Snapshot and Priority Initiatives content shown on the public homepage.
+              Configure District Snapshot, Priority Initiatives, and Campaign cards shown on the public homepage.
             </p>
           </div>
         </header>

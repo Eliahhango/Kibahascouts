@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, assertAdminRequest, toApiErrorResponse } from "../_utils"
+import { richTextToPlainText, sanitizeRichTextHtml } from "@/lib/rich-text"
 import { newsInputSchema } from "@/lib/validation/admin-content"
 
 export const runtime = "nodejs"
@@ -49,6 +50,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: message }, { status: 400 })
     }
 
+    const sanitizedBody = sanitizeRichTextHtml(parsedBody.data.body)
+    const plainBody = richTextToPlainText(sanitizedBody)
+    if (plainBody.length < 20) {
+      return NextResponse.json({ ok: false, error: "Body content must be at least 20 characters." }, { status: 400 })
+    }
+
     const { getAdminDb } = await import("@/lib/firebase/admin")
     const db = getAdminDb()
     const existingSlug = await db.collection("news").where("slug", "==", parsedBody.data.slug).limit(1).get()
@@ -60,6 +67,7 @@ export async function POST(request: Request) {
     const docRef = db.collection("news").doc()
     const payload = {
       ...parsedBody.data,
+      body: sanitizedBody,
       createdAt: now,
       updatedAt: now,
     }

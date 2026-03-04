@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { EVENT_MAP_DEFAULT_ZOOM, buildOpenStreetMapPlaceUrl } from "@/lib/maps"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { RichTextEditor } from "@/components/admin/rich-text-editor"
 
 const EventLocationPicker = dynamic(
   () => import("@/components/admin/event-location-picker").then((module) => module.EventLocationPicker),
@@ -307,16 +308,15 @@ export function EventsManager() {
             />
           </label>
 
-          <label className="text-sm md:col-span-2">
-            <span className="font-medium text-card-foreground">Description</span>
-            <textarea
-              required
-              rows={4}
+          <div className="md:col-span-2">
+            <RichTextEditor
+              label="Description"
               value={form.description}
-              onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              onChange={(nextValue) => setForm((current) => ({ ...current, description: nextValue }))}
+              placeholder="Write event details with formatting..."
+              minHeight={220}
             />
-          </label>
+          </div>
 
           <label className="text-sm">
             <span className="font-medium text-card-foreground">Date</span>

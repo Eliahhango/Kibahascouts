@@ -1,7 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
-import { campaigns } from "@/lib/data"
 import { getEventsFromCms, getHomepageSettingsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
 import { contentGovernance } from "@/lib/content-governance"
 import { deriveMediaEmbedFromUrl, isSupportedMediaEmbedUrl } from "@/lib/media-embed"
@@ -388,7 +387,7 @@ export default async function HomePage() {
             Ongoing District Campaigns
           </h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {campaigns.map((campaign) => (
+            {homepageSettings.campaigns.map((campaign) => (
               <Link key={campaign.id} href={campaign.link} className="overflow-hidden rounded-xl border border-tsa-green-mid bg-[#422a76] card-lift">
                 <div className="relative aspect-[16/10]">
                   <Image src={campaign.image} alt={campaign.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
