@@ -22,7 +22,6 @@ type SessionStatusResponse = {
 
 export function AdminSessionMonitor() {
   const pathname = usePathname()
-  const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [status, setStatus] = useState<SessionStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -42,8 +41,6 @@ export function AdminSessionMonitor() {
     } catch (statusError) {
       setError(statusError instanceof Error ? statusError.message : "Unable to verify admin session.")
       setStatus(null)
-    } finally {
-      setIsLoading(false)
     }
   }, [])
 
@@ -137,12 +134,6 @@ export function AdminSessionMonitor() {
 
   return (
     <>
-      {isLoading ? (
-        <div className="border-b border-border bg-secondary px-4 py-2 text-center text-xs font-medium text-muted-foreground">
-          Verifying admin session...
-        </div>
-      ) : null}
-
       {warningText ? (
         <div className="border-b border-amber-300 bg-amber-100/70 px-4 py-2">
           <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 text-xs text-amber-900">

@@ -148,6 +148,9 @@ export function GoogleTranslator() {
     [languageOptions],
   )
   const includedLanguages = useMemo(() => languageCodes.join(","), [])
+  const normalizedSuggestedLanguage = suggestedLanguage
+    ? normalizeLanguageCode(suggestedLanguage.language) ?? "en"
+    : null
 
   const startGuard = () => {
     toolbarGuardCleanupRef.current?.()
@@ -358,7 +361,7 @@ export function GoogleTranslator() {
             type="button"
             aria-label="Dismiss language suggestion"
             onClick={() => {
-              localStorage.setItem(dismissKey, suggestedLanguage.language)
+              localStorage.setItem(dismissKey, normalizedSuggestedLanguage || "en")
               setSuggestedLanguage(null)
             }}
             className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary"
@@ -374,7 +377,7 @@ export function GoogleTranslator() {
           <p className="mt-1 text-xs text-muted-foreground">
             Showing this page in{" "}
             <span className="font-semibold text-foreground">
-              {languageLabelByCode.get(suggestedLanguage.language) ?? suggestedLanguage.language}
+              {languageLabelByCode.get(normalizedSuggestedLanguage || "en") ?? suggestedLanguage.language}
             </span>
             . You can switch back anytime.
           </p>
@@ -390,7 +393,7 @@ export function GoogleTranslator() {
             <button
               type="button"
               onClick={() => {
-                localStorage.setItem(storageKey, suggestedLanguage.language)
+                localStorage.setItem(storageKey, normalizedSuggestedLanguage || "en")
                 setSuggestedLanguage(null)
               }}
               className="rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-tsa-green-mid"

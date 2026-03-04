@@ -19,5 +19,5 @@ export default async function AdminRegisterPage({ searchParams }: AdminRegisterP
     }
   }
 
-  return <AdminRegisterForm nextPath={nextPath} />
+  return <AdminRegisterForm nextPath={nextPath} inviteOnly />
 }

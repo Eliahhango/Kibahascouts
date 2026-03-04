@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Manrope, Source_Serif_4 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { GlobalBusyIndicator } from '@/components/global-busy-indicator'
 import { SiteVisitTracker } from '@/components/site-visit-tracker'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -66,9 +65,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${sourceSerif.variable}`}>
       <body className="font-sans antialiased overflow-x-hidden">
-        <Suspense fallback={null}>
-          <GlobalBusyIndicator />
-        </Suspense>
         <Suspense fallback={null}>
           <SiteVisitTracker />
         </Suspense>

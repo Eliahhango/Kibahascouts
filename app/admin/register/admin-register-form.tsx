@@ -12,6 +12,7 @@ type AdminRole = "super_admin" | "content_admin" | "viewer"
 
 type AdminRegisterFormProps = {
   nextPath: string
+  inviteOnly?: boolean
 }
 
 type RegisterPreflightPayload = {
@@ -25,6 +26,8 @@ type ApiResponse<T> = {
   data?: T
   error?: string
 }
+
+const REGISTRATION_NOT_AVAILABLE_MESSAGE = "Registration not available."
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -57,16 +60,16 @@ function mapRegisterError(error: unknown) {
   const code = typeof error === "object" && error && "code" in error ? String(error.code) : ""
   const message = error instanceof Error ? error.message : "Unable to set up admin account."
 
-  if (message.includes("Email not found in admin allowlist.")) {
-    return "Email not found in admin allowlist."
+  if (message.includes(REGISTRATION_NOT_AVAILABLE_MESSAGE)) {
+    return REGISTRATION_NOT_AVAILABLE_MESSAGE
   }
 
   if (message.includes("disabled")) {
-    return "This admin account is disabled. Contact a super admin."
+    return REGISTRATION_NOT_AVAILABLE_MESSAGE
   }
 
   if (code === "auth/email-already-in-use") {
-    return "Admin account is already set up for this email. Sign in instead."
+    return "Registration already completed. Please sign in."
   }
 
   if (code === "auth/weak-password") {
@@ -92,13 +95,15 @@ async function parseApiResponse<T>(response: Response) {
   }
 }
 
-export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
+export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegisterFormProps) {
   const router = useRouter()
   const [email, setEmail] = useState("")
+  const [eligibleEmail, setEligibleEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [eligibilityStatus, setEligibilityStatus] = useState<"idle" | "checking" | "approved" | "rejected">("idle")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
 
@@ -117,12 +122,47 @@ export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
     return payload.data
   }
 
+  async function handleCheckInvitation() {
+    setError(null)
+    setInfo(null)
+
+    const normalizedEmail = email.trim().toLowerCase()
+    if (!isValidEmail(normalizedEmail)) {
+      setError("Please enter a valid email address.")
+      return
+    }
+
+    setEligibilityStatus("checking")
+
+    try {
+      const preflight = await checkEligibility(normalizedEmail)
+
+      if (!preflight.registrationRequired) {
+        setEligibilityStatus("rejected")
+        setInfo("Registration already completed for this account. Please sign in.")
+        return
+      }
+
+      setEligibleEmail(normalizedEmail)
+      setEligibilityStatus("approved")
+      setInfo("Invitation verified. Set your password to continue.")
+    } catch {
+      setEligibilityStatus("rejected")
+      setError(REGISTRATION_NOT_AVAILABLE_MESSAGE)
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
     setInfo(null)
 
     const normalizedEmail = email.trim().toLowerCase()
+    if (eligibilityStatus !== "approved" || eligibleEmail !== normalizedEmail) {
+      setError(REGISTRATION_NOT_AVAILABLE_MESSAGE)
+      return
+    }
+
     if (!isValidEmail(normalizedEmail)) {
       setError("Please enter a valid email address.")
       return
@@ -141,12 +181,6 @@ export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
     setIsSubmitting(true)
 
     try {
-      const preflight = await checkEligibility(normalizedEmail)
-      if (!preflight.registrationRequired) {
-        setInfo("This admin email already has a password set. Go to sign in.")
-        return
-      }
-
       const auth = getFirebaseClientAuth()
       const credentials = await createUserWithEmailAndPassword(auth, normalizedEmail, password)
       const idToken = await credentials.user.getIdToken(true)
@@ -178,7 +212,9 @@ export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
       <section className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
         <h1 className="text-2xl font-bold text-card-foreground">Admin Account Setup</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Enter an allowlisted admin email, set your password once, then use the normal admin sign-in page.
+          {inviteOnly
+            ? "Enter your invited admin email first. If eligible, you can set your password and continue."
+            : "Enter an allowlisted admin email, set your password once, then use the normal admin sign-in page."}
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -193,51 +229,66 @@ export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
               autoFocus
               required
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                const nextEmail = event.target.value
+                setEmail(nextEmail)
+
+                const normalizedNext = nextEmail.trim().toLowerCase()
+                if (eligibleEmail && normalizedNext !== eligibleEmail) {
+                  setEligibleEmail("")
+                  setEligibilityStatus("idle")
+                  setPassword("")
+                  setConfirmPassword("")
+                }
+              }}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
 
-          <div>
-            <label htmlFor="admin-register-password" className="text-sm font-medium text-card-foreground">
-              Password
-            </label>
-            <input
-              id="admin-register-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
-            />
-            <div className="mt-2">
-              <div className="h-1.5 w-full rounded-full bg-secondary">
-                <div
-                  className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
-                  style={{ width: `${password ? passwordStrength.percent : 0}%` }}
+          {eligibilityStatus === "approved" ? (
+            <>
+              <div>
+                <label htmlFor="admin-register-password" className="text-sm font-medium text-card-foreground">
+                  Password
+                </label>
+                <input
+                  id="admin-register-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <div className="mt-2">
+                  <div className="h-1.5 w-full rounded-full bg-secondary">
+                    <div
+                      className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
+                      style={{ width: `${password ? passwordStrength.percent : 0}%` }}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">Password strength: {password ? passwordStrength.label : "Not entered"}</p>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="admin-register-confirm-password" className="text-sm font-medium text-card-foreground">
+                  Confirm Password
+                </label>
+                <input
+                  id="admin-register-confirm-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">Password strength: {password ? passwordStrength.label : "Not entered"}</p>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="admin-register-confirm-password" className="text-sm font-medium text-card-foreground">
-              Confirm Password
-            </label>
-            <input
-              id="admin-register-confirm-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
+            </>
+          ) : null}
 
           {error ? (
             <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -251,9 +302,15 @@ export function AdminRegisterForm({ nextPath }: AdminRegisterFormProps) {
             </p>
           ) : null}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Setting up..." : "Set Password and Continue"}
-          </Button>
+          {eligibilityStatus === "approved" ? (
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "Setting up..." : "Set Password and Continue"}
+            </Button>
+          ) : (
+            <Button type="button" disabled={eligibilityStatus === "checking"} onClick={() => void handleCheckInvitation()} className="w-full">
+              {eligibilityStatus === "checking" ? "Checking invitation..." : "Continue"}
+            </Button>
+          )}
         </form>
 
         <p className="mt-4 text-xs text-muted-foreground">

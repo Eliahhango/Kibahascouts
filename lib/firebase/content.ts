@@ -404,19 +404,23 @@ export async function getPublishedMediaItemsFromFirestore(): Promise<MediaItem[]
   const docs = await readPublishedCollection("mediaItems", mediaDocSchema)
 
   return docs
-    .map(({ id, data }) => ({
-      id,
-      title: normalizePublicText(data.title, "District media item"),
-      kind: data.kind,
-      thumbnail: normalizeAssetSrc(data.thumbnail, "/images/about-hero.jpg"),
-      href: normalizePublicUrl(data.href),
-      embedUrl: normalizePublicUrl(data.embedUrl),
-      sourceProvider: normalizePublicText(data.sourceProvider, ""),
-      description: normalizePublicText(data.description, "Media details will be published soon."),
-      displayOrder: Number.isInteger(data.displayOrder) ? data.displayOrder : 0,
-      published: true,
-      createdAt: toIsoString(data.createdAt),
-      updatedAt: toIsoString(data.updatedAt),
-    }))
+    .map(({ id, data }) => {
+      const displayOrder = typeof data.displayOrder === "number" && Number.isInteger(data.displayOrder) ? data.displayOrder : 0
+
+      return {
+        id,
+        title: normalizePublicText(data.title, "District media item"),
+        kind: data.kind,
+        thumbnail: normalizeAssetSrc(data.thumbnail, "/images/about-hero.jpg"),
+        href: normalizePublicUrl(data.href),
+        embedUrl: normalizePublicUrl(data.embedUrl),
+        sourceProvider: normalizePublicText(data.sourceProvider, ""),
+        description: normalizePublicText(data.description, "Media details will be published soon."),
+        displayOrder,
+        published: true,
+        createdAt: toIsoString(data.createdAt),
+        updatedAt: toIsoString(data.updatedAt),
+      }
+    })
     .sort((a, b) => a.displayOrder - b.displayOrder || toTimestamp(b.updatedAt) - toTimestamp(a.updatedAt))
 }

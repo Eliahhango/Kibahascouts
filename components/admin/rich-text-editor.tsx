@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { Bold, Eraser, Heading1, Heading2, Italic, Link2, List, ListOrdered, Pilcrow, Underline } from "lucide-react"
+import { sanitizeRichTextHtml } from "@/lib/rich-text"
 
 type RichTextEditorProps = {
   label: string
@@ -39,6 +40,15 @@ function normalizeEditorHtml(html: string) {
   return html
 }
 
+const sizeClassMap: Record<string, string> = {
+  "12": "text-xs",
+  "14": "text-sm",
+  "16": "text-base",
+  "20": "text-lg",
+  "24": "text-xl",
+  "32": "text-2xl",
+}
+
 export function RichTextEditor({
   label,
   value,
@@ -68,7 +78,7 @@ export function RichTextEditor({
     }
 
     const normalizedHtml = normalizeEditorHtml(editor.innerHTML)
-    onChange(normalizedHtml)
+    onChange(sanitizeRichTextHtml(normalizedHtml))
     setIsEmpty(!editor.textContent?.trim())
   }
 
@@ -86,7 +96,7 @@ export function RichTextEditor({
 
     const range = selection.getRangeAt(0)
     const wrapper = document.createElement("span")
-    wrapper.style.fontSize = `${px}px`
+    wrapper.className = sizeClassMap[px] || sizeClassMap["16"]
 
     try {
       range.surroundContents(wrapper)

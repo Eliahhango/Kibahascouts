@@ -19,13 +19,15 @@ const allowedTags = [
   "h4",
   "a",
   "span",
-  "font",
 ] as const
 
 const allowedAttributes: sanitizeHtml.IOptions["allowedAttributes"] = {
   a: ["href", "target", "rel"],
-  span: ["style"],
-  font: ["size"],
+  span: ["class"],
+}
+
+const allowedClasses: sanitizeHtml.IOptions["allowedClasses"] = {
+  span: ["text-xs", "text-sm", "text-base", "text-lg", "text-xl", "text-2xl"],
 }
 
 const allowedSchemes = ["http", "https", "mailto"]
@@ -33,14 +35,9 @@ const allowedSchemes = ["http", "https", "mailto"]
 const richTextSanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: [...allowedTags],
   allowedAttributes,
+  allowedClasses,
   allowedSchemes,
   disallowedTagsMode: "discard",
-  allowedStyles: {
-    span: {
-      "font-size": [/^(?:10|11|12|13|14|15|16|18|20|24|28|32)px$/],
-      "text-decoration": [/^underline$/],
-    },
-  },
   transformTags: {
     a: sanitizeHtml.simpleTransform("a", {
       rel: "noreferrer noopener",

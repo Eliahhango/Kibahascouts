@@ -57,7 +57,7 @@ async function enforceConcurrentSessionLimit(uid: string) {
   }
 
   const sorted = activeDocs
-    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .map((doc) => ({ id: doc.id, ...(doc.data() as Partial<TrackedSession>) }))
     .sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")))
 
   const sessionsToRevoke = sorted.slice(0, activeDocs.length - serverEnv.ADMIN_MAX_CONCURRENT_SESSIONS + 1)

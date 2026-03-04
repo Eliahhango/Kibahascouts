@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
+import { ArrowRight, Clock3, Download, MapPin } from "lucide-react"
+import { MediaGalleryGrid } from "@/components/home/media-gallery-grid"
 import { getEventsFromCms, getHomepageSettingsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
 import { contentGovernance } from "@/lib/content-governance"
 import { deriveMediaEmbedFromUrl, isSupportedMediaEmbedUrl } from "@/lib/media-embed"
@@ -54,7 +55,13 @@ export default async function HomePage() {
   const latestNews = publishedNews.filter((article) => !article.featured).slice(0, 4)
   const upcomingEvents = publishedEvents.slice(0, 5)
   const topResources = publishedResources.slice(0, 6)
-  const featuredMedia = mediaItems.filter((item) => item.published !== false).slice(0, 6)
+  const featuredMedia = mediaItems
+    .filter((item) => item.published !== false)
+    .slice(0, 18)
+    .map((item) => ({
+      ...item,
+      resolvedEmbedUrl: getMediaEmbedUrl(item),
+    }))
   const featuredStoryImage = featuredNews.image || "/images/hero-scouts.jpg"
 
   return (
@@ -320,62 +327,8 @@ export default async function HomePage() {
           <h2 id="media-heading" className="section-title mt-3">
             Videos and Gallery
           </h2>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredMedia.length > 0 ? (
-              featuredMedia.map((item) => {
-                const embedUrl = getMediaEmbedUrl(item)
-                const imageSrc = item.thumbnail || "/images/about-hero.jpg"
-
-                return (
-                  <article key={item.id} className="section-shell card-lift overflow-hidden">
-                    {item.kind === "video" && embedUrl ? (
-                      <div className="relative aspect-video bg-black">
-                        <iframe
-                          title={item.title}
-                          src={embedUrl}
-                          className="absolute inset-0 h-full w-full"
-                          loading="lazy"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                        />
-                      </div>
-                    ) : item.href ? (
-                      <Link href={item.href} className="group block">
-                        <div className="relative aspect-video">
-                          <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                          <div className="absolute inset-0 flex items-center justify-center bg-foreground/25 transition-colors group-hover:bg-foreground/35">
-                            <PlayCircle className="h-12 w-12 text-primary-foreground" />
-                          </div>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div className="group relative aspect-video">
-                        <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                        <div className="absolute inset-0 flex items-center justify-center bg-foreground/25">
-                          <PlayCircle className="h-12 w-12 text-primary-foreground" />
-                        </div>
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-tsa-green-deep">
-                        {item.kind === "video" ? "Video" : "Gallery"}
-                        {item.sourceProvider ? ` - ${item.sourceProvider}` : ""}
-                      </p>
-                      <h3 className="mt-1 text-sm font-semibold text-card-foreground">{item.title}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
-                    </div>
-                  </article>
-                )
-              })
-            ) : (
-              <article className="section-shell rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
-                <h3 className="text-base font-semibold text-card-foreground">Media updates are coming soon</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Published videos and gallery items will appear here automatically from the admin dashboard.
-                </p>
-              </article>
-            )}
+          <div className="mt-6">
+            <MediaGalleryGrid items={featuredMedia} />
           </div>
         </div>
       </section>

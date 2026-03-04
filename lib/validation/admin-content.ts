@@ -102,8 +102,10 @@ function assertEventCoordinates(
   },
   context: z.RefinementCtx,
 ) {
-  const hasLatitude = typeof data.latitude === "number"
-  const hasLongitude = typeof data.longitude === "number"
+  const latitude = data.latitude
+  const longitude = data.longitude
+  const hasLatitude = typeof latitude === "number"
+  const hasLongitude = typeof longitude === "number"
 
   if (hasLatitude !== hasLongitude) {
     context.addIssue({
@@ -118,7 +120,7 @@ function assertEventCoordinates(
     return
   }
 
-  if (data.latitude < -90 || data.latitude > 90) {
+  if ((latitude as number) < -90 || (latitude as number) > 90) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["latitude"],
@@ -126,7 +128,7 @@ function assertEventCoordinates(
     })
   }
 
-  if (data.longitude < -180 || data.longitude > 180) {
+  if ((longitude as number) < -180 || (longitude as number) > 180) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["longitude"],

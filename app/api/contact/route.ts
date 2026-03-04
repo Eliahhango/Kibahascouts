@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "node:crypto"
+import { Timestamp } from "firebase-admin/firestore"
 import { z } from "zod"
 import { serverEnv } from "@/lib/env/server"
 
@@ -13,10 +15,8 @@ const contactSchema = z.object({
 })
 
 type ContactPayload = z.infer<typeof contactSchema>
-type RateEntry = { count: number; resetAt: number }
 type PersistPayload = ContactPayload & { ip: string; userAgent: string }
 
-const rateLimitStore = new Map<string, RateEntry>()
 const RATE_LIMIT_WINDOW_MS = serverEnv.CONTACT_FORM_RATE_LIMIT_WINDOW_MS
 const RATE_LIMIT_MAX = serverEnv.CONTACT_FORM_RATE_LIMIT_MAX
 
@@ -29,30 +29,67 @@ function getClientIp(request: NextRequest) {
   return request.headers.get("x-real-ip") ?? "unknown"
 }
 
-function checkRateLimit(ip: string) {
-  const now = Date.now()
+function getRateLimitDocId(ip: string) {
+  return createHash("sha256").update(ip).digest("hex")
+}
 
-  for (const [key, value] of rateLimitStore.entries()) {
-    if (value.resetAt <= now) {
-      rateLimitStore.delete(key)
+async function checkRateLimit(ip: string) {
+  const { getAdminDb } = await import("@/lib/firebase/admin")
+  const db = getAdminDb()
+  const nowMs = Date.now()
+  const nextResetAt = Timestamp.fromMillis(nowMs + RATE_LIMIT_WINDOW_MS)
+  const docRef = db.collection("contactRateLimits").doc(getRateLimitDocId(ip))
+
+  return db.runTransaction(async (transaction) => {
+    const doc = await transaction.get(docRef)
+    const data = (doc.data() || {}) as {
+      count?: number
+      resetAt?: Timestamp | number | Date
     }
-  }
 
-  const current = rateLimitStore.get(ip)
-  if (!current || current.resetAt <= now) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
+    const resetAtMs =
+      data.resetAt instanceof Timestamp
+        ? data.resetAt.toMillis()
+        : typeof data.resetAt === "number"
+          ? data.resetAt
+          : data.resetAt instanceof Date
+            ? data.resetAt.getTime()
+            : 0
+
+    const currentCount = typeof data.count === "number" ? data.count : 0
+
+    if (!doc.exists || resetAtMs <= nowMs) {
+      transaction.set(
+        docRef,
+        {
+          count: 1,
+          resetAt: nextResetAt,
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true },
+      )
+      return { allowed: true, retryAfterSeconds: 0 }
+    }
+
+    if (currentCount >= RATE_LIMIT_MAX) {
+      return {
+        allowed: false,
+        retryAfterSeconds: Math.max(1, Math.ceil((resetAtMs - nowMs) / 1000)),
+      }
+    }
+
+    transaction.set(
+      docRef,
+      {
+        count: currentCount + 1,
+        resetAt: data.resetAt instanceof Timestamp ? data.resetAt : nextResetAt,
+        updatedAt: Timestamp.now(),
+      },
+      { merge: true },
+    )
+
     return { allowed: true, retryAfterSeconds: 0 }
-  }
-
-  if (current.count >= RATE_LIMIT_MAX) {
-    return {
-      allowed: false,
-      retryAfterSeconds: Math.max(1, Math.ceil((current.resetAt - now) / 1000)),
-    }
-  }
-
-  rateLimitStore.set(ip, { ...current, count: current.count + 1 })
-  return { allowed: true, retryAfterSeconds: 0 }
+  })
 }
 
 async function persistContactMessage(payload: PersistPayload) {
@@ -72,7 +109,18 @@ async function persistContactMessage(payload: PersistPayload) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const limitResult = checkRateLimit(ip)
+  let limitResult: { allowed: boolean; retryAfterSeconds: number }
+  try {
+    limitResult = await checkRateLimit(ip)
+  } catch {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Message could not be processed at this time. Please try again later.",
+      },
+      { status: 503 },
+    )
+  }
 
   if (!limitResult.allowed) {
     return NextResponse.json(

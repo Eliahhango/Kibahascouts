@@ -8,6 +8,8 @@ import { getRequestIp, getRequestPath, getRequestUserAgent } from "@/lib/securit
 
 export const runtime = "nodejs"
 
+const REGISTRATION_NOT_AVAILABLE_MESSAGE = "Registration not available."
+
 const RegisterPreflightSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address."),
 })
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
         reason: "blocked_actor_register_preflight",
         metadata: { blockId: actorBlock.id, targetType: actorBlock.targetType, scope: actorBlock.scope },
       })
-      return NextResponse.json({ ok: false, error: "This sign-up attempt is blocked by security policy." }, { status: 403 })
+      return NextResponse.json({ ok: false, error: REGISTRATION_NOT_AVAILABLE_MESSAGE }, { status: 403 })
     }
 
     const adminUser = await getAdminUserByEmail(email)
@@ -71,7 +73,7 @@ export async function POST(request: Request) {
         status: 403,
         reason: "email_not_allowlisted_register",
       })
-      return NextResponse.json({ ok: false, error: "Email not found in admin allowlist." }, { status: 403 })
+      return NextResponse.json({ ok: false, error: REGISTRATION_NOT_AVAILABLE_MESSAGE }, { status: 403 })
     }
 
     const { getAdminAuth } = await import("@/lib/firebase/admin")
@@ -93,7 +95,7 @@ export async function POST(request: Request) {
           reason: "firebase_auth_user_disabled",
         })
         return NextResponse.json(
-          { ok: false, error: "This admin account is disabled. Contact a super admin." },
+          { ok: false, error: REGISTRATION_NOT_AVAILABLE_MESSAGE },
           { status: 403 },
         )
       }
