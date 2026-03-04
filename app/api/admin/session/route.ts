@@ -6,6 +6,7 @@ import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
 import { AdminAuthError, readCookieFromHeader, requireAdminFromRequest } from "@/lib/auth/require-admin"
 import { getAdminSessionCookieName, getAdminSessionExpiresInMs, getAdminSessionMaxAgeSeconds } from "@/lib/auth/session-cookie"
 import { serverEnv } from "@/lib/env/server"
+import { resolveBlockingRule } from "@/lib/security/admin-blocks"
 import { logAuthEvent } from "@/lib/security/audit-log"
 import { checkLoginAttemptLimit, clearLoginAttempts, recordFailedLoginAttempt } from "@/lib/security/login-attempts"
 import { getRequestIp, getRequestPath, getRequestUserAgent } from "@/lib/security/request-context"
@@ -83,6 +84,21 @@ export async function POST(request: Request) {
     }
 
     mode = parsedBody.data.mode
+    const ipBlock = await resolveBlockingRule({ ip, scope: "admin_auth" })
+    if (ipBlock) {
+      await logAuthEvent({
+        outcome: "failure",
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "blocked_ip",
+        metadata: { blockId: ipBlock.id, scope: ipBlock.scope },
+      })
+      return NextResponse.json({ ok: false, error: "This sign-in attempt is blocked by security policy." }, { status: 403 })
+    }
+
     const sessionCookieName = getAdminSessionCookieName()
     const previousSessionCookie = readCookieFromHeader(request.headers.get("cookie"), sessionCookieName)
 
@@ -107,6 +123,23 @@ export async function POST(request: Request) {
         reason: "missing_email_claim",
       })
       return NextResponse.json({ ok: false, error: "Unable to determine account email." }, { status: 400 })
+    }
+
+    const actorBlock = await resolveBlockingRule({ email, ip, scope: "admin_auth" })
+    if (actorBlock) {
+      await logAuthEvent({
+        outcome: "failure",
+        email,
+        uid: decodedToken.uid,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "blocked_actor",
+        metadata: { blockId: actorBlock.id, targetType: actorBlock.targetType, scope: actorBlock.scope },
+      })
+      return NextResponse.json({ ok: false, error: "This sign-in attempt is blocked by security policy." }, { status: 403 })
     }
 
     if (mode === "login") {

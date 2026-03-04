@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getAdminUserByEmail, normalizeAdminEmail } from "@/lib/auth/admin-users"
 import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
+import { resolveBlockingRule } from "@/lib/security/admin-blocks"
 import { logAuthEvent } from "@/lib/security/audit-log"
 import { checkLoginAttemptLimit, clearLoginAttempts, recordFailedLoginAttempt } from "@/lib/security/login-attempts"
 import { getRequestIp, getRequestPath, getRequestUserAgent } from "@/lib/security/request-context"
@@ -40,6 +41,23 @@ export async function POST(request: Request) {
 
     const email = normalizeAdminEmail(parsedBody.data.email) || ""
     const action = parsedBody.data.action
+    const actorBlock = await resolveBlockingRule({ email, ip, scope: "admin_auth" })
+
+    if (actorBlock) {
+      await logAuthEvent({
+        outcome: "failure",
+        email,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "blocked_actor_preflight",
+        metadata: { blockId: actorBlock.id, targetType: actorBlock.targetType, scope: actorBlock.scope },
+      })
+
+      return NextResponse.json({ ok: false, error: "This sign-in attempt is blocked by security policy." }, { status: 403 })
+    }
 
     if (action === "success") {
       await clearLoginAttempts(email, ip)

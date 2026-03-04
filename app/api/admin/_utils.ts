@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
 import { type AdminPermission } from "@/lib/auth/admin-users"
 import { AdminAuthError, requireAdminFromRequest } from "@/lib/auth/require-admin"
+import { resolveBlockingRule } from "@/lib/security/admin-blocks"
 import { logAdminApiAccess, trackUnauthorizedAccess } from "@/lib/security/audit-log"
 import { getRequestIp, getRequestPath, getRequestUserAgent } from "@/lib/security/request-context"
 
@@ -13,6 +14,11 @@ export async function assertAdminRequest(request: Request, permission: AdminPerm
 
   try {
     const admin = await requireAdminFromRequest(request, permission)
+    const actorBlock = await resolveBlockingRule({ email: admin.email, ip, scope: "admin_api" })
+    if (actorBlock) {
+      throw new AdminAuthError("Your admin access is blocked by security policy.", 403)
+    }
+
     await logAdminApiAccess({
       email: admin.email,
       uid: admin.uid,

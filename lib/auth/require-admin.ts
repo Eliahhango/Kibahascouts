@@ -4,6 +4,8 @@ import type { DecodedIdToken } from "firebase-admin/auth"
 import { cookies } from "next/headers"
 import { getAdminUserByEmail, getRolePermissions, hasAdminPermission, type AdminPermission, type AdminRole } from "./admin-users"
 import { getTrackedAdminSession, touchTrackedAdminSession } from "./admin-session-store"
+import { resolveBlockingRule } from "@/lib/security/admin-blocks"
+import { getRequestIp } from "@/lib/security/request-context"
 import { getAdminSessionCookieName } from "./session-cookie"
 
 export class AdminAuthError extends Error {
@@ -67,6 +69,11 @@ export async function verifyAdminSessionCookie(
       throw new AdminAuthError("Email not found in admin allowlist.", 403)
     }
 
+    const actorBlock = await resolveBlockingRule({ email: adminUser.email, scope: "admin_api" })
+    if (actorBlock) {
+      throw new AdminAuthError("Your admin access is blocked by security policy.", 403)
+    }
+
     assertAdminPermission(adminUser.role, permission)
     await touchTrackedAdminSession(sessionCookie)
 
@@ -108,5 +115,12 @@ export async function requireAdminFromRequest(
     throw new AdminAuthError("Admin session is required.", 401)
   }
 
-  return verifyAdminSessionCookie(sessionCookie, permission)
+  const session = await verifyAdminSessionCookie(sessionCookie, permission)
+  const ip = getRequestIp(request)
+  const actorBlock = await resolveBlockingRule({ email: session.email, ip, scope: "admin_api" })
+  if (actorBlock) {
+    throw new AdminAuthError("Your admin access is blocked by security policy.", 403)
+  }
+
+  return session
 }

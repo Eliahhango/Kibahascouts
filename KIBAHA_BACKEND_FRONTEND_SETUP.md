@@ -173,6 +173,8 @@ Expected collections:
 - `adminLoginAttempts`
 - `adminAuditLogs`
 - `adminSecurityAlerts`
+- `adminBlockedActors`
+- `siteVisitorLogs`
 
 ### 7.1 First admin record (`adminUsers`)
 
