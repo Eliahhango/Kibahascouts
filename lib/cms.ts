@@ -1,9 +1,12 @@
+import { unstable_noStore as noStore } from "next/cache"
 import { leadershipProfiles, mediaItems, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
 import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
 const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
 async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback: T[]): Promise<T[]> {
+  noStore()
+
   if (sampleModeEnabled) {
     return fallback
   }

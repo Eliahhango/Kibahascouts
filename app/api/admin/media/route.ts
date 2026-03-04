@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, assertAdminRequest, toApiErrorResponse } from "../_utils"
+import { deriveMediaEmbedFromUrl } from "@/lib/media-embed"
 import { mediaInputSchema } from "@/lib/validation/admin-content"
 
 export const runtime = "nodejs"
@@ -12,12 +13,36 @@ function normalizeMediaDoc(id: string, data: Record<string, unknown>) {
     kind: data.kind === "gallery" ? "gallery" : "video",
     thumbnail: String(data.thumbnail || ""),
     href: String(data.href || ""),
+    embedUrl: String(data.embedUrl || ""),
+    sourceProvider: String(data.sourceProvider || ""),
     description: String(data.description || ""),
     displayOrder: Number.isFinite(Number(data.displayOrder)) ? Number(data.displayOrder) : 0,
     published: Boolean(data.published),
     createdAt: String(data.createdAt || ""),
     updatedAt: String(data.updatedAt || ""),
   }
+}
+
+function buildMediaPayload(rawPayload: z.infer<typeof mediaInputSchema>) {
+  const payload = { ...rawPayload }
+  if (payload.kind === "video" && payload.href && !payload.embedUrl) {
+    const derived = deriveMediaEmbedFromUrl(payload.href)
+    if (derived?.embedUrl) {
+      payload.embedUrl = derived.embedUrl
+    }
+    if (!payload.sourceProvider && derived?.provider) {
+      payload.sourceProvider = derived.provider
+    }
+    if (!payload.thumbnail && derived?.thumbnail) {
+      payload.thumbnail = derived.thumbnail
+    }
+  }
+
+  if (payload.kind === "gallery") {
+    payload.embedUrl = ""
+  }
+
+  return payload
 }
 
 export async function GET(request: Request) {
@@ -51,8 +76,9 @@ export async function POST(request: Request) {
     const db = getAdminDb()
 
     const now = new Date().toISOString()
+    const mediaPayload = buildMediaPayload(parsedBody.data)
     const payload = {
-      ...parsedBody.data,
+      ...mediaPayload,
       createdAt: now,
       updatedAt: now,
     }

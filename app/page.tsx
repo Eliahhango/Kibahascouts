@@ -4,6 +4,7 @@ import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
 import { campaigns } from "@/lib/data"
 import { getEventsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
 import { contentGovernance, districtSnapshotPlaceholders } from "@/lib/content-governance"
+import { deriveMediaEmbedFromUrl, isSupportedMediaEmbedUrl } from "@/lib/media-embed"
 import { siteConfig } from "@/lib/site-config"
 
 const highlights = [
@@ -34,6 +35,28 @@ const defaultStory = {
   slug: "newsroom",
   title: "Kibaha Scouts Official Updates",
   summary: "Follow verified district updates, programme notices, and upcoming opportunities across scout sections.",
+}
+
+function getMediaEmbedUrl(item: { kind: "video" | "gallery"; embedUrl?: string; href: string }) {
+  if (item.kind !== "video") {
+    return ""
+  }
+
+  const directEmbedUrl = item.embedUrl?.trim() || ""
+  if (directEmbedUrl && isSupportedMediaEmbedUrl(directEmbedUrl)) {
+    return directEmbedUrl
+  }
+
+  if (!item.href) {
+    return ""
+  }
+
+  const derivedEmbed = deriveMediaEmbedFromUrl(item.href)
+  if (!derivedEmbed?.embedUrl || !isSupportedMediaEmbedUrl(derivedEmbed.embedUrl)) {
+    return ""
+  }
+
+  return derivedEmbed.embedUrl
 }
 
 export default async function HomePage() {
@@ -313,40 +336,52 @@ export default async function HomePage() {
           </h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featuredMedia.length > 0 ? (
-              featuredMedia.map((item) => (
-                <article key={item.id} className="section-shell card-lift overflow-hidden">
-                  {item.href ? (
-                    <Link href={item.href} className="group block">
-                      <div className="relative aspect-video">
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 33vw"
+              featuredMedia.map((item) => {
+                const embedUrl = getMediaEmbedUrl(item)
+                const imageSrc = item.thumbnail || "/images/about-hero.jpg"
+
+                return (
+                  <article key={item.id} className="section-shell card-lift overflow-hidden">
+                    {item.kind === "video" && embedUrl ? (
+                      <div className="relative aspect-video bg-black">
+                        <iframe
+                          title={item.title}
+                          src={embedUrl}
+                          className="absolute inset-0 h-full w-full"
+                          loading="lazy"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
                         />
-                        <div className="absolute inset-0 flex items-center justify-center bg-foreground/25 transition-colors group-hover:bg-foreground/35">
+                      </div>
+                    ) : item.href ? (
+                      <Link href={item.href} className="group block">
+                        <div className="relative aspect-video">
+                          <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-foreground/25 transition-colors group-hover:bg-foreground/35">
+                            <PlayCircle className="h-12 w-12 text-primary-foreground" />
+                          </div>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="group relative aspect-video">
+                        <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-foreground/25">
                           <PlayCircle className="h-12 w-12 text-primary-foreground" />
                         </div>
                       </div>
-                    </Link>
-                  ) : (
-                    <div className="group relative aspect-video">
-                      <Image src={item.thumbnail} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                      <div className="absolute inset-0 flex items-center justify-center bg-foreground/25">
-                        <PlayCircle className="h-12 w-12 text-primary-foreground" />
-                      </div>
+                    )}
+                    <div className="p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-tsa-green-deep">
+                        {item.kind === "video" ? "Video" : "Gallery"}
+                        {item.sourceProvider ? ` - ${item.sourceProvider}` : ""}
+                      </p>
+                      <h3 className="mt-1 text-sm font-semibold text-card-foreground">{item.title}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
                     </div>
-                  )}
-                  <div className="p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-tsa-green-deep">
-                      {item.kind === "video" ? "Video" : "Gallery"}
-                    </p>
-                    <h3 className="mt-1 text-sm font-semibold text-card-foreground">{item.title}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
-                  </div>
-                </article>
-              ))
+                  </article>
+                )
+              })
             ) : (
               <article className="section-shell rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
                 <h3 className="text-base font-semibold text-card-foreground">Media updates are coming soon</h3>

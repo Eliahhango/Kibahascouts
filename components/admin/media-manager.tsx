@@ -11,6 +11,8 @@ type MediaAdminRecord = {
   kind: MediaKind
   thumbnail: string
   href: string
+  embedUrl: string
+  sourceProvider: string
   description: string
   displayOrder: number
   published: boolean
@@ -24,6 +26,8 @@ const initialFormState: MediaFormState = {
   kind: "video",
   thumbnail: "",
   href: "",
+  embedUrl: "",
+  sourceProvider: "",
   description: "",
   displayOrder: 0,
   published: false,
@@ -35,12 +39,22 @@ type ApiResponse<T> = {
   error?: string
 }
 
+type MediaPreview = {
+  sourceUrl: string
+  provider: string
+  embedUrl: string
+  title?: string
+  description?: string
+  thumbnail?: string
+}
+
 export function MediaManager() {
   const [items, setItems] = useState<MediaAdminRecord[]>([])
   const [form, setForm] = useState<MediaFormState>(initialFormState)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isResolvingPreview, setIsResolvingPreview] = useState(false)
   const [actionState, setActionState] = useState<{ id: string; type: "publish" | "delete" } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -57,7 +71,7 @@ export function MediaManager() {
 
       if (!normalizedQuery) return true
 
-      const searchText = `${item.title} ${item.kind} ${item.description}`.toLowerCase()
+      const searchText = `${item.title} ${item.kind} ${item.description} ${item.sourceProvider}`.toLowerCase()
       return searchText.includes(normalizedQuery)
     })
   }, [items, publishFilter, searchQuery])
@@ -97,6 +111,8 @@ export function MediaManager() {
       kind: item.kind,
       thumbnail: item.thumbnail,
       href: item.href || "",
+      embedUrl: item.embedUrl || "",
+      sourceProvider: item.sourceProvider || "",
       description: item.description || "",
       displayOrder: item.displayOrder || 0,
       published: item.published,
@@ -104,6 +120,48 @@ export function MediaManager() {
     setEditingId(item.id)
     setSuccess(null)
     setError(null)
+  }
+
+  async function handleFetchFromLink() {
+    const sourceUrl = form.href.trim()
+    if (!sourceUrl) {
+      setError("Please paste a video URL first.")
+      setSuccess(null)
+      return
+    }
+
+    setIsResolvingPreview(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const query = new URLSearchParams({ url: sourceUrl })
+      const response = await adminFetch(`/api/admin/media/preview?${query.toString()}`, {
+        method: "GET",
+        cache: "no-store",
+      })
+      const payload = (await response.json()) as ApiResponse<MediaPreview>
+      if (!response.ok || !payload.ok || !payload.data) {
+        throw new Error(payload.error || "Unable to fetch preview metadata.")
+      }
+
+      const preview = payload.data
+      setForm((current) => ({
+        ...current,
+        kind: "video",
+        href: preview.sourceUrl || current.href,
+        sourceProvider: current.sourceProvider.trim() || preview.provider || "",
+        embedUrl: current.embedUrl.trim() || preview.embedUrl || "",
+        title: current.title.trim() || preview.title || current.title,
+        description: current.description.trim() || preview.description || current.description,
+        thumbnail: current.thumbnail.trim() || preview.thumbnail || current.thumbnail,
+      }))
+      setSuccess("Video metadata fetched. Review details, then save.")
+    } catch (previewError) {
+      setError(previewError instanceof Error ? previewError.message : "Unable to fetch preview metadata.")
+    } finally {
+      setIsResolvingPreview(false)
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -204,7 +262,7 @@ export function MediaManager() {
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit Media Item" : "Create Media Item"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage homepage Videos & Gallery cards. Use a valid image path and optional link to a video or gallery page.
+          Paste a video link and click fetch to auto-fill caption/title and embed settings. Gallery items can still be entered manually.
         </p>
 
         <form className="mt-5 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
@@ -222,7 +280,14 @@ export function MediaManager() {
             <span className="font-medium text-card-foreground">Type</span>
             <select
               value={form.kind}
-              onChange={(event) => setForm((current) => ({ ...current, kind: event.target.value as MediaKind }))}
+              onChange={(event) => {
+                const nextKind = event.target.value as MediaKind
+                setForm((current) => ({
+                  ...current,
+                  kind: nextKind,
+                  ...(nextKind === "gallery" ? { embedUrl: "", sourceProvider: "" } : {}),
+                }))
+              }}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="video">Video</option>
@@ -231,22 +296,52 @@ export function MediaManager() {
           </label>
 
           <label className="text-sm md:col-span-2">
-            <span className="font-medium text-card-foreground">Thumbnail URL or local path</span>
+            <span className="font-medium text-card-foreground">Video or gallery URL</span>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <input
+                value={form.href}
+                onChange={(event) => setForm((current) => ({ ...current, href: event.target.value }))}
+                placeholder="https://youtube.com/... or /newsroom/..."
+                className="min-w-[260px] flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => void handleFetchFromLink()}
+                disabled={isResolvingPreview || !form.href.trim()}
+                className="inline-flex rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
+              >
+                {isResolvingPreview ? "Fetching..." : "Fetch from Link"}
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">For videos, this will auto-fill provider, embed URL, and available metadata.</p>
+          </label>
+
+          <label className="text-sm">
+            <span className="font-medium text-card-foreground">Source Provider</span>
             <input
-              required
-              value={form.thumbnail}
-              onChange={(event) => setForm((current) => ({ ...current, thumbnail: event.target.value }))}
-              placeholder="/images/campaigns/trees.jpg"
+              value={form.sourceProvider}
+              onChange={(event) => setForm((current) => ({ ...current, sourceProvider: event.target.value }))}
+              placeholder="YouTube"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
+
+          <label className="text-sm">
+            <span className="font-medium text-card-foreground">Embed URL (optional)</span>
+            <input
+              value={form.embedUrl}
+              onChange={(event) => setForm((current) => ({ ...current, embedUrl: event.target.value }))}
+              placeholder="https://www.youtube.com/embed/..."
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
 
           <label className="text-sm md:col-span-2">
-            <span className="font-medium text-card-foreground">Target URL (optional)</span>
+            <span className="font-medium text-card-foreground">Thumbnail URL or local path (optional)</span>
             <input
-              value={form.href}
-              onChange={(event) => setForm((current) => ({ ...current, href: event.target.value }))}
-              placeholder="https://youtube.com/... or /newsroom/..."
+              value={form.thumbnail}
+              onChange={(event) => setForm((current) => ({ ...current, thumbnail: event.target.value }))}
+              placeholder="/images/campaigns/trees.jpg"
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
@@ -356,6 +451,7 @@ export function MediaManager() {
                 <tr className="text-left text-muted-foreground">
                   <th className="py-2 pr-3 font-medium">Title</th>
                   <th className="py-2 pr-3 font-medium">Type</th>
+                  <th className="py-2 pr-3 font-medium">Provider</th>
                   <th className="py-2 pr-3 font-medium">Order</th>
                   <th className="py-2 pr-3 font-medium">Published</th>
                   <th className="py-2 font-medium">Actions</th>
@@ -366,9 +462,10 @@ export function MediaManager() {
                   <tr key={item.id}>
                     <td className="py-2 pr-3">
                       <p className="font-medium text-card-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.thumbnail}</p>
+                      <p className="text-xs text-muted-foreground">{item.thumbnail || item.href || "-"}</p>
                     </td>
                     <td className="py-2 pr-3 text-card-foreground capitalize">{item.kind}</td>
+                    <td className="py-2 pr-3 text-card-foreground">{item.sourceProvider || "-"}</td>
                     <td className="py-2 pr-3 text-card-foreground">{item.displayOrder}</td>
                     <td className="py-2 pr-3 text-card-foreground">{item.published ? "Yes" : "No"}</td>
                     <td className="py-2">

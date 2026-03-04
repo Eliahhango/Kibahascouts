@@ -83,6 +83,8 @@ export interface MediaItem {
   kind: "video" | "gallery"
   thumbnail: string
   href: string
+  embedUrl?: string
+  sourceProvider?: string
   description: string
   displayOrder: number
   published?: boolean

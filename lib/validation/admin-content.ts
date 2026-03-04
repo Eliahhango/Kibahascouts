@@ -26,6 +26,15 @@ const optionalMediaHrefSchema = z
     message: "Must be a valid http(s) URL or internal path starting with '/'.",
   })
 
+const optionalExternalUrlSchema = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value) => value || "")
+  .refine((value) => value === "" || /^https?:\/\/.+/i.test(value), {
+    message: "Must be a valid http(s) URL.",
+  })
+
 export const newsInputSchema = z.object({
   title: z.string().trim().min(3, "Title is required."),
   slug: z
@@ -88,16 +97,44 @@ export const resourceUpdateSchema = resourceInputSchema.partial().refine((data) 
   message: "At least one field is required.",
 })
 
-export const mediaInputSchema = z.object({
+const mediaBaseSchema = z.object({
   title: z.string().trim().min(3, "Title is required."),
   kind: z.enum(["video", "gallery"]),
-  thumbnail: z.string().trim().min(1, "Thumbnail image URL/path is required."),
+  thumbnail: z.string().trim().optional().transform((value) => value || ""),
   href: optionalMediaHrefSchema,
+  embedUrl: optionalExternalUrlSchema,
+  sourceProvider: z.string().trim().optional().transform((value) => value || ""),
   description: z.string().trim().optional().transform((value) => value || ""),
   displayOrder: z.coerce.number().int().min(0).max(999).optional().default(0),
   published: z.boolean().optional().default(false),
 })
 
-export const mediaUpdateSchema = mediaInputSchema.partial().refine((data) => Object.keys(data).length > 0, {
-  message: "At least one field is required.",
+function assertMediaVideoLink(
+  data: {
+    kind?: "video" | "gallery"
+    href?: string
+    embedUrl?: string
+  },
+  context: z.RefinementCtx,
+) {
+  if (data.kind === "video" && data.href === "" && data.embedUrl === "") {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["href"],
+      message: "Video items require a video link URL or embed URL.",
+    })
+  }
+}
+
+export const mediaInputSchema = mediaBaseSchema.superRefine((data, context) => {
+  assertMediaVideoLink(data, context)
+})
+
+export const mediaUpdateSchema = mediaBaseSchema
+  .partial()
+  .superRefine((data, context) => {
+    assertMediaVideoLink(data, context)
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required.",
 })
