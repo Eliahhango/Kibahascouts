@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, toApiErrorResponse } from "../../_utils"
-import { ADMIN_ROLE_VALUES, deleteAdminUser, getAdminUserByEmail, getSuperAdminCount, updateAdminUser } from "@/lib/auth/admin-users"
+import {
+  ADMIN_ROLE_VALUES,
+  deleteAdminUser,
+  getAdminUserByEmail,
+  getPrimarySuperAdminEmail,
+  getSuperAdminCount,
+  updateAdminUser,
+} from "@/lib/auth/admin-users"
 
 export const runtime = "nodejs"
 
@@ -28,9 +35,20 @@ export async function PATCH(request: Request, { params }: Params) {
     const { email: emailParam } = await params
     const targetEmail = decodeEmailParam(emailParam)
     const targetUser = await getAdminUserByEmail(targetEmail)
+    const primarySuperAdminEmail = await getPrimarySuperAdminEmail()
 
     if (!targetUser) {
       return NextResponse.json({ ok: false, error: "Admin user not found." }, { status: 404 })
+    }
+
+    if (primarySuperAdminEmail && targetEmail === primarySuperAdminEmail && admin.email !== primarySuperAdminEmail) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Primary super admin cannot be modified by other admins.",
+        },
+        { status: 403 },
+      )
     }
 
     const rawBody = await request.json().catch(() => null)
@@ -97,9 +115,20 @@ export async function DELETE(request: Request, { params }: Params) {
     const { email: emailParam } = await params
     const targetEmail = decodeEmailParam(emailParam)
     const targetUser = await getAdminUserByEmail(targetEmail)
+    const primarySuperAdminEmail = await getPrimarySuperAdminEmail()
 
     if (!targetUser) {
       return NextResponse.json({ ok: false, error: "Admin user not found." }, { status: 404 })
+    }
+
+    if (primarySuperAdminEmail && targetEmail === primarySuperAdminEmail && admin.email !== primarySuperAdminEmail) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Primary super admin cannot be removed by other admins.",
+        },
+        { status: 403 },
+      )
     }
 
     if (targetEmail === admin.email) {

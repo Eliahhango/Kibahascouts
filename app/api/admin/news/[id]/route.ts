@@ -43,7 +43,26 @@ export async function PATCH(request: Request, { params }: Params) {
       updatedAt: new Date().toISOString(),
     }
 
-    await docRef.update(payload)
+    if (parsedBody.data.featured === true) {
+      const writer = db.batch()
+      const currentlyFeatured = await db.collection("news").where("featured", "==", true).get()
+
+      for (const doc of currentlyFeatured.docs) {
+        if (doc.id === id) {
+          continue
+        }
+        writer.update(doc.ref, {
+          featured: false,
+          updatedAt: payload.updatedAt,
+        })
+      }
+
+      writer.update(docRef, payload)
+      await writer.commit()
+    } else {
+      await docRef.update(payload)
+    }
+
     const updated = await docRef.get()
     return NextResponse.json({ ok: true, data: { id: updated.id, ...(updated.data() || {}) } })
   } catch (error) {

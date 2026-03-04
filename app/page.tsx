@@ -2,39 +2,17 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Clock3, Download, MapPin, PlayCircle } from "lucide-react"
 import { campaigns } from "@/lib/data"
-import { getEventsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
-import { contentGovernance, districtSnapshotPlaceholders } from "@/lib/content-governance"
+import { getEventsFromCms, getHomepageSettingsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
+import { contentGovernance } from "@/lib/content-governance"
 import { deriveMediaEmbedFromUrl, isSupportedMediaEmbedUrl } from "@/lib/media-embed"
 import { siteConfig } from "@/lib/site-config"
-
-const highlights = [
-  {
-    title: "Membership Readiness Plan",
-    description: "District membership priorities and targets are pending confirmation.",
-    href: "/join",
-  },
-  {
-    title: "Community Service Reporting",
-    description: "Service indicators will be published after district verification.",
-    href: "/newsroom?category=Community+Service",
-  },
-  {
-    title: "Leader Training Schedule",
-    description: "Upcoming leader development sessions will be posted in the events calendar.",
-    href: "/events/leader-training-weekend",
-  },
-  {
-    title: "Infrastructure Updates",
-    description: "District facility development updates will be published once confirmed.",
-    href: "/newsroom/new-scout-hall-construction-begins",
-  },
-]
 
 const defaultStory = {
   id: "fallback",
   slug: "newsroom",
   title: "Kibaha Scouts Official Updates",
   summary: "Follow verified district updates, programme notices, and upcoming opportunities across scout sections.",
+  image: "/images/hero-scouts.jpg",
 }
 
 function getMediaEmbedUrl(item: { kind: "video" | "gallery"; embedUrl?: string; href: string }) {
@@ -61,29 +39,32 @@ function getMediaEmbedUrl(item: { kind: "video" | "gallery"; embedUrl?: string; 
 
 export default async function HomePage() {
   const { name } = siteConfig
-  const [newsArticles, scoutEvents, resources, mediaItems] = await Promise.all([
+  const [newsArticles, scoutEvents, resources, mediaItems, homepageSettings] = await Promise.all([
     getNewsFromCms(),
     getEventsFromCms(),
     getResourcesFromCms(),
     getMediaItemsFromCms(),
+    getHomepageSettingsFromCms(),
   ])
 
   const publishedNews = newsArticles.filter((article) => article.published !== false)
   const publishedEvents = scoutEvents.filter((event) => event.published !== false)
   const publishedResources = resources.filter((resource) => resource.published !== false)
 
-  const featuredNews = publishedNews.find((article) => article.featured) ?? publishedNews[0] ?? defaultStory
-  const latestNews = publishedNews.filter((article) => article.id !== featuredNews.id).slice(0, 4)
+  const featuredNews = publishedNews.find((article) => article.featured) ?? defaultStory
+  const latestNews = publishedNews.filter((article) => !article.featured).slice(0, 4)
   const upcomingEvents = publishedEvents.slice(0, 5)
   const topResources = publishedResources.slice(0, 6)
   const featuredMedia = mediaItems.filter((item) => item.published !== false).slice(0, 6)
+  const featuredStoryImage = featuredNews.image || "/images/hero-scouts.jpg"
 
   return (
     <>
       <section className="relative overflow-hidden border-b border-border bg-tsa-green-deep" aria-label="Featured story">
         <div className="absolute inset-0">
-          <Image src="/images/hero-scouts.jpg" alt="" fill className="object-cover opacity-35" priority sizes="100vw" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,8,47,0.9)_8%,rgba(24,8,47,0.6)_48%,rgba(24,8,47,0.3)_100%)]" />
+          <Image src={featuredStoryImage} alt="" fill className="scale-105 object-cover blur-[1.5px] opacity-45" priority sizes="100vw" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(36,14,79,0.92)_8%,rgba(52,21,112,0.72)_48%,rgba(43,18,96,0.5)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(133,70,196,0.3),rgba(41,15,89,0.78))]" />
         </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr] md:py-24">
@@ -115,8 +96,8 @@ export default async function HomePage() {
           <div className="section-shell bg-primary-foreground p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {districtSnapshotPlaceholders.map((item) => (
-                <div key={item.label} className="rounded-lg bg-secondary p-3">
+              {homepageSettings.districtSnapshot.map((item, index) => (
+                <div key={`snapshot-${index}-${item.label}`} className="rounded-lg bg-secondary p-3">
                   <p className="text-base font-bold text-tsa-green-deep md:text-xl">{item.value}</p>
                   <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{item.label}</p>
                 </div>
@@ -198,20 +179,26 @@ export default async function HomePage() {
             Priority Initiatives
           </h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {highlights.map((item, index) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className={`section-shell card-lift p-5 ${index % 2 ? "bg-card" : "bg-background"}`}
-              >
-                <h3 className="text-lg font-bold text-card-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
-                  Learn more
-                  <ArrowRight className="h-4 w-4" />
-                </span>
-              </Link>
-            ))}
+            {homepageSettings.priorityInitiatives.map((item, index) => {
+              const isExternalLink = /^https?:\/\//i.test(item.href)
+
+              return (
+                <Link
+                  key={`initiative-${index}-${item.title}`}
+                  href={item.href}
+                  target={isExternalLink ? "_blank" : undefined}
+                  rel={isExternalLink ? "noreferrer" : undefined}
+                  className={`section-shell card-lift p-5 ${index % 2 ? "bg-card" : "bg-background"}`}
+                >
+                  <h3 className="text-lg font-bold text-card-foreground">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
+                    Learn more
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>

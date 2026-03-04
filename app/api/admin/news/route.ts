@@ -57,12 +57,29 @@ export async function POST(request: Request) {
     }
 
     const now = new Date().toISOString()
+    const docRef = db.collection("news").doc()
     const payload = {
       ...parsedBody.data,
       createdAt: now,
       updatedAt: now,
     }
-    const docRef = await db.collection("news").add(payload)
+
+    if (payload.featured) {
+      const currentlyFeatured = await db.collection("news").where("featured", "==", true).get()
+      const writer = db.batch()
+
+      for (const doc of currentlyFeatured.docs) {
+        writer.update(doc.ref, {
+          featured: false,
+          updatedAt: now,
+        })
+      }
+
+      writer.set(docRef, payload)
+      await writer.commit()
+    } else {
+      await docRef.set(payload)
+    }
 
     return NextResponse.json(
       {

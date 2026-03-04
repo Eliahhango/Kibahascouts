@@ -14,6 +14,9 @@ type AdminUserRecord = {
   updatedAt: string
   lastLoginAt?: string
   lastLoginIp?: string
+  invitationAccepted?: boolean
+  invitationAcceptedAt?: string
+  isPrimarySuperAdmin?: boolean
 }
 
 type ApiResponse<T> = {
@@ -206,7 +209,7 @@ export function AdminUsersManager() {
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">Add Admin User</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage admin access from Firestore-backed records. New users are active immediately.
+          Allowlist admin emails here. Invitation is considered accepted after the admin sets a password and creates an account.
         </p>
 
         <form className="mt-5 flex flex-wrap items-end gap-3" onSubmit={handleCreate}>
@@ -266,67 +269,93 @@ export function AdminUsersManager() {
                   <th className="py-2 pr-3 font-medium">Email</th>
                   <th className="py-2 pr-3 font-medium">Role</th>
                   <th className="py-2 pr-3 font-medium">Status</th>
+                  <th className="py-2 pr-3 font-medium">Invitation</th>
                   <th className="py-2 pr-3 font-medium">Last Login</th>
                   <th className="py-2 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {users.map((user) => (
-                  <tr key={user.email}>
-                    <td className="py-2 pr-3">
-                      <p className="font-medium text-card-foreground">
-                        {user.email}
-                        {currentAdminEmail === user.email ? (
-                          <span className="ml-2 rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">
-                            You
-                          </span>
-                        ) : null}
-                      </p>
-                    </td>
-                    <td className="py-2 pr-3">
-                      <select
-                        value={user.role}
-                        disabled={currentAdminEmail === user.email}
-                        onChange={(event) => void handleRoleChange(user, event.target.value as AdminRole)}
-                        className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
-                      >
-                        {roleOptions.map((option) => (
-                          <option key={`${user.email}-${option.value}`} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="py-2 pr-3 text-card-foreground">{user.active ? "Active" : "Disabled"}</td>
-                    <td className="py-2 pr-3 text-card-foreground">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-GB") : "Never"}</td>
-                    <td className="py-2">
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          disabled={currentAdminEmail === user.email}
-                          onClick={() => void handleActiveToggle(user)}
+                {users.map((user) => {
+                  const isSelf = currentAdminEmail === user.email
+                  const isPrimaryProtected = Boolean(user.isPrimarySuperAdmin && !isSelf)
+                  const controlsLocked = isSelf || isPrimaryProtected
+
+                  return (
+                    <tr key={user.email}>
+                      <td className="py-2 pr-3 align-top">
+                        <p className="font-medium text-card-foreground">
+                          {user.email}
+                          {isSelf ? (
+                            <span className="ml-2 rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">
+                              You
+                            </span>
+                          ) : null}
+                          {user.isPrimarySuperAdmin ? (
+                            <span className="ml-2 rounded bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-800">
+                              Primary
+                            </span>
+                          ) : null}
+                        </p>
+                      </td>
+                      <td className="py-2 pr-3 align-top">
+                        <select
+                          value={user.role}
+                          disabled={controlsLocked}
+                          onChange={(event) => void handleRoleChange(user, event.target.value as AdminRole)}
+                          className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
                         >
-                          {user.active ? "Disable" : "Enable"}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          disabled={currentAdminEmail === user.email}
-                          onClick={() => void deleteUser(user.email)}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {roleOptions.map((option) => (
+                            <option key={`${user.email}-${option.value}`} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="py-2 pr-3 align-top text-card-foreground">{user.active ? "Active" : "Disabled"}</td>
+                      <td className="py-2 pr-3 align-top text-card-foreground">
+                        <div className="space-y-1">
+                          <p className={user.invitationAccepted ? "text-emerald-700" : "text-amber-700"}>
+                            {user.invitationAccepted ? "Accepted" : "Pending"}
+                          </p>
+                          {user.invitationAcceptedAt ? (
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(user.invitationAcceptedAt).toLocaleString("en-GB")}
+                            </p>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-3 align-top text-card-foreground">
+                        {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-GB") : "Never"}
+                      </td>
+                      <td className="py-2 align-top">
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={controlsLocked}
+                            onClick={() => void handleActiveToggle(user)}
+                          >
+                            {user.active ? "Disable" : "Enable"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            disabled={controlsLocked}
+                            onClick={() => void deleteUser(user.email)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
             <p className="mt-3 text-xs text-muted-foreground">
-              Your own super admin account is locked for role/status changes and deletion.
+              Your own super admin account is locked for role/status changes and deletion. The primary super admin account is protected from role changes, disable, or deletion by other admins.
             </p>
           </div>
         ) : null}

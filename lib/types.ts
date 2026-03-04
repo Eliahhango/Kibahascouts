@@ -95,6 +95,24 @@ export interface MediaItem {
   updatedAt?: string
 }
 
+export interface DistrictSnapshotItem {
+  label: string
+  value: string
+}
+
+export interface PriorityInitiative {
+  title: string
+  description: string
+  href: string
+}
+
+export interface HomepageSettings {
+  districtSnapshot: DistrictSnapshotItem[]
+  priorityInitiatives: PriorityInitiative[]
+  updatedAt?: string
+  updatedBy?: string
+}
+
 export interface Campaign {
   id: string
   title: string

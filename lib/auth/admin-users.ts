@@ -254,6 +254,39 @@ export async function getSuperAdminCount() {
   return users.filter((user) => user.role === "super_admin" && user.active).length
 }
 
+function toSortableTimestamp(value: string | undefined) {
+  if (!value) {
+    return Number.MAX_SAFE_INTEGER
+  }
+
+  const parsed = Date.parse(value)
+  if (Number.isNaN(parsed)) {
+    return Number.MAX_SAFE_INTEGER
+  }
+
+  return parsed
+}
+
+export async function getPrimarySuperAdminEmail() {
+  const users = await listAdminUsers()
+  const superAdmins = users.filter((user) => user.role === "super_admin")
+
+  if (superAdmins.length === 0) {
+    return null
+  }
+
+  superAdmins.sort((a, b) => {
+    const timestampDiff = toSortableTimestamp(a.createdAt) - toSortableTimestamp(b.createdAt)
+    if (timestampDiff !== 0) {
+      return timestampDiff
+    }
+
+    return a.email.localeCompare(b.email)
+  })
+
+  return superAdmins[0]?.email || null
+}
+
 export async function markAdminLogin(email: string, ip: string) {
   const normalizedEmail = normalizeAdminEmail(email)
   if (!normalizedEmail) {

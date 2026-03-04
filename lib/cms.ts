@@ -1,6 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache"
 import { leadershipProfiles, mediaItems, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
-import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import type { HomepageSettings, LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import { getDefaultHomepageSettings } from "@/lib/firebase/homepage-settings"
 
 const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
@@ -15,6 +16,20 @@ async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback
     return await readFirestore()
   } catch {
     return []
+  }
+}
+
+async function withSampleFallbackItem<T>(readFirestore: () => Promise<T>, fallback: T): Promise<T> {
+  noStore()
+
+  if (sampleModeEnabled) {
+    return fallback
+  }
+
+  try {
+    return await readFirestore()
+  } catch {
+    return fallback
   }
 }
 
@@ -58,4 +73,11 @@ export async function getMediaItemsFromCms(): Promise<MediaItem[]> {
     const { getPublishedMediaItemsFromFirestore } = await import("@/lib/firebase/content")
     return getPublishedMediaItemsFromFirestore()
   }, mediaItems)
+}
+
+export async function getHomepageSettingsFromCms(): Promise<HomepageSettings> {
+  return withSampleFallbackItem(async () => {
+    const { getHomepageSettingsFromFirestore } = await import("@/lib/firebase/homepage-settings")
+    return getHomepageSettingsFromFirestore()
+  }, getDefaultHomepageSettings())
 }
