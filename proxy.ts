@@ -5,6 +5,7 @@ import { getAdminSessionCookieName } from "@/lib/auth/session-cookie"
 const ADMIN_ROOT_PATH = "/admin"
 const ADMIN_API_ROOT_PATH = "/api/admin"
 const ADMIN_LOGIN_PATH = "/admin/login"
+const ADMIN_REGISTER_PATH = "/admin/register"
 const ADMIN_CSRF_COOKIE_NAME = "kibaha_admin_csrf"
 
 function createCsrfToken() {
@@ -53,7 +54,7 @@ export function proxy(request: NextRequest) {
     return withCsrfCookie(request, NextResponse.next())
   }
 
-  if (pathname === ADMIN_LOGIN_PATH) {
+  if (pathname === ADMIN_LOGIN_PATH || pathname === ADMIN_REGISTER_PATH) {
     // Always allow login route so stale/invalid cookies cannot cause redirect loops.
     return withCsrfCookie(request, NextResponse.next())
   }

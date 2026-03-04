@@ -24,16 +24,16 @@ const newsDocSchema = z.object({
 })
 
 const eventDocSchema = z.object({
-  title: z.string().min(1),
-  slug: z.string().min(1),
-  description: z.string().min(1),
-  date: z.string().min(1),
-  time: z.string().min(1),
-  location: z.string().min(1),
+  title: z.string().optional(),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  date: z.string().optional(),
+  time: z.string().optional(),
+  location: z.string().optional(),
   latitude: z.unknown().optional(),
   longitude: z.unknown().optional(),
   mapZoom: z.unknown().optional(),
-  mapUrl: z.string().optional(),
+  mapUrl: z.unknown().optional(),
   image: z.string().optional(),
   registrationOpen: z.boolean().optional(),
   registrationUrl: z.string().optional(),
@@ -41,7 +41,7 @@ const eventDocSchema = z.object({
   published: z.boolean().optional(),
   createdAt: z.unknown().optional(),
   updatedAt: z.unknown().optional(),
-})
+}).passthrough()
 
 const resourceDocSchema = z.object({
   title: z.string().min(1),
@@ -124,6 +124,17 @@ function estimateReadingTime(text: string) {
   return `${minutes} min read`
 }
 
+function normalizeSlug(value: string | null | undefined, fallback: string) {
+  const raw = (value || "").trim().toLowerCase()
+  const normalized = raw
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+
+  return normalized || fallback
+}
+
 function normalizeNewsCategory(value: string | undefined): NewsArticle["category"] {
   if (value === "Announcements") return "Announcements"
   if (value === "Training") return "Training"
@@ -189,13 +200,6 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
     .map(({ id, data }) => {
       const createdAt = toIsoString(data.createdAt) ?? data.date
       const updatedAt = toIsoString(data.updatedAt) ?? data.date
-      const latitude = normalizeCoordinate(data.latitude)
-      const longitude = normalizeCoordinate(data.longitude)
-      const hasCoordinates = hasValidCoordinates(latitude, longitude)
-      const mapZoom = normalizeMapZoom(data.mapZoom)
-      const mapUrl = hasCoordinates
-        ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
-        : data.mapUrl || ""
 
       return {
         id,
@@ -223,17 +227,30 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
 
   return docs
     .map(({ id, data }) => {
-      const createdAt = toIsoString(data.createdAt) ?? data.date
-      const updatedAt = toIsoString(data.updatedAt) ?? data.date
+      const createdAtIso = toIsoString(data.createdAt) ?? new Date().toISOString()
+      const fallbackDate = createdAtIso.slice(0, 10)
+      const dateValue = hasMeaningfulText(data.date) ? String(data.date) : fallbackDate
+      const createdAt = createdAtIso
+      const updatedAt = toIsoString(data.updatedAt) ?? createdAtIso
+      const latitude = normalizeCoordinate(data.latitude)
+      const longitude = normalizeCoordinate(data.longitude)
+      const hasCoordinates = hasValidCoordinates(latitude, longitude)
+      const mapZoom = normalizeMapZoom(data.mapZoom)
+      const mapUrl = hasCoordinates
+        ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
+        : typeof data.mapUrl === "string"
+          ? data.mapUrl
+          : ""
+      const slugValue = normalizeSlug(hasMeaningfulText(data.slug) ? String(data.slug) : "", `event-${id}`)
 
       return {
         id,
-        slug: data.slug,
+        slug: slugValue,
         title: normalizePublicText(data.title, "Event update"),
         description: normalizePublicText(data.description),
-        date: data.date,
-        time: normalizePublicText(data.time),
-        location: normalizePublicText(data.location),
+        date: dateValue,
+        time: normalizePublicText(data.time, "Time will be shared soon."),
+        location: normalizePublicText(data.location, "Location details will be shared soon."),
         latitude: hasCoordinates ? (latitude as number) : undefined,
         longitude: hasCoordinates ? (longitude as number) : undefined,
         mapZoom: hasCoordinates ? mapZoom : undefined,
