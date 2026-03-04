@@ -9,6 +9,7 @@ import { mainNavItems } from "@/lib/data"
 import { GlobalSearch } from "@/components/global-search"
 import { GoogleTranslator } from "@/components/google-translator"
 import { SearchModal } from "@/components/search-modal"
+import { SafeClientBoundary } from "@/components/safe-client-boundary"
 import { siteConfig } from "@/lib/site-config"
 
 const menuDescriptions: Record<string, string> = {
@@ -117,11 +118,15 @@ export function SiteHeader() {
           </div>
 
           <div className="hidden flex-1 md:block">
-            <GlobalSearch />
+            <SafeClientBoundary>
+              <GlobalSearch />
+            </SafeClientBoundary>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <GoogleTranslator />
+            <SafeClientBoundary>
+              <GoogleTranslator />
+            </SafeClientBoundary>
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -251,7 +256,9 @@ export function SiteHeader() {
         {mobileOpen && <MobileNav pathname={pathname} onClose={() => setMobileOpen(false)} />}
       </header>
 
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SafeClientBoundary>
+        <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      </SafeClientBoundary>
     </>
   )
 }

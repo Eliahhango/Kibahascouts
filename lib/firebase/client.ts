@@ -14,7 +14,7 @@ type FirebaseClientConfig = {
 let cachedApp: FirebaseApp | null = null
 
 function getFirebaseClientConfig(): FirebaseClientConfig {
-  return {
+  const config = {
     apiKey: publicEnv.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: publicEnv.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     projectId: publicEnv.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -22,6 +22,16 @@ function getFirebaseClientConfig(): FirebaseClientConfig {
     messagingSenderId: publicEnv.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: publicEnv.NEXT_PUBLIC_FIREBASE_APP_ID,
   }
+
+  const missingKeys = Object.entries(config)
+    .filter(([, value]) => !value)
+    .map(([key]) => key)
+
+  if (missingKeys.length > 0) {
+    throw new Error(`Firebase client configuration is incomplete: ${missingKeys.join(", ")}`)
+  }
+
+  return config
 }
 
 export function getFirebaseClientApp() {
