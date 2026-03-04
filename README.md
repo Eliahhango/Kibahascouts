@@ -1,127 +1,63 @@
-# Kibaha Scouts Website
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1f6f5f,100:2b4c8c&height=220&section=header&text=Kibaha%20Scouts%20Website&fontSize=42&fontColor=ffffff&animation=fadeIn" alt="Kibaha Scouts Website Banner" />
+</div>
 
-Production-ready Next.js (App Router) website with:
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Poppins&size=24&duration=2400&pause=900&color=1F6F5F&center=true&vCenter=true&width=900&lines=Kibaha+District+Scouts+Official+Digital+Platform;News+%7C+Events+%7C+Resources+%7C+Admin+CMS;Built+for+real+community+impact" alt="Typing Animation" />
+</div>
 
-- Public institutional pages (news, events, resources, safety, join, contact)
-- Firebase Firestore content backend with sample fallback mode
-- Contact pipeline (`/api/contact`) with validation, honeypot, and rate limiting
-- Internal admin panel (`/admin`) with Firebase Auth session + allowlist protection
-- Admin CRUD for news, events, resources and inbox management for contact messages
+## Kibaha Scouts Website
 
-## Tech Stack
+This project is the official digital platform for **Kibaha District Scouts**.  
+It helps the district share trusted updates, publish events, provide resources, and manage communication with members and the public.
 
-- Next.js 16 (App Router) + TypeScript
-- Tailwind CSS
-- Firebase Client SDK (Auth login)
-- Firebase Admin SDK (server-side Firestore + session verification)
-- Zod validation
+## What This Platform Supports
 
-## 1. Firebase Setup
+- Public pages for news, events, resources, contact, and district information
+- Admin panel for managing news, events, media, resources, and messages
+- Role-based admin access with Firebase Authentication + Firestore allowlist
+- Security tracking for sessions, login attempts, and audit logs
+- Deployment-ready setup for local development and Vercel production
 
-1. Create a Firebase project in Firebase Console.
-2. Enable **Authentication -> Sign-in method -> Email/Password**.
-3. Create **Firestore Database** (Native mode).
-4. Create a service account key:
-   - Firebase Console -> Project settings -> Service accounts -> Generate new private key.
-5. Save project credentials for environment variables.
-
-## 2. Environment Variables
-
-Copy `.env.example` to `.env.local` and fill all required values.
-
-### Required Variables
-
-- `NEXT_PUBLIC_SITE_URL`
-- `SAMPLE_MODE` (`true` to force sample content, `false` for Firestore-first)
-- `NEXT_PUBLIC_FIREBASE_API_KEY`
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
-- `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `FIREBASE_ADMIN_PROJECT_ID`
-- `FIREBASE_ADMIN_CLIENT_EMAIL`
-- `FIREBASE_ADMIN_PRIVATE_KEY` (keep escaped `\n` in env var value)
-- `ADMIN_SESSION_COOKIE_NAME`
-- `ADMIN_SESSION_MAX_AGE_DAYS`
-- `ADMIN_MAX_CONCURRENT_SESSIONS`
-- `ADMIN_LOGIN_MAX_ATTEMPTS`
-- `ADMIN_LOGIN_WINDOW_MINUTES`
-- `ADMIN_SESSION_REFRESH_BEFORE_MINUTES`
-- `ADMIN_SECURITY_ALERT_THRESHOLD`
-- `ADMIN_SECURITY_ALERT_WINDOW_MINUTES`
-- `CONTACT_FORM_RATE_LIMIT_MAX`
-- `CONTACT_FORM_RATE_LIMIT_WINDOW_MS`
-
-Optional legacy vars (kept for compatibility):
-
-- `CMS_BASE_URL`
-- `CMS_API_TOKEN`
-- `ADMIN_EMAILS` (optional bootstrap seeding only when `adminUsers` collection is empty)
-
-## 3. Local Development
+## Quick Start
 
 ```bash
 npm install
 npm run dev
 ```
 
-Production build check:
+Production check:
 
 ```bash
 npm run build
-npm run start
 ```
 
-## 4. Create First Admin User
+## Firebase and Admin Setup
 
-1. In Firebase Console -> Authentication, create a user with email/password.
-2. Seed first admin access by setting `ADMIN_EMAILS` for initial bootstrap, or insert a document into Firestore `adminUsers` collection keyed by lowercase email.
-3. Start app and go to `/admin/login`.
-4. Sign in with that account.
-5. Use `/admin/admins` to manage admin users and roles in Firestore (`super_admin`, `content_admin`, `viewer`).
+1. Enable Email/Password sign-in in Firebase Authentication.
+2. Create Firestore database in Native mode.
+3. Deploy Firestore rules and indexes from this repo.
+4. Add required environment variables from `.env.example`.
+5. Add admin emails in `adminUsers`.
+6. First-time invited admins use `/admin/register`, then continue with `/admin/login`.
 
-## 5. Firestore Rules and Indexes
+## Deployment
 
-This repo includes:
+- Deploy on Vercel
+- Add the same environment variables to Vercel (Production and Preview)
+- Redeploy after every environment change
 
-- `firestore.rules`
-- `firestore.indexes.json`
-- `firebase.json`
+## Special Thanks
 
-Deploy rules/indexes with Firebase CLI:
+Special thanks to **Eliahhango** for the development, vision, and continuous improvement of this platform.
 
-```bash
-firebase login
-firebase use <your-project-id>
-firebase deploy --only firestore:rules,firestore:indexes
-```
+Developer profiles:
 
-## 6. Vercel Deployment
+- GitHub: [github.com/Eliahhango](https://github.com/Eliahhango)
+- LinkedIn: [linkedin.com/in/eliahhango](https://www.linkedin.com/in/eliahhango/)
+- Website: [elitechwiz.site](https://www.elitechwiz.site)
+- YouTube: [youtube.com/@eliahhango](https://youtube.com/@eliahhango)
 
-1. Import repository in Vercel.
-2. Add all environment variables for **Production** and **Preview**.
-3. Set `NEXT_PUBLIC_SITE_URL`:
-   - Production: your real domain
-   - Preview: Vercel preview URL if desired
-4. Deploy.
-
-## 7. Content Governance Notes
-
-- Do not publish unverifiable claims.
-- Keep placeholders for unknown facts:
-  - `[CONFIRM PHONE]`
-  - `[CONFIRM EMAIL]`
-  - `[INSERT REAL STATS]`
-- Replace sample content before production publication.
-
-## 8. Quick QA Checklist
-
-- Public routes load with no 404s.
-- Footer/header links resolve to valid routes.
-- `/contact` form submits and stores data in Firestore.
-- `/admin` redirects to `/admin/login` when not authenticated.
-- Non-allowlisted emails in Firestore `adminUsers` are rejected for admin session creation.
-- Admin CRUD works for news, events, resources.
-- Admin inbox status updates work (`unread` / `read` / `replied`).
-- `npm run build` passes.
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:2b4c8c,100:1f6f5f&height=120&section=footer" alt="Footer Banner" />
+</div>

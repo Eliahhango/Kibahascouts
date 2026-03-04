@@ -118,6 +118,15 @@ function toIsoString(value: unknown) {
   return undefined
 }
 
+function toTimestamp(value: string | undefined) {
+  if (!value) {
+    return 0
+  }
+
+  const parsed = Date.parse(value)
+  return Number.isNaN(parsed) ? 0 : parsed
+}
+
 function estimateReadingTime(text: string) {
   const words = text.trim().split(/\s+/).filter(Boolean).length
   const minutes = Math.max(1, Math.ceil(words / 180))
@@ -133,6 +142,55 @@ function normalizeSlug(value: string | null | undefined, fallback: string) {
     .replace(/^-+|-+$/g, "")
 
   return normalized || fallback
+}
+
+function normalizeDateOnly(value: unknown, fallback: string) {
+  const raw = (typeof value === "string" ? value : toIsoString(value) || "").trim()
+  if (!raw) {
+    return fallback
+  }
+
+  const parsed = new Date(raw)
+  if (Number.isNaN(parsed.getTime())) {
+    return fallback
+  }
+
+  return parsed.toISOString().slice(0, 10)
+}
+
+function isHttpUrl(value: string) {
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === "http:" || parsed.protocol === "https:"
+  } catch {
+    return false
+  }
+}
+
+function normalizeAssetSrc(value: string | undefined, fallback: string) {
+  const raw = (value || "").trim()
+  if (!raw) {
+    return fallback
+  }
+
+  if (raw.startsWith("/")) {
+    return raw
+  }
+
+  return isHttpUrl(raw) ? raw : fallback
+}
+
+function normalizePublicUrl(value: string | undefined) {
+  const raw = (value || "").trim()
+  if (!raw) {
+    return ""
+  }
+
+  if (raw.startsWith("/")) {
+    return raw
+  }
+
+  return isHttpUrl(raw) ? raw : ""
 }
 
 function normalizeNewsCategory(value: string | undefined): NewsArticle["category"] {
@@ -198,19 +256,23 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
 
   return docs
     .map(({ id, data }) => {
-      const createdAt = toIsoString(data.createdAt) ?? data.date
-      const updatedAt = toIsoString(data.updatedAt) ?? data.date
+      const nowIso = new Date().toISOString()
+      const createdAtIso = toIsoString(data.createdAt) ?? nowIso
+      const fallbackDate = createdAtIso.slice(0, 10)
+      const date = normalizeDateOnly(data.date, fallbackDate)
+      const createdAt = createdAtIso
+      const updatedAt = toIsoString(data.updatedAt) ?? createdAtIso
 
       return {
         id,
-        slug: data.slug,
+        slug: normalizeSlug(data.slug, `news-${id}`),
         title: normalizePublicText(data.title, "News update"),
         summary: normalizePublicText(data.summary),
         content: normalizePublicText(data.body),
         category: normalizeNewsCategory(data.category),
-        image: data.image || "/images/news/placeholder.jpg",
+        image: normalizeAssetSrc(data.image, "/images/news/placeholder.jpg"),
         author: normalizePublicText(data.author, "Kibaha Scouts Communications"),
-        date: data.date,
+        date,
         readingTime: estimateReadingTime(data.body),
         tags: normalizeTagList(data.tags),
         featured: Boolean(data.featured),
@@ -219,7 +281,7 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
         updatedAt,
       }
     })
-    .sort((a, b) => +new Date(b.date) - +new Date(a.date))
+    .sort((a, b) => toTimestamp(b.date) - toTimestamp(a.date))
 }
 
 export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
@@ -229,7 +291,7 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
     .map(({ id, data }) => {
       const createdAtIso = toIsoString(data.createdAt) ?? new Date().toISOString()
       const fallbackDate = createdAtIso.slice(0, 10)
-      const dateValue = hasMeaningfulText(data.date) ? String(data.date) : fallbackDate
+      const dateValue = normalizeDateOnly(data.date, fallbackDate)
       const createdAt = createdAtIso
       const updatedAt = toIsoString(data.updatedAt) ?? createdAtIso
       const latitude = normalizeCoordinate(data.latitude)
@@ -238,9 +300,7 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
       const mapZoom = normalizeMapZoom(data.mapZoom)
       const mapUrl = hasCoordinates
         ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
-        : typeof data.mapUrl === "string"
-          ? data.mapUrl
-          : ""
+        : normalizePublicUrl(typeof data.mapUrl === "string" ? data.mapUrl : "")
       const slugValue = normalizeSlug(hasMeaningfulText(data.slug) ? String(data.slug) : "", `event-${id}`)
 
       return {
@@ -255,16 +315,16 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
         longitude: hasCoordinates ? (longitude as number) : undefined,
         mapZoom: hasCoordinates ? mapZoom : undefined,
         mapUrl,
-        image: data.image || "/images/events/placeholder.jpg",
+        image: normalizeAssetSrc(data.image, "/images/events/placeholder.jpg"),
         registrationOpen: Boolean(data.registrationOpen),
-        registrationUrl: data.registrationUrl || "",
+        registrationUrl: normalizePublicUrl(data.registrationUrl),
         category: normalizePublicText(data.category, "General"),
         published: true,
         createdAt,
         updatedAt,
       }
     })
-    .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+    .sort((a, b) => toTimestamp(a.date) - toTimestamp(b.date))
 }
 
 export async function getPublishedResourcesFromFirestore(): Promise<Resource[]> {
@@ -272,25 +332,29 @@ export async function getPublishedResourcesFromFirestore(): Promise<Resource[]> 
 
   return docs
     .map(({ id, data }) => {
-      const createdAt = toIsoString(data.createdAt) ?? data.publishDate
-      const updatedAt = toIsoString(data.updatedAt) ?? data.publishDate
+      const nowIso = new Date().toISOString()
+      const createdAtIso = toIsoString(data.createdAt) ?? nowIso
+      const fallbackDate = createdAtIso.slice(0, 10)
+      const publishDate = normalizeDateOnly(data.publishDate, fallbackDate)
+      const createdAt = createdAtIso
+      const updatedAt = toIsoString(data.updatedAt) ?? createdAtIso
 
       return {
         id,
-        slug: data.slug,
+        slug: data.slug ? normalizeSlug(data.slug, `resource-${id}`) : undefined,
         title: normalizePublicText(data.title, "Resource update"),
         summary: normalizePublicText(data.description),
         category: normalizeResourceCategory(data.category),
         fileType: normalizeFileType(data.fileType),
         fileSize: normalizePublicText(data.fileSize, "File details will be shared soon."),
-        publishDate: data.publishDate,
-        downloadUrl: data.downloadUrl || "",
+        publishDate,
+        downloadUrl: normalizePublicUrl(data.downloadUrl),
         published: true,
         createdAt,
         updatedAt,
       }
     })
-    .sort((a, b) => +new Date(b.publishDate) - +new Date(a.publishDate))
+    .sort((a, b) => toTimestamp(b.publishDate) - toTimestamp(a.publishDate))
 }
 
 export async function getPublishedUnitsFromFirestore(): Promise<ScoutUnit[]> {
@@ -339,9 +403,9 @@ export async function getPublishedMediaItemsFromFirestore(): Promise<MediaItem[]
       id,
       title: normalizePublicText(data.title, "District media item"),
       kind: data.kind,
-      thumbnail: data.thumbnail || "/images/about-hero.jpg",
-      href: data.href || "",
-      embedUrl: data.embedUrl || "",
+      thumbnail: normalizeAssetSrc(data.thumbnail, "/images/about-hero.jpg"),
+      href: normalizePublicUrl(data.href),
+      embedUrl: normalizePublicUrl(data.embedUrl),
       sourceProvider: normalizePublicText(data.sourceProvider, ""),
       description: normalizePublicText(data.description, "Media details will be published soon."),
       displayOrder: Number.isInteger(data.displayOrder) ? data.displayOrder : 0,
@@ -349,5 +413,5 @@ export async function getPublishedMediaItemsFromFirestore(): Promise<MediaItem[]
       createdAt: toIsoString(data.createdAt),
       updatedAt: toIsoString(data.updatedAt),
     }))
-    .sort((a, b) => a.displayOrder - b.displayOrder || +new Date(b.updatedAt || 0) - +new Date(a.updatedAt || 0))
+    .sort((a, b) => a.displayOrder - b.displayOrder || toTimestamp(b.updatedAt) - toTimestamp(a.updatedAt))
 }
