@@ -54,7 +54,7 @@ export default async function NewsroomPage({
       <Breadcrumbs items={[{ label: "Newsroom" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Newsroom")}
           </h1>
@@ -79,7 +79,7 @@ export default async function NewsroomPage({
                 <Link
                   key={item}
                   href={href}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-tsa-green-deep text-primary-foreground"
                       : "bg-secondary text-secondary-foreground hover:bg-border"
@@ -94,7 +94,7 @@ export default async function NewsroomPage({
       </section>
 
       <section className="bg-secondary py-12" aria-labelledby="news-list">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 id="news-list" className="sr-only">
             News list
           </h2>
@@ -151,7 +151,7 @@ export default async function NewsroomPage({
               </p>
               <Link
                 href="/newsroom"
-                className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                className="mt-3 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
               >
                 View all categories
               </Link>
@@ -168,7 +168,7 @@ export default async function NewsroomPage({
       </section>
 
       <section id="press" className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">
             {normalizePublicText(pageContent.pressTitle, "Press & Downloads")}
           </h2>
@@ -187,7 +187,7 @@ export default async function NewsroomPage({
                   {resource.downloadUrl && resource.downloadUrl !== "#" ? (
                     <Link
                       href={resource.downloadUrl}
-                      className="mt-4 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                      className="mt-4 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
                     >
                       Download
                     </Link>
@@ -206,7 +206,7 @@ export default async function NewsroomPage({
                 </p>
                 <Link
                   href="/resources"
-                  className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                  className="mt-3 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
                 >
                   Browse all resources
                 </Link>

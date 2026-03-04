@@ -87,11 +87,11 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-b border-border bg-tsa-green-deep" aria-label="Featured story">
         <div className="absolute inset-0">
           <Image src={featuredStoryImage} alt="" fill className="scale-105 object-cover blur-[1.5px] opacity-45" priority sizes="100vw" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(36,14,79,0.92)_8%,rgba(52,21,112,0.72)_48%,rgba(43,18,96,0.5)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(133,70,196,0.3),rgba(41,15,89,0.78))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,31,24,0.92)_8%,rgba(30,58,47,0.74)_48%,rgba(15,31,24,0.5)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(74,140,92,0.28),rgba(17,37,29,0.78))]" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr] md:py-24">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
             {contentGovernance.homepageMode === "sample" ? (
               <div className="mb-4 max-w-2xl rounded-md border border-tsa-gold/50 bg-tsa-gold/20 px-3 py-2">
@@ -117,7 +117,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="section-shell bg-primary-foreground p-5">
+          <div className="section-shell bg-primary-foreground p-5 pb-8 md:pb-5">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {homepageSettings.districtSnapshot.map((item, index) => {
@@ -147,7 +147,7 @@ export default async function HomePage() {
       </section>
 
       <section className="py-12 md:py-16" aria-labelledby="latest-news-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between">
             <div>
               <span className="eyebrow">Newsroom</span>
@@ -161,7 +161,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {latestNews.length > 0 ? (
               latestNews.map((article) => (
                 <Link key={article.id} href={`/newsroom/${article.slug}`} className="section-shell card-lift group overflow-hidden">
@@ -212,7 +212,7 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-secondary py-12 md:py-16" aria-labelledby="highlights-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="eyebrow">Highlights</span>
           <h2 id="highlights-heading" className="section-title mt-3">
             Priority Initiatives
@@ -243,7 +243,7 @@ export default async function HomePage() {
       </section>
 
       <section className="py-12 md:py-16" aria-labelledby="events-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between">
             <div>
               <span className="eyebrow">Events</span>
@@ -265,7 +265,7 @@ export default async function HomePage() {
                   <Link
                     key={event.id}
                     href={`/events/${event.slug}`}
-                    className="group grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
+                    className="group flex flex-wrap items-start gap-3 border-b border-border px-4 py-4 last:border-b-0 hover:bg-secondary lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center"
                   >
                     <div className="flex h-16 w-16 flex-col items-center justify-center rounded-md border-b-2 border-tsa-gold bg-tsa-green-deep text-primary-foreground">
                       <span className="text-lg font-bold leading-none">{date.getDate()}</span>
@@ -284,9 +284,9 @@ export default async function HomePage() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 lg:justify-end">
+                    <div className="ml-auto flex items-center gap-2 lg:ml-0 lg:justify-end">
                       {event.registrationOpen && (
-                        <span className="inline-flex h-fit rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
+                        <span className="inline-flex min-h-[44px] items-center rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
                           Registration Open
                         </span>
                       )}
@@ -305,7 +305,7 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-secondary py-12 md:py-16" aria-labelledby="resources-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between">
             <div>
               <span className="eyebrow">Resources</span>
@@ -333,7 +333,7 @@ export default async function HomePage() {
                         {resource.fileType} - {resource.fileSize}
                       </p>
                       {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                        <Link href={resource.downloadUrl} className="mt-2 inline-flex text-xs font-semibold text-tsa-green-deep">
+                        <Link href={resource.downloadUrl} className="mt-2 inline-flex min-h-[44px] items-center text-xs font-semibold text-tsa-green-deep">
                           Download
                         </Link>
                       ) : (
@@ -358,7 +358,7 @@ export default async function HomePage() {
       </section>
 
       <section className="py-12 md:py-16" aria-labelledby="media-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="eyebrow">Media</span>
           <h2 id="media-heading" className="section-title mt-3">
             Videos and Gallery
@@ -370,7 +370,7 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-tsa-green-deep py-12 md:py-16" aria-labelledby="campaigns-heading">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Campaigns</span>
           <h2 id="campaigns-heading" className="mt-3 text-3xl font-bold text-primary-foreground">
             Ongoing District Campaigns
@@ -394,18 +394,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-tsa-gold py-12 md:py-16" aria-label="Call to action">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, rgba(255,255,255,0.7) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.7) 75%, transparent 75%, transparent)",
-            backgroundSize: "32px 32px",
-          }}
-          aria-hidden="true"
-        />
-
-        <div className="relative mx-auto max-w-7xl px-4 text-center">
+      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center,#2d5a3d_0%,#1e3a2f_100%)] py-12 md:py-16" aria-label="Call to action">
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
             Start Your Scouting Journey with {name}
           </h2>
@@ -416,14 +406,14 @@ export default async function HomePage() {
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/join#youth"
-              className="inline-flex items-center gap-2 rounded-md bg-tsa-green-deep px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-tsa-green-mid"
+              className="inline-flex items-center gap-2 rounded-md bg-tsa-gold px-8 py-3 text-sm font-semibold text-white hover:bg-tsa-gold-light"
             >
               Join as Youth
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/join#volunteer"
-              className="inline-flex items-center gap-2 rounded-md border-2 border-primary-foreground px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground hover:text-tsa-green-deep"
+              className="inline-flex items-center gap-2 rounded-md border-2 border-white/70 px-8 py-3 text-sm font-semibold text-white hover:bg-white hover:text-tsa-green-deep"
             >
               Volunteer as Leader
               <ArrowRight className="h-4 w-4" />

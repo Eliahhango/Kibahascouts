@@ -166,7 +166,7 @@ export function AdminNav() {
 
   return (
     <header className="notranslate sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/admin" className="flex items-center gap-2.5 rounded-md px-1 py-0.5 transition hover:bg-secondary/60">
           <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-border" aria-hidden="true">
             <Image src={siteConfig.branding.primaryLogo} alt="" fill sizes="32px" className="object-cover" />
@@ -182,7 +182,7 @@ export function AdminNav() {
             Public Website
           </Link>
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/70 px-2 py-1">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#1e3a2f]/15 text-xs font-semibold text-[#1e3a2f]">
               {avatarInitial}
             </span>
             <span className="hidden text-[11px] font-medium text-muted-foreground sm:inline">
@@ -194,8 +194,9 @@ export function AdminNav() {
 
       <div className="relative border-t border-border/70">
         <nav
-          className="mx-auto flex w-full max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 pr-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="mx-auto flex w-full max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2.5 pr-12 [scrollbar-width:none] [-ms-overflow-style:none] sm:px-6 lg:px-8 [&::-webkit-scrollbar]:hidden"
           aria-label="Admin navigation"
+          style={{ WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)", maskImage: "linear-gradient(to right, black 85%, transparent 100%)" }}
         >
           {adminNavItems.map((item) => {
             const active = item.match(pathname)
@@ -204,8 +205,8 @@ export function AdminNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                  active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-medium transition-colors",
+                  active ? "bg-[#1e3a2f] text-white shadow-sm" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
                 aria-current={active ? "page" : undefined}
               >
@@ -215,7 +216,6 @@ export function AdminNav() {
             )
           })}
         </nav>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background via-background/90 to-transparent" />
       </div>
     </header>
   )

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type AdminRole = "super_admin" | "content_admin" | "viewer"
 
@@ -242,7 +243,14 @@ export function AdminUsersManager() {
           </label>
 
           <Button type="submit" disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Admin"}
+            {isSaving ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Saving admin access...
+              </>
+            ) : (
+              "Save Admin"
+            )}
           </Button>
         </form>
       </div>
@@ -254,7 +262,14 @@ export function AdminUsersManager() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-lg font-semibold text-card-foreground">Current Admin Users</h3>
           <Button type="button" variant="outline" size="sm" onClick={() => void loadUsers()} disabled={isLoading}>
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing admin accounts...
+              </>
+            ) : (
+              "Refresh"
+            )}
           </Button>
         </div>
 

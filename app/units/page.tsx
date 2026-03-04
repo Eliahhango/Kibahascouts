@@ -43,7 +43,7 @@ export default async function UnitsPage({
       <Breadcrumbs items={[{ label: "Scout Units" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Scout Units Directory")}
           </h1>
@@ -113,7 +113,7 @@ export default async function UnitsPage({
       </section>
 
       <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {filtered.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filtered.map((unit) => (

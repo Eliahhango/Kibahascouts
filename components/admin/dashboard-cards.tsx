@@ -20,22 +20,22 @@ type DashboardCardsProps = {
 const accentClasses: Record<DashboardCardItem["accent"], { border: string; icon: string; spark: string }> = {
   purple: {
     border: "border-l-violet-500",
-    icon: "bg-violet-500/15 text-violet-700",
+    icon: "text-violet-700",
     spark: "bg-violet-500",
   },
   blue: {
     border: "border-l-blue-500",
-    icon: "bg-blue-500/15 text-blue-700",
+    icon: "text-blue-700",
     spark: "bg-blue-500",
   },
   green: {
     border: "border-l-emerald-500",
-    icon: "bg-emerald-500/15 text-emerald-700",
+    icon: "text-emerald-700",
     spark: "bg-emerald-500",
   },
   amber: {
     border: "border-l-amber-500",
-    icon: "bg-amber-500/15 text-amber-700",
+    icon: "text-amber-700",
     spark: "bg-amber-500",
   },
 }
@@ -53,37 +53,37 @@ export function DashboardCards({ items }: DashboardCardsProps) {
             href={item.href}
             className={`rounded-xl border border-l-4 border-border ${accent.border} bg-card p-5 shadow-sm transition-transform hover:-translate-y-0.5`}
           >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm text-muted-foreground">{item.title}</p>
-              <div className="mt-1 flex items-center gap-2">
-                <p className="text-3xl font-bold text-card-foreground">{item.value}</p>
-                {item.value > 0 ? (
-                  <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                    ↑ Live
-                  </span>
-                ) : null}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm text-muted-foreground">{item.title}</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <p className="text-3xl font-bold text-card-foreground">{item.value}</p>
+                  {item.value > 0 ? (
+                    <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      Live
+                    </span>
+                  ) : null}
+                </div>
               </div>
+              {item.error ? (
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <AlertTriangle className="h-5 w-5" />
+                </span>
+              ) : (
+                <span className={`inline-flex h-10 w-10 items-center justify-center ${accent.icon}`}>
+                  <item.icon className="h-5 w-5" />
+                </span>
+              )}
             </div>
-            {item.error ? (
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                <AlertTriangle className="h-5 w-5" />
-              </span>
-            ) : (
-              <span className={`inline-flex h-10 w-10 items-center justify-center rounded-full ${accent.icon}`}>
-                <item.icon className="h-5 w-5" />
-              </span>
-            )}
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">{item.description}</p>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-secondary">
-            <div
-              className={`h-1.5 rounded-full ${accent.spark}`}
-              style={{ width: `${trendWidth}%` }}
-              aria-hidden="true"
-            />
-          </div>
-          {item.error ? <p className="mt-2 text-xs font-medium text-destructive">Data fallback active: {item.error}</p> : null}
+            <p className="mt-3 text-xs text-muted-foreground">{item.description}</p>
+            <div className="mt-3 h-1.5 w-full rounded-full bg-secondary">
+              <div
+                className={`h-1.5 rounded-full ${accent.spark}`}
+                style={{ width: `${trendWidth}%` }}
+                aria-hidden="true"
+              />
+            </div>
+            {item.error ? <p className="mt-2 text-xs font-medium text-destructive">Data fallback active: {item.error}</p> : null}
           </Link>
         )
       })}

@@ -45,7 +45,7 @@ export default async function ResourcesPage({
       <Breadcrumbs items={[{ label: "Resources" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Resources")}
           </h1>
@@ -69,7 +69,7 @@ export default async function ResourcesPage({
                 <Link
                   key={category}
                   href={href}
-                  className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-tsa-green-deep text-primary-foreground"
                       : "bg-secondary text-secondary-foreground hover:bg-border"
@@ -85,7 +85,7 @@ export default async function ResourcesPage({
       </section>
 
       <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {sorted.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {sorted.map((resource) => (
@@ -111,7 +111,7 @@ export default async function ResourcesPage({
                       {resource.downloadUrl && resource.downloadUrl !== "#" ? (
                         <Link
                           href={resource.downloadUrl}
-                          className="mt-3 inline-flex items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                          className="mt-3 inline-flex min-h-[44px] items-center gap-1 rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
                         >
                           <Download className="h-3.5 w-3.5" />
                           Download
@@ -134,7 +134,7 @@ export default async function ResourcesPage({
               </p>
               <Link
                 href="/resources"
-                className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                className="mt-3 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
               >
                 View all categories
               </Link>

@@ -91,75 +91,75 @@ export default async function AdminHomePage() {
         label: "News Manager",
         description: "Create and publish official district stories.",
         icon: Newspaper,
-        iconTone: "bg-violet-100 text-violet-700",
+        borderAccent: "border-l-[#352163]",
       },
       {
         href: "/admin/events",
         label: "Events Calendar",
         description: "Manage upcoming events, details, and publishing.",
         icon: CalendarDays,
-        iconTone: "bg-blue-100 text-blue-700",
+        borderAccent: "border-l-[#1d4ed8]",
       },
       {
         href: "/admin/resources",
         label: "Resources Library",
         description: "Upload or update forms, files, and links.",
         icon: FileText,
-        iconTone: "bg-emerald-100 text-emerald-700",
+        borderAccent: "border-l-[#15803d]",
       },
       {
         href: "/admin/media",
         label: "Media Center",
         description: "Maintain videos and gallery content for homepage.",
         icon: Clapperboard,
-        iconTone: "bg-fuchsia-100 text-fuchsia-700",
+        borderAccent: "border-l-[#9333ea]",
       },
       {
         href: "/admin/messages",
         label: "Inbox",
         description: "Review and manage contact submissions.",
         icon: Inbox,
-        iconTone: "bg-amber-100 text-amber-700",
+        borderAccent: "border-l-[#b45309]",
       },
       {
         href: "/admin/homepage",
         label: "Homepage",
         description: "Edit featured sections and homepage highlights.",
         icon: Home,
-        iconTone: "bg-indigo-100 text-indigo-700",
+        borderAccent: "border-l-[#0e7490]",
       },
       {
         href: "/admin/navigation",
         label: "Navigation",
         description: "Update header menus and navigation labels.",
         icon: Compass,
-        iconTone: "bg-cyan-100 text-cyan-700",
+        borderAccent: "border-l-[#4338ca]",
       },
       {
         href: "/admin/site-content",
         label: "Site Content",
         description: "Update text content across public pages.",
         icon: Settings2,
-        iconTone: "bg-slate-100 text-slate-700",
+        borderAccent: "border-l-[#374151]",
       },
       {
         href: "/admin/admins",
         label: "Admin Access",
         description: "Manage admin roles, invitations, and status.",
         icon: ShieldCheck,
-        iconTone: "bg-purple-100 text-purple-700",
+        borderAccent: "border-l-[#7c3aed]",
       },
       {
         href: "/admin/security",
         label: "Security Center",
         description: "Review logs, blocks, and threat alerts.",
         icon: ShieldAlert,
-        iconTone: "bg-rose-100 text-rose-700",
+        borderAccent: "border-l-[#dc2626]",
       },
     ]
 
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 py-10">
+      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-3">
@@ -197,18 +197,16 @@ export default async function AdminHomePage() {
             Access content, security, and communication modules from one place.
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {toolCards.map((tool) => (
               <Link
                 key={tool.href}
                 href={tool.href}
-                className="rounded-xl border border-border bg-background p-4 transition-transform hover:-translate-y-0.5 hover:bg-secondary/30"
+                className={`rounded-lg border border-gray-200 border-l-[3px] bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${tool.borderAccent}`}
               >
-                <span className={`inline-flex h-11 w-11 items-center justify-center rounded-lg ${tool.iconTone}`}>
-                  <tool.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-3 text-sm font-semibold text-card-foreground">{tool.label}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{tool.description}</p>
+                <tool.icon className="h-6 w-6 text-[#352163]" />
+                <h3 className="mt-3 text-[15px] font-semibold text-gray-900">{tool.label}</h3>
+                <p className="mt-1 text-[13px] leading-snug text-gray-500">{tool.description}</p>
               </Link>
             ))}
           </div>

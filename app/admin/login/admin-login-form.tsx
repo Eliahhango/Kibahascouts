@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { FormEvent, useMemo, useState } from "react"
+import { FormEvent, useEffect, useMemo, useState } from "react"
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { Shield } from "lucide-react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
@@ -93,8 +93,23 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
   const [info, setInfo] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState("Verifying credentials...")
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
   const registerHref = `/admin/register?next=${encodeURIComponent(nextPath)}`
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      setSubmitMessage("Verifying credentials...")
+      return
+    }
+
+    setSubmitMessage("Verifying credentials...")
+    const phaseTimer = window.setTimeout(() => {
+      setSubmitMessage("Starting secure session...")
+    }, 1000)
+
+    return () => window.clearTimeout(phaseTimer)
+  }, [isSubmitting])
 
   async function preflightCheck(normalizedEmail: string) {
     const response = await adminFetch("/api/admin/session/preflight", {
@@ -204,7 +219,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-tsa-green-deep to-[#1a0f3d] px-4 py-10">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-tsa-green-deep to-[#11251d] px-4 py-10">
       <section className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
         <div className="mb-4 flex justify-center">
           <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-tsa-gold/70">
@@ -288,7 +303,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
             {isSubmitting ? (
               <>
                 <Spinner size="sm" className="mr-2" />
-                Signing in...
+                {submitMessage}
                 <span className="pointer-events-none absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               </>
             ) : (
@@ -299,7 +314,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
 
         {isSubmitting ? (
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Verifying credentials and starting secure session...
+            {submitMessage}
           </p>
         ) : null}
 

@@ -50,7 +50,7 @@ export default async function UnitProfilePage({
       />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{unit.name}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {unit.section} - {unit.type} - Established {unit.established}

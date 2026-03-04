@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type AdminBlockRecord = {
   id: string
@@ -128,7 +129,14 @@ export function SecurityLogsBrowser() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-card-foreground">All Security Logs (Max 200 each)</h2>
           <Button type="button" variant="outline" size="sm" onClick={() => void load()} disabled={isLoading}>
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing security logs...
+              </>
+            ) : (
+              "Refresh"
+            )}
           </Button>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">

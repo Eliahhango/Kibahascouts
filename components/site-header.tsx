@@ -182,7 +182,7 @@ export function SiteHeader() {
 
       <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
-          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 lg:flex-nowrap lg:gap-4"
+          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 sm:px-6 lg:flex-nowrap lg:gap-4 lg:px-8"
           aria-label={utilityLabel}
         >
           <div className="inline-flex items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2.5 py-1 text-xs font-medium text-tsa-green-deep shadow-sm">
@@ -203,7 +203,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-primary-foreground text-primary-foreground transition hover:bg-tsa-green-mid md:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-primary-foreground text-primary-foreground transition hover:bg-tsa-green-mid md:hidden"
               aria-label="Open search"
             >
               <Search className="h-4 w-4" />
@@ -217,7 +217,7 @@ export function SiteHeader() {
         className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/"
             className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
@@ -256,7 +256,7 @@ export function SiteHeader() {
                   <Link
                     href={item.href}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    className={`inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`inline-flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
@@ -313,14 +313,14 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
               aria-label="Open search"
             >
               <Search className="h-5 w-5" />
             </button>
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
               onClick={() => setMobileOpen((current) => !current)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -359,7 +359,7 @@ function MobileNav({
         open ? "max-h-[calc(100dvh-4.5rem)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
       }`}
     >
-      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-7xl overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
+      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-7xl overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
           return (

@@ -466,7 +466,7 @@ export function EventsManager() {
               {isSaving ? (
                 <>
                   <Spinner size="sm" className="mr-1.5" />
-                  Saving...
+                  Saving event...
                 </>
               ) : (
                 submitLabel
@@ -497,7 +497,14 @@ export function EventsManager() {
             disabled={isLoading}
             className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
           >
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <span className="inline-flex items-center">
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing events...
+              </span>
+            ) : (
+              "Refresh"
+            )}
           </button>
         </div>
 
@@ -581,7 +588,7 @@ export function EventsManager() {
                           {actionState?.id === item.id && actionState.type === "publish" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Updating...
+                              {item.published ? "Unpublishing..." : "Publishing..."}
                             </span>
                           ) : (
                             (item.published ? "Unpublish" : "Publish")
@@ -596,7 +603,7 @@ export function EventsManager() {
                           {actionState?.id === item.id && actionState.type === "delete" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Deleting...
+                              Removing event...
                             </span>
                           ) : (
                             "Delete"

@@ -5,6 +5,7 @@ import { signOut } from "firebase/auth"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 export function AdminLogoutButton() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -30,7 +31,14 @@ export function AdminLogoutButton() {
 
   return (
     <Button type="button" variant="outline" onClick={handleLogout} disabled={isSubmitting}>
-      {isSubmitting ? "Signing out..." : "Sign out"}
+      {isSubmitting ? (
+        <>
+          <Spinner size="sm" className="mr-1.5" />
+          Signing out securely...
+        </>
+      ) : (
+        "Sign out"
+      )}
     </Button>
   )
 }

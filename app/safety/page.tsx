@@ -19,7 +19,7 @@ export default async function SafetyPage() {
       <Breadcrumbs items={[{ label: "Safety & Youth Protection" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Safety & Youth Protection")}
           </h1>
@@ -41,7 +41,7 @@ export default async function SafetyPage() {
       </section>
 
       <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-4 md:grid-cols-2">
             <article className="rounded-lg border border-border bg-card p-5">
               <div className="flex h-10 w-10 items-center justify-center rounded-md bg-tsa-green-deep/10">
@@ -71,7 +71,7 @@ export default async function SafetyPage() {
       </section>
 
       <section className="bg-background py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <article className="rounded-lg border border-border bg-card p-6">
               <h2 className="text-2xl font-bold text-card-foreground">

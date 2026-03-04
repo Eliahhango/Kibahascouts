@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type AdminRole = "super_admin" | "content_admin" | "viewer"
 
@@ -258,15 +259,17 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
                   onChange={(event) => setPassword(event.target.value)}
                   className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
                 />
-                <div className="mt-2">
-                  <div className="h-1.5 w-full rounded-full bg-secondary">
-                    <div
-                      className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
-                      style={{ width: `${password ? passwordStrength.percent : 0}%` }}
-                    />
+                {password ? (
+                  <div className="mt-2">
+                    <div className="h-1.5 w-full rounded-full bg-secondary">
+                      <div
+                        className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
+                        style={{ width: `${passwordStrength.percent}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">Password strength: {passwordStrength.label}</p>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">Password strength: {password ? passwordStrength.label : "Not entered"}</p>
-                </div>
+                ) : null}
               </div>
 
               <div>
@@ -301,11 +304,25 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
 
           {eligibilityStatus === "approved" ? (
             <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting ? "Setting up..." : "Set Password and Continue"}
+              {isSubmitting ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Setting up account...
+                </>
+              ) : (
+                "Set Password and Continue"
+              )}
             </Button>
           ) : (
             <Button type="button" disabled={eligibilityStatus === "checking"} onClick={() => void handleCheckInvitation()} className="w-full">
-              {eligibilityStatus === "checking" ? "Checking invitation..." : "Continue"}
+              {eligibilityStatus === "checking" ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Verifying invitation...
+                </>
+              ) : (
+                "Continue"
+              )}
             </Button>
           )}
         </form>

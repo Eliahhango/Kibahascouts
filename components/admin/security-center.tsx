@@ -4,6 +4,7 @@ import Link from "next/link"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type AdminBlockTargetType = "email" | "ip"
 type AdminBlockScope = "admin_auth" | "admin_api" | "all"
@@ -308,7 +309,14 @@ export function SecurityCenter() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-card-foreground">Block Management</h2>
           <Button type="button" variant="outline" size="sm" onClick={() => void loadSecurityData()} disabled={isLoading}>
-            {isLoading ? "Refreshing..." : "Refresh Security Data"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing security centre...
+              </>
+            ) : (
+              "Refresh Security Data"
+            )}
           </Button>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -376,7 +384,14 @@ export function SecurityCenter() {
 
           <div className="md:col-span-2">
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Block Rule"}
+              {isSaving ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Saving block rule...
+                </>
+              ) : (
+                "Save Block Rule"
+              )}
             </Button>
           </div>
         </form>
@@ -425,7 +440,14 @@ export function SecurityCenter() {
                         disabled={activeActionId === block.id}
                         onClick={() => void handleRemoveBlock(block)}
                       >
-                        {activeActionId === block.id ? "Removing..." : "Unblock"}
+                        {activeActionId === block.id ? (
+                          <>
+                            <Spinner size="sm" className="mr-1.5" />
+                            Removing block...
+                          </>
+                        ) : (
+                          "Unblock"
+                        )}
                       </Button>
                     </td>
                   </tr>
@@ -473,7 +495,14 @@ export function SecurityCenter() {
                           disabled={!attempt.ip || attempt.ip === "unknown" || activeActionId === `ip:${attempt.ip}`}
                           onClick={() => void handleQuickBlock("ip", attempt.ip, "Blocked due to repeated failed admin login attempts.")}
                         >
-                          {activeActionId === `ip:${attempt.ip}` ? "Blocking..." : "Block IP"}
+                          {activeActionId === `ip:${attempt.ip}` ? (
+                            <>
+                              <Spinner size="sm" className="mr-1.5" />
+                              Blocking IP...
+                            </>
+                          ) : (
+                            "Block IP"
+                          )}
                         </Button>
                         <Button
                           type="button"
@@ -482,7 +511,14 @@ export function SecurityCenter() {
                           disabled={!attempt.email || activeActionId === `email:${attempt.email}`}
                           onClick={() => void handleQuickBlock("email", attempt.email, "Blocked due to repeated failed admin login attempts.")}
                         >
-                          {activeActionId === `email:${attempt.email}` ? "Blocking..." : "Block Email"}
+                          {activeActionId === `email:${attempt.email}` ? (
+                            <>
+                              <Spinner size="sm" className="mr-1.5" />
+                              Blocking email...
+                            </>
+                          ) : (
+                            "Block Email"
+                          )}
                         </Button>
                       </div>
                     </td>
@@ -529,7 +565,14 @@ export function SecurityCenter() {
                         disabled={!visitor.ip || visitor.ip === "unknown" || activeActionId === `ip:${visitor.ip}`}
                         onClick={() => void handleQuickBlock("ip", visitor.ip, "Blocked based on suspicious visitor activity.")}
                       >
-                        {activeActionId === `ip:${visitor.ip}` ? "Blocking..." : "Block IP"}
+                        {activeActionId === `ip:${visitor.ip}` ? (
+                          <>
+                            <Spinner size="sm" className="mr-1.5" />
+                            Blocking IP...
+                          </>
+                        ) : (
+                          "Block IP"
+                        )}
                       </Button>
                     </td>
                   </tr>

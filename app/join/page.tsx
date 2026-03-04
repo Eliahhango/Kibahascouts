@@ -18,7 +18,7 @@ export default async function JoinPage() {
       <Breadcrumbs items={[{ label: "Join / Volunteer" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Join / Volunteer")}
           </h1>
@@ -32,7 +32,7 @@ export default async function JoinPage() {
       </section>
 
       <section id="youth" className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-lg border border-border bg-card p-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-tsa-green-deep/10">
               <Users className="h-5 w-5 text-tsa-green-deep" />
@@ -53,7 +53,7 @@ export default async function JoinPage() {
       </section>
 
       <section id="volunteer" className="bg-background py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-lg border border-border bg-card p-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-tsa-green-deep/10">
               <CheckCircle2 className="h-5 w-5 text-tsa-green-deep" />
@@ -72,7 +72,7 @@ export default async function JoinPage() {
       </section>
 
       <section id="donate" className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-lg border border-border bg-card p-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-tsa-green-deep/10">
               <HandHeart className="h-5 w-5 text-tsa-green-deep" />

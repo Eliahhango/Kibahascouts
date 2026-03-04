@@ -6,6 +6,7 @@ import { LogIn, ShieldOff } from "lucide-react"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type SessionStatus = {
   email: string
@@ -216,7 +217,14 @@ export function AdminSessionMonitor() {
           <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 text-xs text-amber-900">
             <p>{warningText}</p>
             <Button type="button" size="sm" variant="outline" onClick={() => void refreshSession()} disabled={isRefreshing}>
-              {isRefreshing ? "Refreshing..." : "Refresh Session"}
+              {isRefreshing ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Refreshing your session...
+                </>
+              ) : (
+                "Refresh Session"
+              )}
             </Button>
           </div>
         </div>

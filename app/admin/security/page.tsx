@@ -8,7 +8,7 @@ export default async function AdminSecurityPage() {
     await requireAdmin("admins:manage")
 
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 py-10">
+      <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
         <header className="mb-6 space-y-3">
           <AdminBreadcrumbs currentPage="Security" />
           <div>

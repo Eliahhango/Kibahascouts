@@ -35,7 +35,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Header */}
       <section className="bg-tsa-green-deep py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="inline-block rounded-full bg-tsa-gold px-3 py-1 text-xs font-semibold text-tsa-green-deep">
             Ages {prog.ageRange}
           </span>
@@ -50,7 +50,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Objectives */}
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground">Objectives</h2>
           <ul className="mt-6 grid gap-3 md:grid-cols-2">
             {prog.objectives.map((obj, i) => (
@@ -65,7 +65,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Activities */}
       <section className="bg-secondary py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground">Activities</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {prog.activities.map((act, i) => (
@@ -79,7 +79,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Badges */}
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
             <Award className="h-6 w-6 text-tsa-gold" />
             Badges
@@ -99,7 +99,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Progression */}
       <section className="bg-secondary py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
             <TrendingUp className="h-6 w-6 text-tsa-green-deep" />
             Progression Path
@@ -119,7 +119,7 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {/* Uniform */}
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
             <Shirt className="h-6 w-6 text-tsa-green-mid" />
             Uniform Guidance

@@ -70,7 +70,7 @@ export default async function EventDetailPage({
       />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Link
             href="/events"
             className="inline-flex items-center gap-1 rounded text-sm text-tsa-green-deep transition-colors hover:text-tsa-green-mid focus-visible:ring-2 focus-visible:ring-ring"
@@ -150,7 +150,7 @@ export default async function EventDetailPage({
       </section>
 
       <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground">Event Location Map</h2>
           <div className="mt-4">
             {hasMapCoordinates ? (
@@ -177,7 +177,7 @@ export default async function EventDetailPage({
       </section>
 
       <section className="bg-background py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground">Related Events</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (

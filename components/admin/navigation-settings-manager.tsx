@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react"
 import { mainNavItems } from "@/lib/data"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type NavigationChildItem = {
   label: string
@@ -373,10 +374,24 @@ export function NavigationSettingsManager() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Button type="submit" disabled={isLoading || isSaving}>
-            {isSaving ? "Saving..." : "Save Navigation Settings"}
+            {isSaving ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Saving navigation settings...
+              </>
+            ) : (
+              "Save Navigation Settings"
+            )}
           </Button>
           <Button type="button" variant="outline" disabled={isLoading || isSaving} onClick={() => void loadSettings()}>
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing navigation settings...
+              </>
+            ) : (
+              "Refresh"
+            )}
           </Button>
         </div>
       </form>

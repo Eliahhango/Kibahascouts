@@ -359,7 +359,7 @@ export function ResourcesManager() {
               {isSaving ? (
                 <>
                   <Spinner size="sm" className="mr-1.5" />
-                  Saving...
+                  Saving resource...
                 </>
               ) : (
                 submitLabel
@@ -390,7 +390,14 @@ export function ResourcesManager() {
             disabled={isLoading}
             className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
           >
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <span className="inline-flex items-center">
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing resources...
+              </span>
+            ) : (
+              "Refresh"
+            )}
           </button>
         </div>
 
@@ -471,7 +478,7 @@ export function ResourcesManager() {
                           {actionState?.id === item.id && actionState.type === "publish" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Updating...
+                              {item.published ? "Unpublishing..." : "Publishing..."}
                             </span>
                           ) : (
                             (item.published ? "Unpublish" : "Publish")
@@ -486,7 +493,7 @@ export function ResourcesManager() {
                           {actionState?.id === item.id && actionState.type === "delete" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Deleting...
+                              Deleting resource...
                             </span>
                           ) : (
                             "Delete"

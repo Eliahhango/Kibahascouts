@@ -23,7 +23,7 @@ export default async function ContactPage() {
       <Breadcrumbs items={[{ label: "Contact" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Contact KIBAHA SCOUTS")}
           </h1>
@@ -115,7 +115,7 @@ export default async function ContactPage() {
       </section>
 
       <section className="bg-background py-12">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground">
             {normalizePublicText(pageContent.mapTitle, "Map")}
           </h2>

@@ -4,6 +4,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import type { SiteContentSettings } from "@/lib/types"
 
 type ApiResponse<T> = {
@@ -817,10 +818,24 @@ export function SiteContentManager() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Button type="submit" disabled={isLoading || isSaving}>
-            {isSaving ? "Saving..." : "Save Site Content"}
+            {isSaving ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Saving site content...
+              </>
+            ) : (
+              "Save Site Content"
+            )}
           </Button>
           <Button type="button" variant="outline" disabled={isLoading || isSaving} onClick={() => void loadSettings()}>
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing site content...
+              </>
+            ) : (
+              "Refresh"
+            )}
           </Button>
         </div>
       </form>

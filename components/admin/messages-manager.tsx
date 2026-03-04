@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { Spinner } from "@/components/ui/spinner"
 
 type MessageStatus = "unread" | "read" | "replied"
 
@@ -41,6 +42,7 @@ export function MessagesManager() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [updatingMessage, setUpdatingMessage] = useState("Updating message...")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
@@ -123,6 +125,7 @@ export function MessagesManager() {
     if (!confirmed) return
 
     setIsUpdating(true)
+    setUpdatingMessage("Updating message status...")
     setError(null)
     setSuccess(null)
 
@@ -156,6 +159,7 @@ export function MessagesManager() {
     if (!confirmed) return
 
     setIsUpdating(true)
+    setUpdatingMessage("Deleting message...")
     setError(null)
     setSuccess(null)
 
@@ -238,6 +242,7 @@ export function MessagesManager() {
     if (!confirmed) return
 
     setIsUpdating(true)
+    setUpdatingMessage("Deleting selected messages...")
     setError(null)
     setSuccess(null)
 
@@ -283,7 +288,14 @@ export function MessagesManager() {
                 disabled={isLoading}
                 className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
               >
-                {isLoading ? "Refreshing..." : "Refresh"}
+                {isLoading ? (
+                  <span className="inline-flex items-center">
+                    <Spinner size="sm" className="mr-1.5" />
+                    Refreshing inbox...
+                  </span>
+                ) : (
+                  "Refresh"
+                )}
               </button>
               <button
                 type="button"
@@ -291,7 +303,14 @@ export function MessagesManager() {
                 disabled={isUpdating || selectedIds.length === 0}
                 className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
               >
-                {isUpdating ? "Working..." : `Delete Selected (${selectedIds.length})`}
+                {isUpdating ? (
+                  <span className="inline-flex items-center">
+                    <Spinner size="sm" className="mr-1.5" />
+                    {updatingMessage}
+                  </span>
+                ) : (
+                  `Delete Selected (${selectedIds.length})`
+                )}
               </button>
             </div>
           </div>
@@ -478,7 +497,14 @@ export function MessagesManager() {
                   onClick={() => updateStatus("unread")}
                   className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
                 >
-                  {isUpdating ? "Updating..." : "Mark Unread"}
+                  {isUpdating ? (
+                    <span className="inline-flex items-center">
+                      <Spinner size="sm" className="mr-1.5" />
+                      {updatingMessage}
+                    </span>
+                  ) : (
+                    "Mark Unread"
+                  )}
                 </button>
                 <button
                   type="button"
@@ -486,7 +512,14 @@ export function MessagesManager() {
                   onClick={() => updateStatus("read")}
                   className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
                 >
-                  {isUpdating ? "Updating..." : "Mark Read"}
+                  {isUpdating ? (
+                    <span className="inline-flex items-center">
+                      <Spinner size="sm" className="mr-1.5" />
+                      {updatingMessage}
+                    </span>
+                  ) : (
+                    "Mark Read"
+                  )}
                 </button>
                 <button
                   type="button"
@@ -494,7 +527,14 @@ export function MessagesManager() {
                   onClick={() => updateStatus("replied")}
                   className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-70"
                 >
-                  {isUpdating ? "Updating..." : "Mark Replied"}
+                  {isUpdating ? (
+                    <span className="inline-flex items-center">
+                      <Spinner size="sm" className="mr-1.5" />
+                      {updatingMessage}
+                    </span>
+                  ) : (
+                    "Mark Replied"
+                  )}
                 </button>
                 <a
                   href={`mailto:${selectedMessage.email}?subject=${encodeURIComponent(`Re: ${selectedMessage.subject || "Contact message"}`)}`}
@@ -508,7 +548,14 @@ export function MessagesManager() {
                   onClick={() => void deleteSelectedMessage()}
                   className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
                 >
-                  {isUpdating ? "Working..." : "Delete Message"}
+                  {isUpdating ? (
+                    <span className="inline-flex items-center">
+                      <Spinner size="sm" className="mr-1.5" />
+                      {updatingMessage}
+                    </span>
+                  ) : (
+                    "Delete Message"
+                  )}
                 </button>
               </div>
             </div>

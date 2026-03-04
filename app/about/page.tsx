@@ -25,7 +25,7 @@ export default async function AboutPage() {
         <div className="absolute inset-0">
           <Image src="/images/about-hero.jpg" alt="" fill className="object-cover opacity-30" sizes="100vw" priority />
         </div>
-        <div className="relative mx-auto max-w-7xl px-4 py-16 md:py-24">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <h1 className="text-balance text-3xl font-bold text-primary-foreground md:text-4xl lg:text-5xl">
             {normalizePublicText(aboutContent.heroTitle, "About KIBAHA SCOUTS")}
           </h1>
@@ -40,7 +40,7 @@ export default async function AboutPage() {
 
       {/* District Overview */}
       <section className="bg-background py-12 md:py-16" id="overview">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
               <h2 className="text-2xl font-bold text-foreground md:text-3xl">
@@ -68,7 +68,7 @@ export default async function AboutPage() {
 
       {/* Mission, Vision, Values */}
       <section className="bg-secondary py-12 md:py-16" id="mission">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">Mission, Vision & Values</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg bg-card p-6 border border-border">
@@ -112,7 +112,7 @@ export default async function AboutPage() {
 
       {/* Leadership */}
       <section className="bg-background py-12 md:py-16" id="leadership">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">District Leadership</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {normalizePublicText(
@@ -148,7 +148,7 @@ export default async function AboutPage() {
 
       {/* History Timeline */}
       <section className="bg-secondary py-12 md:py-16" id="history">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">History & Timeline</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {normalizePublicText(aboutContent.historyIntro, "Key milestones in Kibaha District scouting")}
@@ -172,7 +172,7 @@ export default async function AboutPage() {
 
       {/* Partners */}
       <section className="bg-background py-12 md:py-16" id="partners">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">Partners & Stakeholders</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {normalizePublicText(
@@ -195,7 +195,7 @@ export default async function AboutPage() {
 
       {/* FAQs */}
       <section className="bg-secondary py-12 md:py-16" id="faqs">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">
             {normalizePublicText(aboutContent.faqsTitle, "Frequently Asked Questions")}
           </h2>

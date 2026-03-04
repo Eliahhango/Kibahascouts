@@ -5,49 +5,49 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Kibaha Scouts: Refined Purple + White */
-  --background: #F7F8FC;
-  --foreground: #1F1B2D;
-  --card: #FFFFFF;
-  --card-foreground: #1F1B2D;
-  --popover: #FFFFFF;
-  --popover-foreground: #1F1B2D;
-  --primary: #3E2A78;
-  --primary-foreground: #FFFFFF;
-  --secondary: #EEEAF9;
-  --secondary-foreground: #1F1B2D;
-  --muted: #F3F0FD;
-  --muted-foreground: #5F5A74;
-  --accent: #5F3DC4;
-  --accent-foreground: #FFFFFF;
-  --destructive: #D32F2F;
-  --destructive-foreground: #FFFFFF;
-  --border: #DDD8EF;
-  --input: #DDD8EF;
-  --ring: #5F3DC4;
-  --chart-1: #3E2A78;
-  --chart-2: #5F3DC4;
-  --chart-3: #7D60D6;
-  --chart-4: #A68FE8;
-  --chart-5: #D5C8F7;
+  /* Kibaha Scouts: Forest Green + Gold */
+  --background: #f5f6f2;
+  --foreground: #1b2822;
+  --card: #ffffff;
+  --card-foreground: #1b2822;
+  --popover: #ffffff;
+  --popover-foreground: #1b2822;
+  --primary: #1e3a2f;
+  --primary-foreground: #ffffff;
+  --secondary: #edf2ee;
+  --secondary-foreground: #1b2822;
+  --muted: #eef3ef;
+  --muted-foreground: #58685f;
+  --accent: #c9910a;
+  --accent-foreground: #ffffff;
+  --destructive: #d32f2f;
+  --destructive-foreground: #ffffff;
+  --border: #d3ddd5;
+  --input: #d3ddd5;
+  --ring: #c9910a;
+  --chart-1: #1e3a2f;
+  --chart-2: #2d5a3d;
+  --chart-3: #4a8c5c;
+  --chart-4: #c9910a;
+  --chart-5: #e6a812;
   --radius: 0.5rem;
-  --sidebar: #FCFBFF;
-  --sidebar-foreground: #1F1B2D;
-  --sidebar-primary: #3E2A78;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EEEAF9;
-  --sidebar-accent-foreground: #1F1B2D;
-  --sidebar-border: #DDD8EF;
-  --sidebar-ring: #5F3DC4;
+  --sidebar: #fcfdf9;
+  --sidebar-foreground: #1b2822;
+  --sidebar-primary: #1e3a2f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edf2ee;
+  --sidebar-accent-foreground: #1b2822;
+  --sidebar-border: #d3ddd5;
+  --sidebar-ring: #c9910a;
 
   /* Custom TSA tokens */
-  --tsa-green-deep: #352163;
-  --tsa-green-mid: #4E3294;
-  --tsa-green-light: #8E73D8;
-  --tsa-gold: #6E4BD9;
-  --tsa-gold-light: #8466E4;
-  --tsa-cream: #F1EDFB;
-  --tsa-warm-white: #FCFBFF;
+  --tsa-green-deep: #1e3a2f;
+  --tsa-green-mid: #2d5a3d;
+  --tsa-green-light: #4a8c5c;
+  --tsa-gold: #c9910a;
+  --tsa-gold-light: #e6a812;
+  --tsa-cream: #f5f0e8;
+  --tsa-warm-white: #fdfcf9;
 }
 
 @theme inline {

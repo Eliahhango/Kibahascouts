@@ -65,7 +65,7 @@ export default async function EventsPage({
       <Breadcrumbs items={[{ label: "Events" }]} />
 
       <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-foreground md:text-4xl">
             {normalizePublicText(pageContent.title, "Events")}
           </h1>
@@ -84,7 +84,7 @@ export default async function EventsPage({
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <Link
               href={`/events${showPast ? "?past=true" : ""}`}
-              className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 selectedView === "list"
                   ? "bg-tsa-green-deep text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-border"
@@ -95,7 +95,7 @@ export default async function EventsPage({
             </Link>
             <Link
               href={`/events?view=calendar${showPast ? "&past=true" : ""}`}
-              className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 selectedView === "calendar"
                   ? "bg-tsa-green-deep text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-border"
@@ -106,7 +106,7 @@ export default async function EventsPage({
             </Link>
             <Link
               href={`/events${selectedView === "calendar" ? "?view=calendar" : ""}`}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 !showPast ? "bg-tsa-gold text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-border"
               }`}
             >
@@ -114,7 +114,7 @@ export default async function EventsPage({
             </Link>
             <Link
               href={`/events?past=true${selectedView === "calendar" ? "&view=calendar" : ""}`}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 showPast ? "bg-tsa-gold text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-border"
               }`}
             >
@@ -132,7 +132,7 @@ export default async function EventsPage({
 
       {selectedView === "calendar" ? (
         <section className="bg-secondary py-12" aria-labelledby="calendar-view">
-          <div className="mx-auto max-w-7xl px-4">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
               Calendar View: {monthYearLabel}
             </h2>
@@ -186,7 +186,7 @@ export default async function EventsPage({
         </section>
       ) : (
         <section className="bg-secondary py-12" aria-labelledby="list-view">
-          <div className="mx-auto max-w-7xl px-4">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 id="list-view" className="sr-only">
               Event list
             </h2>
@@ -198,7 +198,7 @@ export default async function EventsPage({
                     <article key={event.id} className="rounded-lg border border-border bg-card p-5">
                       <Link href={`/events/${event.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
                         <div className="flex flex-wrap items-start gap-4">
-                          <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
+                          <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-md border-b-2 border-tsa-gold bg-tsa-green-deep text-primary-foreground">
                             <span className="text-lg font-bold leading-none">{eventDate.getDate()}</span>
                             <span className="text-xs uppercase">
                               {eventDate.toLocaleDateString("en-GB", { month: "short" })}

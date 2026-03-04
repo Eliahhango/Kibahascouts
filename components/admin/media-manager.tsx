@@ -562,7 +562,7 @@ export function MediaManager() {
               {isSaving ? (
                 <>
                   <Spinner size="sm" className="mr-1.5" />
-                  Saving...
+                  Saving media...
                 </>
               ) : (
                 submitLabel
@@ -593,7 +593,14 @@ export function MediaManager() {
             disabled={isLoading}
             className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
           >
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <span className="inline-flex items-center">
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing media...
+              </span>
+            ) : (
+              "Refresh"
+            )}
           </button>
         </div>
 
@@ -668,7 +675,14 @@ export function MediaManager() {
                           disabled={actionState?.id === item.id}
                           className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
                         >
-                          {actionState?.id === item.id && actionState.type === "publish" ? "Updating..." : item.published ? "Unpublish" : "Publish"}
+                          {actionState?.id === item.id && actionState.type === "publish" ? (
+                            <span className="inline-flex items-center">
+                              <Spinner size="sm" className="mr-1.5" />
+                              {item.published ? "Unpublishing..." : "Publishing..."}
+                            </span>
+                          ) : (
+                            item.published ? "Unpublish" : "Publish"
+                          )}
                         </button>
                         <button
                           type="button"
@@ -676,14 +690,15 @@ export function MediaManager() {
                           disabled={actionState?.id === item.id}
                           className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
                         >
-                          {actionState?.id === item.id && actionState.type === "delete" ? "Deleting..." : "Delete"}
+                          {actionState?.id === item.id && actionState.type === "delete" ? (
+                            <span className="inline-flex items-center">
+                              <Spinner size="sm" className="mr-1.5" />
+                              Deleting media...
+                            </span>
+                          ) : (
+                            "Delete"
+                          )}
                         </button>
-                        {actionState?.id === item.id ? (
-                          <span className="inline-flex items-center text-xs text-muted-foreground">
-                            <Spinner size="sm" className="mr-1.5" />
-                            Processing
-                          </span>
-                        ) : null}
                       </div>
                     </td>
                   </tr>

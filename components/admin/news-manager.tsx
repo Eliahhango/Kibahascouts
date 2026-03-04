@@ -63,6 +63,7 @@ export function NewsManager() {
   const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all")
 
   const submitLabel = useMemo(() => (editingId ? "Update News Item" : "Create News Item"), [editingId])
+  const savingLabel = useMemo(() => (editingId ? "Updating article..." : "Publishing article..."), [editingId])
   const filteredItems = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase()
 
@@ -348,7 +349,7 @@ export function NewsManager() {
               {isSaving ? (
                 <>
                   <Spinner size="sm" className="mr-1.5" />
-                  Saving...
+                  {savingLabel}
                 </>
               ) : (
                 submitLabel
@@ -379,7 +380,14 @@ export function NewsManager() {
             disabled={isLoading}
             className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
           >
-            {isLoading ? "Refreshing..." : "Refresh"}
+            {isLoading ? (
+              <span className="inline-flex items-center">
+                <Spinner size="sm" className="mr-1.5" />
+                Refreshing articles...
+              </span>
+            ) : (
+              "Refresh"
+            )}
           </button>
         </div>
 
@@ -460,7 +468,7 @@ export function NewsManager() {
                           {actionState?.id === item.id && actionState.type === "publish" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Updating...
+                              {item.published ? "Unpublishing..." : "Publishing..."}
                             </span>
                           ) : (
                             (item.published ? "Unpublish" : "Publish")
@@ -475,7 +483,7 @@ export function NewsManager() {
                           {actionState?.id === item.id && actionState.type === "delete" ? (
                             <span className="inline-flex items-center">
                               <Spinner size="sm" className="mr-1.5" />
-                              Deleting...
+                              Deleting article...
                             </span>
                           ) : (
                             "Delete"
