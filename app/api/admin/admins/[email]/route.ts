@@ -49,6 +49,28 @@ export async function PATCH(request: Request, { params }: Params) {
     const nextRole = parsedBody.data.role ?? targetUser.role
     const nextActive = typeof parsedBody.data.active === "boolean" ? parsedBody.data.active : targetUser.active
 
+    if (targetEmail === admin.email) {
+      if (nextRole !== "super_admin") {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "You cannot change your own role from super admin.",
+          },
+          { status: 403 },
+        )
+      }
+
+      if (!nextActive) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "You cannot disable your own super admin account.",
+          },
+          { status: 403 },
+        )
+      }
+    }
+
     if (targetUser.role === "super_admin" && (!nextActive || nextRole !== "super_admin")) {
       const superAdminCount = await getSuperAdminCount()
       if (superAdminCount <= 1) {
@@ -71,13 +93,23 @@ export async function PATCH(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
   try {
-    await assertAdminMutationRequest(request, "admins:manage")
+    const admin = await assertAdminMutationRequest(request, "admins:manage")
     const { email: emailParam } = await params
     const targetEmail = decodeEmailParam(emailParam)
     const targetUser = await getAdminUserByEmail(targetEmail)
 
     if (!targetUser) {
       return NextResponse.json({ ok: false, error: "Admin user not found." }, { status: 404 })
+    }
+
+    if (targetEmail === admin.email) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "You cannot delete your own super admin account.",
+        },
+        { status: 403 },
+      )
     }
 
     if (targetUser.role === "super_admin") {

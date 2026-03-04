@@ -125,6 +125,11 @@ export function NewsManager() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const actionText = editingId ? "update" : "create"
+    const publishText = form.published ? "and publish" : "as draft"
+    const confirmed = window.confirm(`Are you sure you want to ${actionText} this news item ${publishText}?`)
+    if (!confirmed) return
+
     setIsSaving(true)
     setError(null)
     setSuccess(null)
@@ -155,6 +160,10 @@ export function NewsManager() {
   }
 
   async function handleTogglePublished(item: NewsAdminRecord) {
+    const nextAction = item.published ? "unpublish" : "publish"
+    const confirmed = window.confirm(`Are you sure you want to ${nextAction} "${item.title}"?`)
+    if (!confirmed) return
+
     setError(null)
     setSuccess(null)
     setActionState({ id: item.id, type: "publish" })
@@ -181,7 +190,7 @@ export function NewsManager() {
   }
 
   async function handleDelete(item: NewsAdminRecord) {
-    const confirmed = window.confirm(`Delete "${item.title}"? This cannot be undone.`)
+    const confirmed = window.confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)
     if (!confirmed) return
 
     setError(null)

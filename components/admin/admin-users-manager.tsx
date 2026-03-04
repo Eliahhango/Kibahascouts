@@ -22,6 +22,15 @@ type ApiResponse<T> = {
   error?: string
 }
 
+type SessionResponse = {
+  ok: boolean
+  data?: {
+    email: string
+    role: AdminRole
+  }
+  error?: string
+}
+
 const roleOptions: Array<{ value: AdminRole; label: string }> = [
   { value: "super_admin", label: "Super Admin" },
   { value: "content_admin", label: "Content Admin" },
@@ -36,9 +45,11 @@ export function AdminUsersManager() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [currentAdminEmail, setCurrentAdminEmail] = useState<string | null>(null)
 
   useEffect(() => {
     void loadUsers()
+    void loadCurrentAdmin()
   }, [])
 
   async function loadUsers() {
@@ -60,8 +71,31 @@ export function AdminUsersManager() {
     }
   }
 
+  async function loadCurrentAdmin() {
+    try {
+      const response = await fetch("/api/admin/session", { method: "GET", cache: "no-store" })
+      const payload = (await response.json()) as SessionResponse
+      if (!response.ok || !payload.ok || !payload.data?.email) {
+        return
+      }
+
+      setCurrentAdminEmail(payload.data.email.trim().toLowerCase())
+    } catch {
+      // No-op: page-level auth already protects this route.
+    }
+  }
+
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const normalizedEmail = email.trim().toLowerCase()
+    const confirmed = window.confirm(
+      `Are you sure you want to add ${normalizedEmail} as ${role.replace("_", " ")}?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
     setIsSaving(true)
     setError(null)
     setSuccess(null)
@@ -70,7 +104,7 @@ export function AdminUsersManager() {
       const response = await adminFetch("/api/admin/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, role }),
+        body: JSON.stringify({ email: normalizedEmail, role }),
       })
 
       const payload = (await response.json()) as ApiResponse<null>
@@ -89,7 +123,16 @@ export function AdminUsersManager() {
     }
   }
 
-  async function updateUser(emailValue: string, updates: Partial<Pick<AdminUserRecord, "role" | "active">>, successText: string) {
+  async function updateUser(
+    emailValue: string,
+    updates: Partial<Pick<AdminUserRecord, "role" | "active">>,
+    successText: string,
+    confirmMessage: string,
+  ) {
+    if (!window.confirm(confirmMessage)) {
+      return
+    }
+
     setError(null)
     setSuccess(null)
 
@@ -113,7 +156,7 @@ export function AdminUsersManager() {
   }
 
   async function deleteUser(emailValue: string) {
-    if (!window.confirm(`Remove admin access for ${emailValue}?`)) {
+    if (!window.confirm(`Are you sure you want to remove admin access for ${emailValue}? This action cannot be undone.`)) {
       return
     }
 
@@ -134,6 +177,28 @@ export function AdminUsersManager() {
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unable to remove admin user.")
     }
+  }
+
+  async function handleRoleChange(user: AdminUserRecord, nextRole: AdminRole) {
+    if (user.role === nextRole) {
+      return
+    }
+
+    await updateUser(
+      user.email,
+      { role: nextRole },
+      "Admin role updated.",
+      `Are you sure you want to change ${user.email} role from ${user.role.replace("_", " ")} to ${nextRole.replace("_", " ")}?`,
+    )
+  }
+
+  async function handleActiveToggle(user: AdminUserRecord) {
+    await updateUser(
+      user.email,
+      { active: !user.active },
+      user.active ? "Admin disabled." : "Admin enabled.",
+      `Are you sure you want to ${user.active ? "disable" : "enable"} ${user.email}?`,
+    )
   }
 
   return (
@@ -209,14 +274,20 @@ export function AdminUsersManager() {
                 {users.map((user) => (
                   <tr key={user.email}>
                     <td className="py-2 pr-3">
-                      <p className="font-medium text-card-foreground">{user.email}</p>
+                      <p className="font-medium text-card-foreground">
+                        {user.email}
+                        {currentAdminEmail === user.email ? (
+                          <span className="ml-2 rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">
+                            You
+                          </span>
+                        ) : null}
+                      </p>
                     </td>
                     <td className="py-2 pr-3">
                       <select
                         value={user.role}
-                        onChange={(event) =>
-                          void updateUser(user.email, { role: event.target.value as AdminRole }, "Admin role updated.")
-                        }
+                        disabled={currentAdminEmail === user.email}
+                        onChange={(event) => void handleRoleChange(user, event.target.value as AdminRole)}
                         className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
                       >
                         {roleOptions.map((option) => (
@@ -234,11 +305,18 @@ export function AdminUsersManager() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => void updateUser(user.email, { active: !user.active }, user.active ? "Admin disabled." : "Admin enabled.")}
+                          disabled={currentAdminEmail === user.email}
+                          onClick={() => void handleActiveToggle(user)}
                         >
                           {user.active ? "Disable" : "Enable"}
                         </Button>
-                        <Button type="button" variant="destructive" size="sm" onClick={() => void deleteUser(user.email)}>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          disabled={currentAdminEmail === user.email}
+                          onClick={() => void deleteUser(user.email)}
+                        >
                           Remove
                         </Button>
                       </div>
@@ -247,6 +325,9 @@ export function AdminUsersManager() {
                 ))}
               </tbody>
             </table>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Your own super admin account is locked for role/status changes and deletion.
+            </p>
           </div>
         ) : null}
       </div>

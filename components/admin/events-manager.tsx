@@ -131,6 +131,11 @@ export function EventsManager() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const actionText = editingId ? "update" : "create"
+    const publishText = form.published ? "and publish" : "as draft"
+    const confirmed = window.confirm(`Are you sure you want to ${actionText} this event ${publishText}?`)
+    if (!confirmed) return
+
     setIsSaving(true)
     setError(null)
     setSuccess(null)
@@ -161,6 +166,10 @@ export function EventsManager() {
   }
 
   async function handleTogglePublished(item: EventAdminRecord) {
+    const nextAction = item.published ? "unpublish" : "publish"
+    const confirmed = window.confirm(`Are you sure you want to ${nextAction} "${item.title}"?`)
+    if (!confirmed) return
+
     setError(null)
     setSuccess(null)
     setActionState({ id: item.id, type: "publish" })
@@ -187,7 +196,7 @@ export function EventsManager() {
   }
 
   async function handleDelete(item: EventAdminRecord) {
-    const confirmed = window.confirm(`Delete "${item.title}"? This cannot be undone.`)
+    const confirmed = window.confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)
     if (!confirmed) return
 
     setError(null)

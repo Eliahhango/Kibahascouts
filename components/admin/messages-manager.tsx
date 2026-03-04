@@ -105,6 +105,11 @@ export function MessagesManager() {
 
   async function updateStatus(status: MessageStatus) {
     if (!selectedMessage) return
+    const confirmed = window.confirm(
+      `Are you sure you want to mark this message as "${status}"?`,
+    )
+    if (!confirmed) return
+
     setIsUpdating(true)
     setError(null)
     setSuccess(null)
