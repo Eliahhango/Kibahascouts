@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Mail, MapPin, Users } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { getUnitsFromCms } from "@/lib/cms"
+import { getSiteContentSettingsFromCms, getUnitsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export async function generateStaticParams() {
   const scoutUnits = await getUnitsFromCms()
@@ -34,8 +35,9 @@ export default async function UnitProfilePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const scoutUnits = await getUnitsFromCms()
+  const [scoutUnits, siteContent] = await Promise.all([getUnitsFromCms(), getSiteContentSettingsFromCms()])
   const unit = scoutUnits.find((item) => item.slug === slug)
+  const pageContent = siteContent.unitsPage
   if (!unit) notFound()
 
   return (
@@ -104,9 +106,11 @@ export default async function UnitProfilePage({
               </div>
 
               <div className="rounded-lg border border-border bg-card p-5">
-                <h2 className="text-lg font-bold text-card-foreground">Contact This Unit</h2>
+                <h2 className="text-lg font-bold text-card-foreground">
+                  {normalizePublicText(pageContent.unitContactTitle, "Contact This Unit")}
+                </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Submit your interest and a district officer will connect you with the unit leadership team.
+                  {normalizePublicText(pageContent.unitContactDescription)}
                 </p>
                 <form className="mt-4 space-y-3">
                   <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-name">
@@ -137,13 +141,13 @@ export default async function UnitProfilePage({
                     name="message"
                     rows={4}
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder="I would like to join this unit..."
+                    placeholder={normalizePublicText(pageContent.unitContactMessagePlaceholder, "I would like to join this unit...")}
                   />
                   <button
                     type="submit"
                     className="w-full rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
                   >
-                    Send Inquiry
+                    {normalizePublicText(pageContent.unitContactButtonLabel, "Send Inquiry")}
                   </button>
                 </form>
               </div>

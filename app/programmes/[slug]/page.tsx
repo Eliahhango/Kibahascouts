@@ -1,24 +1,27 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { programmes } from "@/lib/data"
+import { getSiteContentSettingsFromCms } from "@/lib/cms"
 import { CheckCircle2, Award, TrendingUp, Shirt } from "lucide-react"
 import { normalizePublicText } from "@/lib/public-text"
 
 export async function generateStaticParams() {
-  return programmes.map((p) => ({ slug: p.slug }))
+  const siteContent = await getSiteContentSettingsFromCms()
+  return siteContent.programmesList.map((programme) => ({ slug: programme.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const prog = programmes.find((p) => p.slug === slug)
+  const siteContent = await getSiteContentSettingsFromCms()
+  const prog = siteContent.programmesList.find((programme) => programme.slug === slug)
   if (!prog) return { title: "Programme Not Found" }
   return { title: prog.title, description: normalizePublicText(prog.description).slice(0, 160) }
 }
 
 export default async function ProgrammeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const prog = programmes.find((p) => p.slug === slug)
+  const siteContent = await getSiteContentSettingsFromCms()
+  const prog = siteContent.programmesList.find((programme) => programme.slug === slug)
   if (!prog) notFound()
 
   return (

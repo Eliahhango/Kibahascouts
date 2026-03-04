@@ -38,6 +38,7 @@ function getStatusBadgeClass(status: MessageStatus) {
 export function MessagesManager() {
   const [messages, setMessages] = useState<ContactMessage[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +71,12 @@ export function MessagesManager() {
     () => filteredMessages.find((message) => message.id === selectedId) || null,
     [filteredMessages, selectedId],
   )
+  const filteredMessageIds = useMemo(() => filteredMessages.map((message) => message.id), [filteredMessages])
+  const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds])
+  const selectedFilteredCount = useMemo(
+    () => filteredMessageIds.reduce((count, id) => count + (selectedIdSet.has(id) ? 1 : 0), 0),
+    [filteredMessageIds, selectedIdSet],
+  )
 
   useEffect(() => {
     if (filteredMessages.length === 0) {
@@ -83,6 +90,11 @@ export function MessagesManager() {
       setSelectedId(filteredMessages[0].id)
     }
   }, [filteredMessages, selectedId])
+
+  useEffect(() => {
+    const idSet = new Set(messages.map((message) => message.id))
+    setSelectedIds((current) => current.filter((id) => idSet.has(id)))
+  }, [messages])
 
   async function loadMessages() {
     setIsLoading(true)
@@ -135,6 +147,126 @@ export function MessagesManager() {
     }
   }
 
+  async function deleteSelectedMessage() {
+    if (!selectedMessage) return
+
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this message? This action cannot be undone.",
+    )
+    if (!confirmed) return
+
+    setIsUpdating(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const messageId = selectedMessage.id
+      const response = await adminFetch(`/api/admin/messages/${messageId}`, {
+        method: "DELETE",
+      })
+
+      const payload = (await response.json()) as ApiResponse<{ id: string }>
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "Unable to delete message.")
+      }
+
+      setMessages((current) => current.filter((message) => message.id !== messageId))
+      setSelectedId((current) => (current === messageId ? null : current))
+      setSelectedIds((current) => current.filter((id) => id !== messageId))
+      setSuccess("Message deleted.")
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete message.")
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  function toggleMessageSelection(messageId: string, checked: boolean) {
+    setSelectedIds((current) => {
+      if (checked) {
+        if (current.includes(messageId)) {
+          return current
+        }
+        return [...current, messageId]
+      }
+
+      return current.filter((id) => id !== messageId)
+    })
+  }
+
+  function selectAllResults() {
+    if (filteredMessageIds.length === 0) {
+      return
+    }
+
+    setSelectedIds((current) => Array.from(new Set([...current, ...filteredMessageIds])))
+  }
+
+  function selectAllInboxMessages() {
+    if (messages.length === 0) {
+      return
+    }
+
+    setSelectedIds(messages.map((message) => message.id))
+  }
+
+  function clearFilteredSelection() {
+    if (filteredMessageIds.length === 0) {
+      return
+    }
+
+    const filteredSet = new Set(filteredMessageIds)
+    setSelectedIds((current) => current.filter((id) => !filteredSet.has(id)))
+  }
+
+  function clearAllSelection() {
+    if (selectedIds.length === 0) {
+      return
+    }
+
+    setSelectedIds([])
+  }
+
+  async function deleteSelectedMessages() {
+    if (selectedIds.length === 0) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to permanently delete ${selectedIds.length} selected message(s)? This action cannot be undone.`,
+    )
+    if (!confirmed) return
+
+    setIsUpdating(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const idsToDelete = [...selectedIds]
+      const idsSet = new Set(idsToDelete)
+      const response = await adminFetch("/api/admin/messages/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: idsToDelete }),
+      })
+
+      const payload = (await response.json()) as ApiResponse<{ deletedCount: number }>
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "Unable to bulk delete messages.")
+      }
+
+      setMessages((current) => current.filter((message) => !idsSet.has(message.id)))
+      setSelectedIds((current) => current.filter((id) => !idsSet.has(id)))
+      setSelectedId((current) => (current && idsSet.has(current) ? null : current))
+      const deletedCount = payload.data?.deletedCount ?? idsToDelete.length
+      setSuccess(`${deletedCount} message(s) deleted.`)
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to bulk delete messages.")
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   return (
     <section className="space-y-6">
       {error ? <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
@@ -144,14 +276,24 @@ export function MessagesManager() {
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-card-foreground">Inbox</h2>
-            <button
-              type="button"
-              onClick={() => void loadMessages()}
-              disabled={isLoading}
-              className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
-            >
-              {isLoading ? "Refreshing..." : "Refresh"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void loadMessages()}
+                disabled={isLoading}
+                className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
+              >
+                {isLoading ? "Refreshing..." : "Refresh"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void deleteSelectedMessages()}
+                disabled={isUpdating || selectedIds.length === 0}
+                className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
+              >
+                {isUpdating ? "Working..." : `Delete Selected (${selectedIds.length})`}
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -190,35 +332,84 @@ export function MessagesManager() {
               Showing {filteredMessages.length} of {messages.length} message(s).
             </p>
           ) : null}
+          {!isLoading && filteredMessages.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={selectAllResults}
+                disabled={selectedFilteredCount === filteredMessages.length}
+                className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground disabled:opacity-60"
+              >
+                Select All Results
+              </button>
+              <button
+                type="button"
+                onClick={selectAllInboxMessages}
+                disabled={selectedIds.length === messages.length}
+                className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground disabled:opacity-60"
+              >
+                Select All Inbox
+              </button>
+              <button
+                type="button"
+                onClick={clearFilteredSelection}
+                disabled={selectedFilteredCount === 0}
+                className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground disabled:opacity-60"
+              >
+                Clear Results Selection
+              </button>
+              <button
+                type="button"
+                onClick={clearAllSelection}
+                disabled={selectedIds.length === 0}
+                className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground disabled:opacity-60"
+              >
+                Clear All Selection
+              </button>
+              <span className="inline-flex items-center text-xs text-muted-foreground">
+                {selectedFilteredCount} selected in results, {selectedIds.length} selected total
+              </span>
+            </div>
+          ) : null}
 
           {!isLoading && filteredMessages.length > 0 ? (
             <ul className="mt-3 space-y-2">
               {filteredMessages.map((message) => {
                 const isSelected = message.id === selectedId
+                const isChecked = selectedIdSet.has(message.id)
                 return (
                   <li key={message.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedId(message.id)}
+                    <div
                       className={`w-full rounded-lg border px-3 py-3 text-left transition ${
                         isSelected ? "border-primary bg-primary/5" : "border-border bg-background hover:bg-secondary"
                       }`}
                     >
-                      <p className="text-sm font-semibold text-foreground">{message.subject || "No subject provided"}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{message.name} - {message.email}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {message.createdAt
-                          ? new Date(message.createdAt).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "Unknown date"}
-                      </p>
-                      <span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${getStatusBadgeClass(message.status)}`}>
-                        {message.status}
-                      </span>
-                    </button>
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(event) => toggleMessageSelection(message.id, event.target.checked)}
+                          className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                          aria-label={`Select message ${message.subject || message.id}`}
+                        />
+                        <button type="button" onClick={() => setSelectedId(message.id)} className="min-w-0 flex-1 text-left">
+                          <p className="text-sm font-semibold text-foreground">{message.subject || "No subject provided"}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{message.name} - {message.email}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {message.createdAt
+                              ? new Date(message.createdAt).toLocaleDateString("en-GB", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : "Unknown date"}
+                          </p>
+                          <span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${getStatusBadgeClass(message.status)}`}>
+                            {message.status}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </li>
                 )
               })}
@@ -311,6 +502,14 @@ export function MessagesManager() {
                 >
                   Reply by Email
                 </a>
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => void deleteSelectedMessage()}
+                  className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
+                >
+                  {isUpdating ? "Working..." : "Delete Message"}
+                </button>
               </div>
             </div>
           ) : null}

@@ -6,12 +6,14 @@ import type {
   MediaItem,
   NavigationSettings,
   NewsArticle,
+  SiteContentSettings,
   Resource,
   ScoutEvent,
   ScoutUnit,
 } from "@/lib/types"
 import { getDefaultHomepageSettings } from "@/lib/firebase/homepage-settings"
 import { getDefaultNavigationSettings } from "@/lib/firebase/navigation-settings"
+import { getDefaultSiteContentSettings } from "@/lib/firebase/site-content"
 
 const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
@@ -97,4 +99,11 @@ export async function getNavigationSettingsFromCms(): Promise<NavigationSettings
     const { getNavigationSettingsFromFirestore } = await import("@/lib/firebase/navigation-settings")
     return getNavigationSettingsFromFirestore()
   }, getDefaultNavigationSettings())
+}
+
+export async function getSiteContentSettingsFromCms(): Promise<SiteContentSettings> {
+  return withSampleFallbackItem(async () => {
+    const { getSiteContentFromFirestore } = await import("@/lib/firebase/site-content")
+    return getSiteContentFromFirestore()
+  }, getDefaultSiteContentSettings())
 }

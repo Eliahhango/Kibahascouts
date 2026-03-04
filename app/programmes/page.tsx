@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import Image from "next/image"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { programmes } from "@/lib/data"
+import { getSiteContentSettingsFromCms } from "@/lib/cms"
 import { ArrowRight, Users } from "lucide-react"
 import { normalizePublicText } from "@/lib/public-text"
 
@@ -11,16 +10,25 @@ export const metadata: Metadata = {
   description: "Explore Kibaha Scouts programmes for Cub Scouts, Scouts, and Rover Scouts.",
 }
 
-export default function ProgrammesPage() {
+export default async function ProgrammesPage() {
+  const siteContent = await getSiteContentSettingsFromCms()
+  const pageContent = siteContent.programmesPage
+  const programmes = siteContent.programmesList
+
   return (
     <>
       <Breadcrumbs items={[{ label: "Programmes" }]} />
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Scout Programmes</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Scout Programmes")}
+          </h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Kibaha Scouts offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.
+            {normalizePublicText(
+              pageContent.description,
+              "Kibaha Scouts offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.",
+            )}
           </p>
 
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

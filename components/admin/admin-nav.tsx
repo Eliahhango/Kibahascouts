@@ -11,6 +11,7 @@ import {
   Inbox,
   LayoutDashboard,
   Newspaper,
+  Settings2,
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react"
@@ -40,6 +41,12 @@ const adminNavItems = [
     label: "Navigation",
     icon: Compass,
     match: (pathname: string) => pathname.startsWith("/admin/navigation"),
+  },
+  {
+    href: "/admin/site-content",
+    label: "Site Content",
+    icon: Settings2,
+    match: (pathname: string) => pathname.startsWith("/admin/site-content"),
   },
   {
     href: "/admin/events",

@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { Mail, MapPin, Phone } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { ContactForm } from "@/components/contact-form"
+import { getSiteContentSettingsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 import { siteConfig } from "@/lib/site-config"
 
 export const metadata: Metadata = {
@@ -9,8 +11,10 @@ export const metadata: Metadata = {
   description: "Contact Kibaha Scouts office, send inquiries, and connect through social channels.",
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
   const { contact } = siteConfig
+  const siteContent = await getSiteContentSettingsFromCms()
+  const pageContent = siteContent.contactPage
   const hasPhoneLink = Boolean(contact.phoneHref)
   const hasEmailLink = Boolean(contact.emailHref)
 
@@ -20,9 +24,14 @@ export default function ContactPage() {
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Contact KIBAHA SCOUTS</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Contact KIBAHA SCOUTS")}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Reach the district office for programme inquiries, membership support, partnerships, and media requests.
+            {normalizePublicText(
+              pageContent.description,
+              "Reach the district office for programme inquiries, membership support, partnerships, and media requests.",
+            )}
           </p>
         </div>
       </section>
@@ -30,7 +39,9 @@ export default function ContactPage() {
       <section className="bg-secondary py-12">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 lg:grid-cols-[1fr_1fr]">
           <article className="rounded-lg border border-border bg-card p-6">
-            <h2 className="text-2xl font-bold text-card-foreground">District Office Details</h2>
+            <h2 className="text-2xl font-bold text-card-foreground">
+              {normalizePublicText(pageContent.officeTitle, "District Office Details")}
+            </h2>
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
               <p className="inline-flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-tsa-green-deep" />
@@ -59,7 +70,9 @@ export default function ContactPage() {
               <p>Office hours: {contact.officeHours}</p>
             </div>
 
-            <h3 className="mt-6 text-lg font-semibold text-card-foreground">Social Media</h3>
+            <h3 className="mt-6 text-lg font-semibold text-card-foreground">
+              {normalizePublicText(pageContent.socialTitle, "Social Media")}
+            </h3>
             <ul className="mt-2 space-y-1 text-sm text-tsa-green-deep">
               <li>
                 <a
@@ -90,10 +103,11 @@ export default function ContactPage() {
           </article>
 
           <article id="reporting" className="rounded-lg border border-border bg-card p-6">
-            <h2 className="text-2xl font-bold text-card-foreground">Contact Form</h2>
+            <h2 className="text-2xl font-bold text-card-foreground">
+              {normalizePublicText(pageContent.formTitle, "Contact Form")}
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Include your unit or school name for faster response. This form uses server-side validation, a honeypot
-              field, and IP-based rate limiting.
+              {normalizePublicText(pageContent.formDescription)}
             </p>
             <ContactForm />
           </article>
@@ -102,11 +116,13 @@ export default function ContactPage() {
 
       <section className="bg-background py-12">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="text-2xl font-bold text-foreground">Map</h2>
+          <h2 className="text-2xl font-bold text-foreground">
+            {normalizePublicText(pageContent.mapTitle, "Map")}
+          </h2>
           <div className="mt-4 overflow-hidden rounded-lg border border-border">
             <iframe
               title="Kibaha Scouts office map"
-              src="https://maps.google.com/maps?q=Kibaha%20District%20Council&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              src={pageContent.mapEmbedUrl}
               className="h-[320px] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

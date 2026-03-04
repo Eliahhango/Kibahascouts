@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { MapPin, Users } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { getUnitsFromCms } from "@/lib/cms"
+import { getSiteContentSettingsFromCms, getUnitsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Scout Units",
@@ -20,20 +21,22 @@ export default async function UnitsPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const scoutUnits = (await getUnitsFromCms()).filter((unit) => unit.published !== false)
+  const [scoutUnits, siteContent] = await Promise.all([getUnitsFromCms(), getSiteContentSettingsFromCms()])
+  const publishedUnits = scoutUnits.filter((unit) => unit.published !== false)
+  const pageContent = siteContent.unitsPage
   const wardFilter = params.ward
   const dayFilter = params.day
   const hasActiveFilters = Boolean(wardFilter || dayFilter)
 
-  const wards = Array.from(new Set(scoutUnits.map((unit) => unit.ward))).sort()
-  const meetingDays = Array.from(new Set(scoutUnits.map((unit) => unit.meetingDay))).sort()
+  const wards = Array.from(new Set(publishedUnits.map((unit) => unit.ward))).sort()
+  const meetingDays = Array.from(new Set(publishedUnits.map((unit) => unit.meetingDay))).sort()
 
-  const filtered = scoutUnits.filter((unit) => {
+  const filtered = publishedUnits.filter((unit) => {
     if (wardFilter && unit.ward !== wardFilter) return false
     if (dayFilter && unit.meetingDay !== dayFilter) return false
     return true
   })
-  const filtersExcludeAll = hasActiveFilters && scoutUnits.length > 0 && filtered.length === 0
+  const filtersExcludeAll = hasActiveFilters && publishedUnits.length > 0 && filtered.length === 0
 
   return (
     <>
@@ -41,9 +44,14 @@ export default async function UnitsPage({
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Scout Units Directory</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Scout Units Directory")}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Find active packs, troops, and crews across Kibaha District. Filter by ward or meeting day.
+            {normalizePublicText(
+              pageContent.description,
+              "Find active packs, troops, and crews across Kibaha District. Filter by ward or meeting day.",
+            )}
           </p>
 
           <div id="find" className="mt-6 grid gap-3 md:grid-cols-2">
@@ -162,16 +170,17 @@ export default async function UnitsPage({
       <section id="start" className="bg-background py-12">
         <div className="mx-auto max-w-4xl px-4">
           <div className="rounded-lg border border-border bg-card p-6">
-            <h2 className="text-2xl font-bold text-foreground">Start a New Unit</h2>
+            <h2 className="text-2xl font-bold text-foreground">
+              {normalizePublicText(pageContent.startSectionTitle, "Start a New Unit")}
+            </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Interested in opening a new pack, troop, or crew in your ward? Contact the district programme office to
-              review leader availability, meeting venue options, and start-up requirements.
+              {normalizePublicText(pageContent.startSectionDescription)}
             </p>
             <Link
               href="/contact"
               className="mt-4 inline-flex rounded-md bg-tsa-gold px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
             >
-              Request New Unit Pack
+              {normalizePublicText(pageContent.startSectionButtonLabel, "Request New Unit Pack")}
             </Link>
           </div>
         </div>

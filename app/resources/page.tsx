@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Download, FileText, Filter } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { getResourcesFromCms } from "@/lib/cms"
+import { getResourcesFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Resources",
@@ -21,7 +22,9 @@ export default async function ResourcesPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const resources = (await getResourcesFromCms()).filter((resource) => resource.published !== false)
+  const [resourcesFromCms, siteContent] = await Promise.all([getResourcesFromCms(), getSiteContentSettingsFromCms()])
+  const pageContent = siteContent.resourcesPage
+  const resources = resourcesFromCms.filter((resource) => resource.published !== false)
   const selectedCategory = params.category
   const filtered =
     selectedCategory && selectedCategory !== "All"
@@ -43,9 +46,14 @@ export default async function ResourcesPage({
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Resources</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Resources")}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Search the district document library for forms, training references, policy documents, and reports.
+            {normalizePublicText(
+              pageContent.description,
+              "Search the district document library for forms, training references, policy documents, and reports.",
+            )}
           </p>
           {lastUpdated ? (
             <p className="mt-2 text-xs text-muted-foreground">

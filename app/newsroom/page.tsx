@@ -3,7 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, CalendarDays, User } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
+import { getNewsFromCms, getResourcesFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Newsroom",
@@ -19,7 +20,12 @@ export default async function NewsroomPage({
 }) {
   const params = await searchParams
   const category = params.category
-  const [newsArticles, resources] = await Promise.all([getNewsFromCms(), getResourcesFromCms()])
+  const [newsArticles, resources, siteContent] = await Promise.all([
+    getNewsFromCms(),
+    getResourcesFromCms(),
+    getSiteContentSettingsFromCms(),
+  ])
+  const pageContent = siteContent.newsroomPage
   const publishedArticles = newsArticles.filter((article) => article.published !== false)
   const publishedResources = resources.filter((resource) => resource.published !== false)
 
@@ -49,10 +55,14 @@ export default async function NewsroomPage({
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Newsroom</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Newsroom")}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Official updates from Kibaha Scouts, including announcements, training highlights, community service
-            impact, and scout achievements.
+            {normalizePublicText(
+              pageContent.description,
+              "Official updates from Kibaha Scouts, including announcements, training highlights, community service impact, and scout achievements.",
+            )}
           </p>
           {lastUpdated ? (
             <p className="mt-2 text-xs text-muted-foreground">
@@ -159,9 +169,11 @@ export default async function NewsroomPage({
 
       <section id="press" className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="text-2xl font-bold text-foreground md:text-3xl">Press & Downloads</h2>
+          <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+            {normalizePublicText(pageContent.pressTitle, "Press & Downloads")}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Media-ready files for official district communication.
+            {normalizePublicText(pageContent.pressDescription, "Media-ready files for official district communication.")}
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {pressDownloads.length > 0 ? (

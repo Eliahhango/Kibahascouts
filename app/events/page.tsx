@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { CalendarDays, Clock3, List, MapPin } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { getEventsFromCms } from "@/lib/cms"
+import { getEventsFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
+import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Events",
@@ -24,7 +25,9 @@ export default async function EventsPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const scoutEvents = (await getEventsFromCms()).filter((event) => event.published !== false)
+  const [events, siteContent] = await Promise.all([getEventsFromCms(), getSiteContentSettingsFromCms()])
+  const pageContent = siteContent.eventsPage
+  const scoutEvents = events.filter((event) => event.published !== false)
   const selectedView = params.view === "calendar" ? "calendar" : "list"
   const showPast = params.past === "true"
   const today = new Date()
@@ -63,9 +66,14 @@ export default async function EventsPage({
 
       <section className="bg-background py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Events</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+            {normalizePublicText(pageContent.title, "Events")}
+          </h1>
           <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            Browse all district activities, training weekends, and ceremonies. Switch between calendar and list views.
+            {normalizePublicText(
+              pageContent.description,
+              "Browse all district activities, training weekends, and ceremonies. Switch between calendar and list views.",
+            )}
           </p>
           {lastUpdated ? (
             <p className="mt-2 text-xs text-muted-foreground">
