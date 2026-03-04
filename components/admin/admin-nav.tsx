@@ -2,7 +2,18 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { CalendarDays, Clapperboard, FileText, Home, Inbox, LayoutDashboard, Newspaper, ShieldAlert, ShieldCheck } from "lucide-react"
+import {
+  CalendarDays,
+  Clapperboard,
+  Compass,
+  FileText,
+  Home,
+  Inbox,
+  LayoutDashboard,
+  Newspaper,
+  ShieldAlert,
+  ShieldCheck,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const adminNavItems = [
@@ -23,6 +34,12 @@ const adminNavItems = [
     label: "Homepage",
     icon: Home,
     match: (pathname: string) => pathname.startsWith("/admin/homepage"),
+  },
+  {
+    href: "/admin/navigation",
+    label: "Navigation",
+    icon: Compass,
+    match: (pathname: string) => pathname.startsWith("/admin/navigation"),
   },
   {
     href: "/admin/events",
@@ -64,15 +81,28 @@ const adminNavItems = [
 
 export function AdminNav() {
   const pathname = usePathname()
+  const hideAdminNav = pathname === "/admin/login" || pathname === "/admin/register"
+
+  if (hideAdminNav) {
+    return null
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Link href="/admin" className="text-sm font-semibold text-foreground hover:text-primary">
           Admin Dashboard
         </Link>
+        <Link href="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
+          Public Website
+        </Link>
+      </div>
 
-        <nav className="flex flex-1 flex-wrap items-center gap-1">
+      <div className="border-t border-border/70">
+        <nav
+          className="mx-auto flex w-full max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Admin navigation"
+        >
           {adminNavItems.map((item) => {
             const active = item.match(pathname)
             return (
@@ -80,7 +110,7 @@ export function AdminNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                   active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
                 aria-current={active ? "page" : undefined}
@@ -91,10 +121,6 @@ export function AdminNav() {
             )
           })}
         </nav>
-
-        <Link href="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
-          Public Website
-        </Link>
       </div>
     </header>
   )

@@ -11,8 +11,9 @@ import { GoogleTranslator } from "@/components/google-translator"
 import { SearchModal } from "@/components/search-modal"
 import { SafeClientBoundary } from "@/components/safe-client-boundary"
 import { siteConfig } from "@/lib/site-config"
+import type { NavigationItem } from "@/lib/types"
 
-const menuDescriptions: Record<string, string> = {
+const defaultMenuDescriptions: Record<string, string> = {
   "About Kibaha Scouts": "Institutional profile, leadership, history, and district governance.",
   Programmes: "Age-based sections, badge progression, and training pathways.",
   "Scout Units": "Directory of packs, troops, and crews across Kibaha wards.",
@@ -27,6 +28,39 @@ function splitIntoColumns<T>(items: T[]) {
   return [items.slice(0, midpoint), items.slice(midpoint)]
 }
 
+function buildFallbackNavItems(): NavigationItem[] {
+  return mainNavItems.map((item) => ({
+    ...item,
+    description: defaultMenuDescriptions[item.label] || "",
+    children: item.children?.map((child) => ({ ...child })),
+  }))
+}
+
+function normalizeNavItems(items: NavigationItem[] | undefined): NavigationItem[] {
+  if (!items || items.length === 0) {
+    return buildFallbackNavItems()
+  }
+
+  return items.map((item) => ({
+    label: (item.label || "").trim() || "Menu",
+    href: (item.href || "").trim() || "/",
+    description: (item.description || "").trim(),
+    children: item.children && item.children.length > 0
+      ? item.children.map((child) => ({
+          label: (child.label || "").trim() || "Item",
+          href: (child.href || "").trim() || "/",
+        }))
+      : undefined,
+  }))
+}
+
+type NavigationSettingsResponse = {
+  ok?: boolean
+  data?: {
+    mainNavItems?: NavigationItem[]
+  }
+}
+
 export function SiteHeader() {
   const { branding, name, organization } = siteConfig
   const pathname = usePathname()
@@ -34,8 +68,10 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [navItems, setNavItems] = useState<NavigationItem[]>(() => buildFallbackNavItems())
   const navRef = useRef<HTMLElement>(null)
   const menuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const shouldHideHeader = pathname === "/admin/login" || pathname === "/admin/register"
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -86,6 +122,39 @@ export function SiteHeader() {
     setActiveMenu(null)
   }, [pathname])
 
+  useEffect(() => {
+    if (shouldHideHeader) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadNavItems = async () => {
+      try {
+        const response = await fetch("/api/navigation", {
+          method: "GET",
+          cache: "no-store",
+        })
+        const payload = (await response.json()) as NavigationSettingsResponse
+        if (!response.ok || !payload.ok) {
+          return
+        }
+
+        if (!cancelled) {
+          setNavItems(normalizeNavItems(payload.data?.mainNavItems))
+        }
+      } catch {
+        // Keep fallback nav when API read fails.
+      }
+    }
+
+    void loadNavItems()
+
+    return () => {
+      cancelled = true
+    }
+  }, [shouldHideHeader])
+
   const handleMenuEnter = (label: string) => {
     if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current)
     setActiveMenu(label)
@@ -100,6 +169,10 @@ export function SiteHeader() {
       "Kibaha district identity, language translation, and global search.",
     [],
   )
+
+  if (shouldHideHeader) {
+    return null
+  }
 
   return (
     <>
@@ -167,7 +240,7 @@ export function SiteHeader() {
           </Link>
 
           <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Main navigation">
-            {mainNavItems.map((item) => {
+            {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
               const childColumns = item.children ? splitIntoColumns(item.children) : [[], []]
@@ -206,7 +279,9 @@ export function SiteHeader() {
                     >
                       <div className="mb-4 border-b border-border pb-3">
                         <p className="text-sm font-semibold text-card-foreground">{item.label}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{menuDescriptions[item.label]}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {item.description || defaultMenuDescriptions[item.label] || "Explore links in this section."}
+                        </p>
                       </div>
                       <div className="grid gap-2 md:grid-cols-2">
                         {childColumns.map((column, columnIndex) => (
@@ -253,7 +328,7 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {mobileOpen && <MobileNav pathname={pathname} onClose={() => setMobileOpen(false)} />}
+        {mobileOpen && <MobileNav pathname={pathname} navItems={navItems} onClose={() => setMobileOpen(false)} />}
       </header>
 
       <SafeClientBoundary>
@@ -263,21 +338,29 @@ export function SiteHeader() {
   )
 }
 
-function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => void }) {
+function MobileNav({
+  pathname,
+  navItems,
+  onClose,
+}: {
+  pathname: string
+  navItems: NavigationItem[]
+  onClose: () => void
+}) {
   const [expanded, setExpanded] = useState<string | null>(null)
 
   return (
-    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-border bg-background shadow-2xl xl:hidden">
+    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-border bg-background/95 shadow-2xl backdrop-blur xl:hidden">
       <nav className="mx-auto max-w-7xl px-4 py-4" aria-label="Mobile navigation">
-        {mainNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
           return (
-            <div key={item.label} className="border-b border-border">
+            <div key={`${item.label}-${item.href}`} className="border-b border-border">
               {item.children ? (
                 <>
                   <button
                     type="button"
-                    className={`flex w-full items-center justify-between py-3 text-left text-base font-medium focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`flex min-h-14 w-full items-center justify-between py-3 text-left text-base font-medium focus-visible:ring-2 focus-visible:ring-ring ${
                       isActive ? "text-tsa-green-deep" : "text-foreground"
                     }`}
                     onClick={() => setExpanded((current) => (current === item.label ? null : item.label))}
@@ -292,11 +375,12 @@ function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => voi
                   </button>
                   {expanded === item.label && (
                     <div className="pb-3 pl-4">
+                      {item.description ? <p className="mb-2 text-xs text-muted-foreground">{item.description}</p> : null}
                       {item.children.map((child) => (
                         <Link
-                          key={child.href}
+                          key={`${child.label}-${child.href}`}
                           href={child.href}
-                          className="block py-2 text-sm text-muted-foreground transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
+                          className="block rounded-md py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={onClose}
                         >
                           {child.label}
@@ -308,7 +392,7 @@ function MobileNav({ pathname, onClose }: { pathname: string; onClose: () => voi
               ) : (
                 <Link
                   href={item.href}
-                  className={`block py-3 text-base font-medium transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`block min-h-14 py-3 text-base font-medium transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring ${
                     isActive ? "text-tsa-green-deep" : "text-foreground"
                   }`}
                   onClick={onClose}

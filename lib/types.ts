@@ -113,6 +113,24 @@ export interface HomepageSettings {
   updatedBy?: string
 }
 
+export interface NavigationChildItem {
+  label: string
+  href: string
+}
+
+export interface NavigationItem {
+  label: string
+  href: string
+  description?: string
+  children?: NavigationChildItem[]
+}
+
+export interface NavigationSettings {
+  mainNavItems: NavigationItem[]
+  updatedAt?: string
+  updatedBy?: string
+}
+
 export interface Campaign {
   id: string
   title: string

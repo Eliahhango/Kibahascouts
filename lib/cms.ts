@@ -1,7 +1,17 @@
 import { unstable_noStore as noStore } from "next/cache"
 import { leadershipProfiles, mediaItems, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
-import type { HomepageSettings, LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import type {
+  HomepageSettings,
+  LeaderProfile,
+  MediaItem,
+  NavigationSettings,
+  NewsArticle,
+  Resource,
+  ScoutEvent,
+  ScoutUnit,
+} from "@/lib/types"
 import { getDefaultHomepageSettings } from "@/lib/firebase/homepage-settings"
+import { getDefaultNavigationSettings } from "@/lib/firebase/navigation-settings"
 
 const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
@@ -80,4 +90,11 @@ export async function getHomepageSettingsFromCms(): Promise<HomepageSettings> {
     const { getHomepageSettingsFromFirestore } = await import("@/lib/firebase/homepage-settings")
     return getHomepageSettingsFromFirestore()
   }, getDefaultHomepageSettings())
+}
+
+export async function getNavigationSettingsFromCms(): Promise<NavigationSettings> {
+  return withSampleFallbackItem(async () => {
+    const { getNavigationSettingsFromFirestore } = await import("@/lib/firebase/navigation-settings")
+    return getNavigationSettingsFromFirestore()
+  }, getDefaultNavigationSettings())
 }
