@@ -20,9 +20,10 @@ export default async function UnitsPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const scoutUnits = await getUnitsFromCms()
+  const scoutUnits = (await getUnitsFromCms()).filter((unit) => unit.published !== false)
   const wardFilter = params.ward
   const dayFilter = params.day
+  const hasActiveFilters = Boolean(wardFilter || dayFilter)
 
   const wards = Array.from(new Set(scoutUnits.map((unit) => unit.ward))).sort()
   const meetingDays = Array.from(new Set(scoutUnits.map((unit) => unit.meetingDay))).sort()
@@ -32,6 +33,7 @@ export default async function UnitsPage({
     if (dayFilter && unit.meetingDay !== dayFilter) return false
     return true
   })
+  const filtersExcludeAll = hasActiveFilters && scoutUnits.length > 0 && filtered.length === 0
 
   return (
     <>
@@ -132,6 +134,19 @@ export default async function UnitsPage({
                   </Link>
                 </article>
               ))}
+            </div>
+          ) : filtersExcludeAll ? (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h2 className="text-base font-semibold text-card-foreground">No units match the selected filters</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Published units are available, but none match your ward/day filter combination.
+              </p>
+              <Link
+                href="/units"
+                className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+              >
+                Clear all filters
+              </Link>
             </div>
           ) : (
             <div className="rounded-lg border border-border bg-card p-5">

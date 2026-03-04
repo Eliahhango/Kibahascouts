@@ -28,12 +28,15 @@ export default async function NewsroomPage({
     category && category !== "All"
       ? sortedArticles.filter((article) => article.category === category)
       : sortedArticles
+  const hasCategoryFilter = Boolean(category && category !== "All")
+  const categoryFilterEmpty = hasCategoryFilter && sortedArticles.length > 0 && filteredArticles.length === 0
 
   const pressDownloads = publishedResources.filter((resource) =>
     ["TSA Brand Guidelines for Units", "District Census Report 2025", "Kibaha District Annual Plan 2026"].includes(
       resource.title,
     ),
   )
+  const pressFilterEmpty = publishedResources.length > 0 && pressDownloads.length === 0
   const lastUpdated =
     sortedArticles
       .map((article) => article.updatedAt || article.date)
@@ -130,6 +133,19 @@ export default async function NewsroomPage({
                 </article>
               ))}
             </div>
+          ) : categoryFilterEmpty ? (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h3 className="text-base font-semibold text-card-foreground">No articles match this category yet</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                There are published newsroom articles, but none in <span className="font-medium">{category}</span>.
+              </p>
+              <Link
+                href="/newsroom"
+                className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+              >
+                View all categories
+              </Link>
+            </div>
           ) : (
             <div className="rounded-lg border border-border bg-card p-5">
               <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>
@@ -170,6 +186,19 @@ export default async function NewsroomPage({
                   )}
                 </div>
               ))
+            ) : pressFilterEmpty ? (
+              <div className="rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
+                <h3 className="text-base font-semibold text-card-foreground">No featured press downloads yet</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Published resources exist, but none are marked as featured press files right now.
+                </p>
+                <Link
+                  href="/resources"
+                  className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                >
+                  Browse all resources
+                </Link>
+              </div>
             ) : (
               <div className="rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
                 <h3 className="text-base font-semibold text-card-foreground">Press resources are coming soon</h3>

@@ -153,6 +153,13 @@ export default async function HomePage() {
                   </div>
                 </Link>
               ))
+            ) : publishedNews.length > 0 ? (
+              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-4">
+                <h3 className="text-base font-semibold text-card-foreground">No additional news items yet</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  The featured story is live. More published news items will appear here automatically.
+                </p>
+              </article>
             ) : (
               <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-4">
                 <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>

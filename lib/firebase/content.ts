@@ -80,6 +80,10 @@ const leaderDocSchema = z.object({
 
 type ParsedDoc<T> = { id: string; data: T }
 
+function isPublishedValue(value: unknown) {
+  return value === true || value === "true" || value === 1
+}
+
 function toIsoString(value: unknown) {
   if (!value) return undefined
   if (value instanceof Timestamp) return value.toDate().toISOString()
@@ -137,14 +141,23 @@ function normalizeTagList(value: string[] | undefined) {
 }
 
 async function readPublishedCollection<T>(collectionName: string, schema: z.ZodType<T>): Promise<ParsedDoc<T>[]> {
-  const snapshot = await getAdminDb().collection(collectionName).where("published", "==", true).get()
+  const snapshot = await getAdminDb().collection(collectionName).get()
 
   const docs: ParsedDoc<T>[] = []
   snapshot.forEach((doc) => {
-    const parsed = schema.safeParse(doc.data())
+    const data = doc.data()
+    if (!isPublishedValue(data?.published)) {
+      return
+    }
+
+    const parsed = schema.safeParse(data)
     if (parsed.success) {
       docs.push({ id: doc.id, data: parsed.data })
+      return
     }
+
+    // Keep rendering resilient even when a stored document shape is incomplete.
+    console.warn(`Skipping invalid published ${collectionName} document: ${doc.id}`)
   })
 
   return docs

@@ -27,8 +27,10 @@ export default async function ResourcesPage({
     selectedCategory && selectedCategory !== "All"
       ? resources.filter((resource) => resource.category === selectedCategory)
       : resources
+  const hasCategoryFilter = Boolean(selectedCategory && selectedCategory !== "All")
 
   const sorted = [...filtered].sort((a, b) => +new Date(b.publishDate) - +new Date(a.publishDate))
+  const categoryFilterEmpty = hasCategoryFilter && resources.length > 0 && sorted.length === 0
   const lastUpdated =
     sorted
       .map((resource) => resource.updatedAt || resource.publishDate)
@@ -115,6 +117,19 @@ export default async function ResourcesPage({
                   </div>
                 </article>
               ))}
+            </div>
+          ) : categoryFilterEmpty ? (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h2 className="text-base font-semibold text-card-foreground">No resources match this category yet</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                There are published resources, but none in <span className="font-medium">{selectedCategory}</span>.
+              </p>
+              <Link
+                href="/resources"
+                className="mt-3 inline-flex rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+              >
+                View all categories
+              </Link>
             </div>
           ) : (
             <div className="rounded-lg border border-border bg-card p-5">
