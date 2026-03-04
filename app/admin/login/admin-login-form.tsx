@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { Shield } from "lucide-react"
@@ -88,7 +87,6 @@ async function parseApiResponse(response: Response) {
 }
 
 export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
-  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -171,8 +169,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
       }
 
       await clearFailedAttempts(normalizedEmail)
-      router.replace(nextPath)
-      router.refresh()
+      window.location.assign(nextPath)
     } catch (submitError) {
       const uiError = mapSignInError(submitError)
       const reasonCode = uiError.toLowerCase().includes("allowlist") ? "email_not_allowlisted" : "incorrect_password"

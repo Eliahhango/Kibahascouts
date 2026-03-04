@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { adminFetch } from "@/lib/auth/admin-fetch"
@@ -96,7 +95,6 @@ async function parseApiResponse<T>(response: Response) {
 }
 
 export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegisterFormProps) {
-  const router = useRouter()
   const [email, setEmail] = useState("")
   const [eligibleEmail, setEligibleEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -196,8 +194,7 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
         throw new Error(message)
       }
 
-      router.replace(nextPath)
-      router.refresh()
+      window.location.assign(nextPath)
     } catch (submitError) {
       setError(mapRegisterError(submitError))
     } finally {

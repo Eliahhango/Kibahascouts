@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { signOut } from "firebase/auth"
 import { adminFetch } from "@/lib/auth/admin-fetch"
@@ -8,7 +7,6 @@ import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
 
 export function AdminLogoutButton() {
-  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleLogout() {
@@ -25,8 +23,7 @@ export function AdminLogoutButton() {
         // Do not block logout redirect if client auth state is unavailable.
       }
 
-      router.replace("/admin/login")
-      router.refresh()
+      window.location.assign("/admin/login")
       setIsSubmitting(false)
     }
   }
