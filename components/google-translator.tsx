@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
 import { languageCodes, normalizeLanguageCode } from "@/lib/translate-languages"
 
@@ -41,9 +42,20 @@ declare global {
 
 function setGoogTransCookie(code: string) {
   const value = `/en/${code}`
-  document.cookie = `googtrans=${value};path=/`
-  document.cookie = `googtrans=${value};domain=${window.location.hostname};path=/`
-  document.cookie = `googtrans=${value};domain=.${window.location.hostname};path=/`
+  const expires = "Fri, 31 Dec 2099 23:59:59 GMT"
+  const baseParts = [`googtrans=${value}`, "path=/", `expires=${expires}`, "SameSite=Lax"]
+  if (window.location.protocol === "https:") {
+    baseParts.push("Secure")
+  }
+
+  const baseCookie = baseParts.join(";")
+  document.cookie = baseCookie
+
+  const host = window.location.hostname
+  if (host && host !== "localhost" && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+    document.cookie = `${baseCookie};domain=${host}`
+    document.cookie = `${baseCookie};domain=.${host}`
+  }
 }
 
 function getTranslateCombo() {
@@ -133,6 +145,7 @@ function createLanguageOptions() {
 }
 
 export function GoogleTranslator() {
+  const pathname = usePathname()
   const [selectedLanguage, setSelectedLanguage] = useState("en")
   const [ready, setReady] = useState(false)
   const [suggestedLanguage, setSuggestedLanguage] = useState<LocaleDetectResponse | null>(null)
@@ -140,7 +153,7 @@ export function GoogleTranslator() {
   const applyTimerRef = useRef<number | null>(null)
   const observerRef = useRef<MutationObserver | null>(null)
   const pendingLanguageRef = useRef<string | null>(null)
-  const applyAttemptsRef = useRef(0)
+  const lastAppliedRef = useRef<string | null>(null)
 
   const languageOptions = useMemo(createLanguageOptions, [])
   const languageLabelByCode = useMemo(
@@ -159,10 +172,9 @@ export function GoogleTranslator() {
 
   const clearApplyTimer = () => {
     if (applyTimerRef.current !== null) {
-      window.clearInterval(applyTimerRef.current)
+      window.clearTimeout(applyTimerRef.current)
       applyTimerRef.current = null
     }
-    applyAttemptsRef.current = 0
   }
 
   const attemptApplyLanguage = (code: string) => {
@@ -172,25 +184,17 @@ export function GoogleTranslator() {
 
     if (done) {
       pendingLanguageRef.current = null
+      lastAppliedRef.current = code
       startGuard()
     }
     return done
   }
 
-  const applyLanguageWhenReady = (code: string) => {
+  const applyLanguageWhenReady = (code: string, initialDelayMs = 0) => {
     pendingLanguageRef.current = code
+    clearApplyTimer()
 
-    if (attemptApplyLanguage(code)) {
-      clearApplyTimer()
-      return
-    }
-
-    if (applyTimerRef.current !== null) {
-      return
-    }
-
-    applyTimerRef.current = window.setInterval(() => {
-      applyAttemptsRef.current += 1
+    const runWithRetry = (attempt: number) => {
       const pending = pendingLanguageRef.current
       if (!pending) {
         clearApplyTimer()
@@ -202,11 +206,19 @@ export function GoogleTranslator() {
         return
       }
 
-      if (applyAttemptsRef.current >= 60) {
-        // Keep selected value and cookie even if Google widget did not respond in time.
+      if (attempt >= 30) {
+        // Keep selected value and cookie even if the widget did not attach in time.
         clearApplyTimer()
+        return
       }
-    }, 250)
+
+      const delayMs = Math.min(300 * (attempt + 1), 2000)
+      applyTimerRef.current = window.setTimeout(() => runWithRetry(attempt + 1), delayMs)
+    }
+
+    applyTimerRef.current = window.setTimeout(() => {
+      runWithRetry(0)
+    }, Math.max(0, initialDelayMs))
   }
 
   const startComboObserver = () => {
@@ -219,7 +231,9 @@ export function GoogleTranslator() {
       if (!pending) {
         return
       }
-      attemptApplyLanguage(pending)
+      if (attemptApplyLanguage(pending)) {
+        clearApplyTimer()
+      }
     })
 
     observerRef.current.observe(document.body, {
@@ -327,6 +341,19 @@ export function GoogleTranslator() {
       isCancelled = true
     }
   }, [ready])
+
+  useEffect(() => {
+    if (!ready) {
+      return
+    }
+
+    const lastApplied = lastAppliedRef.current
+    if (!lastApplied || lastApplied === "en") {
+      return
+    }
+
+    applyLanguageWhenReady(lastApplied, 800)
+  }, [pathname, ready])
 
   const onChangeLanguage = (nextLanguage: string, persist = true) => {
     const normalized = normalizeLanguageCode(nextLanguage) ?? "en"

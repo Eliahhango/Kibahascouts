@@ -1,15 +1,43 @@
-import { Loader2Icon } from 'lucide-react'
+import type { CSSProperties, ComponentPropsWithoutRef } from "react"
+import { cn } from "@/lib/utils"
 
-import { cn } from '@/lib/utils'
+type SpinnerSize = "sm" | "md" | "lg"
 
-function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
+type SpinnerProps = ComponentPropsWithoutRef<"svg"> & {
+  size?: SpinnerSize
+  color?: string
+}
+
+const sizeClassMap: Record<SpinnerSize, string> = {
+  sm: "h-4 w-4",
+  md: "h-5 w-5",
+  lg: "h-8 w-8",
+}
+
+function Spinner({ className, size = "md", color = "currentColor", style, ...props }: SpinnerProps) {
+  const mergedStyle: CSSProperties = {
+    color,
+    ...style,
+  }
+
   return (
-    <Loader2Icon
+    <svg
       role="status"
       aria-label="Loading"
-      className={cn('size-4 animate-spin', className)}
+      viewBox="0 0 24 24"
+      className={cn("animate-spin", sizeClassMap[size], className)}
+      style={mergedStyle}
       {...props}
-    />
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" fill="none" opacity="0.2" />
+      <path
+        d="M21 12a9 9 0 0 0-9-9"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
   )
 }
 

@@ -8,7 +8,7 @@ type AdminLayoutProps = {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-secondary/40">
+    <div className="notranslate min-h-screen bg-secondary/40">
       <AdminSessionMonitor />
       <AdminNav />
       {children}

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { Spinner } from "@/components/ui/spinner"
 
 type MediaKind = "video" | "gallery"
 
@@ -48,6 +49,14 @@ type MediaPreview = {
   thumbnail?: string
 }
 
+type InstagramImportPreview = {
+  thumbnailUrl: string
+  title: string
+  authorName: string
+  embedUrl: string
+  postUrl: string
+}
+
 export function MediaManager() {
   const [items, setItems] = useState<MediaAdminRecord[]>([])
   const [form, setForm] = useState<MediaFormState>(initialFormState)
@@ -55,6 +64,10 @@ export function MediaManager() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isResolvingPreview, setIsResolvingPreview] = useState(false)
+  const [instagramUrl, setInstagramUrl] = useState("")
+  const [instagramPreview, setInstagramPreview] = useState<InstagramImportPreview | null>(null)
+  const [isFetchingInstagram, setIsFetchingInstagram] = useState(false)
+  const [instagramImportMode, setInstagramImportMode] = useState<"gallery" | "video" | null>(null)
   const [actionState, setActionState] = useState<{ id: string; type: "publish" | "delete" } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -164,6 +177,84 @@ export function MediaManager() {
     }
   }
 
+  async function handleFetchInstagramImages() {
+    const sourceUrl = instagramUrl.trim()
+    if (!sourceUrl) {
+      setError("Please paste an Instagram post URL first.")
+      setSuccess(null)
+      return
+    }
+
+    setIsFetchingInstagram(true)
+    setInstagramPreview(null)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const response = await adminFetch("/api/admin/media/instagram-import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: sourceUrl }),
+      })
+
+      const payload = (await response.json()) as ApiResponse<InstagramImportPreview>
+      if (!response.ok || !payload.ok || !payload.data) {
+        throw new Error(payload.error || "Could not fetch Instagram post. Make sure the post is public.")
+      }
+
+      setInstagramPreview(payload.data)
+      setSuccess("Instagram post fetched. Choose how to import it.")
+    } catch (fetchError) {
+      setError(fetchError instanceof Error ? fetchError.message : "Could not fetch Instagram post. Make sure the post is public.")
+    } finally {
+      setIsFetchingInstagram(false)
+    }
+  }
+
+  async function handleAddInstagram(kind: "gallery" | "video") {
+    if (!instagramPreview) {
+      return
+    }
+
+    setInstagramImportMode(kind)
+    setError(null)
+    setSuccess(null)
+
+    const title = instagramPreview.title?.trim() || "Instagram Post"
+    const description = instagramPreview.authorName
+      ? `Imported from Instagram by ${instagramPreview.authorName}`
+      : "Imported from Instagram"
+
+    try {
+      const response = await adminFetch("/api/admin/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind,
+          title,
+          thumbnail: instagramPreview.thumbnailUrl,
+          href: instagramPreview.postUrl,
+          embedUrl: kind === "video" ? instagramPreview.embedUrl : "",
+          sourceProvider: "Instagram",
+          description,
+          published: false,
+        }),
+      })
+
+      const payload = (await response.json()) as ApiResponse<MediaAdminRecord>
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "Unable to import Instagram media.")
+      }
+
+      setSuccess(kind === "gallery" ? "Instagram post added as gallery image." : "Instagram post added as video embed.")
+      await loadMedia()
+    } catch (importError) {
+      setError(importError instanceof Error ? importError.message : "Unable to import Instagram media.")
+    } finally {
+      setInstagramImportMode(null)
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const actionText = editingId ? "update" : "create"
@@ -265,6 +356,85 @@ export function MediaManager() {
           Paste a video link and click fetch to auto-fill caption/title and embed settings. Gallery items can still be entered manually.
         </p>
 
+        <details className="mt-4 rounded-lg border border-border bg-secondary/30 p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-card-foreground">Import from Instagram</summary>
+          <div className="mt-3 space-y-3">
+            <label className="block text-sm">
+              <span className="font-medium text-card-foreground">Instagram Post URL</span>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <input
+                  value={instagramUrl}
+                  onChange={(event) => setInstagramUrl(event.target.value)}
+                  placeholder="https://www.instagram.com/p/ABC123/"
+                  className="min-w-[260px] flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleFetchInstagramImages()}
+                  disabled={isFetchingInstagram || !instagramUrl.trim()}
+                  className="inline-flex items-center rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
+                >
+                  {isFetchingInstagram ? (
+                    <>
+                      <Spinner size="sm" className="mr-1.5" />
+                      Fetching...
+                    </>
+                  ) : (
+                    "Fetch Images"
+                  )}
+                </button>
+              </div>
+            </label>
+
+            {instagramPreview ? (
+              <article className="rounded-lg border border-border bg-background p-3">
+                {instagramPreview.thumbnailUrl ? (
+                  <img
+                    src={instagramPreview.thumbnailUrl}
+                    alt={instagramPreview.title || "Instagram preview"}
+                    className="h-40 w-full rounded-md object-cover"
+                  />
+                ) : null}
+                <p className="mt-2 text-sm font-semibold text-card-foreground">{instagramPreview.title || "Instagram Post"}</p>
+                <p className="text-xs text-muted-foreground">{instagramPreview.authorName || "Instagram"}</p>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void handleAddInstagram("gallery")}
+                    disabled={instagramImportMode !== null}
+                    className="inline-flex items-center rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
+                  >
+                    {instagramImportMode === "gallery" ? (
+                      <>
+                        <Spinner size="sm" className="mr-1.5" />
+                        Importing...
+                      </>
+                    ) : (
+                      "Add as Gallery Image"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleAddInstagram("video")}
+                    disabled={instagramImportMode !== null}
+                    className="inline-flex items-center rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
+                  >
+                    {instagramImportMode === "video" ? (
+                      <>
+                        <Spinner size="sm" className="mr-1.5" />
+                        Importing...
+                      </>
+                    ) : (
+                      "Add as Video Embed"
+                    )}
+                  </button>
+                </div>
+              </article>
+            ) : null}
+          </div>
+        </details>
+
         <form className="mt-5 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
           <label className="text-sm">
             <span className="font-medium text-card-foreground">Title</span>
@@ -308,9 +478,16 @@ export function MediaManager() {
                 type="button"
                 onClick={() => void handleFetchFromLink()}
                 disabled={isResolvingPreview || !form.href.trim()}
-                className="inline-flex rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
+                className="inline-flex items-center rounded-md border border-border px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-70"
               >
-                {isResolvingPreview ? "Fetching..." : "Fetch from Link"}
+                {isResolvingPreview ? (
+                  <>
+                    <Spinner size="sm" className="mr-1.5" />
+                    Fetching...
+                  </>
+                ) : (
+                  "Fetch from Link"
+                )}
               </button>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">For videos, this will auto-fill provider, embed URL, and available metadata.</p>
@@ -380,9 +557,16 @@ export function MediaManager() {
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-70"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-70"
             >
-              {isSaving ? "Saving..." : submitLabel}
+              {isSaving ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Saving...
+                </>
+              ) : (
+                submitLabel
+              )}
             </button>
             {editingId ? (
               <button
@@ -494,6 +678,12 @@ export function MediaManager() {
                         >
                           {actionState?.id === item.id && actionState.type === "delete" ? "Deleting..." : "Delete"}
                         </button>
+                        {actionState?.id === item.id ? (
+                          <span className="inline-flex items-center text-xs text-muted-foreground">
+                            <Spinner size="sm" className="mr-1.5" />
+                            Processing
+                          </span>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

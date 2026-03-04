@@ -9,6 +9,7 @@ import { Shield } from "lucide-react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type AdminLoginFormProps = {
   nextPath: string
@@ -286,10 +287,24 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
             </p>
           ) : null}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Signing in..." : "Sign in to Admin"}
+          <Button type="submit" disabled={isSubmitting} className="relative w-full overflow-hidden">
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="mr-2" />
+                Signing in...
+                <span className="pointer-events-none absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              </>
+            ) : (
+              "Sign in to Admin"
+            )}
           </Button>
         </form>
+
+        {isSubmitting ? (
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            Verifying credentials and starting secure session...
+          </p>
+        ) : null}
 
         <p className="mt-4 text-xs text-muted-foreground">
           If your account is not allowlisted, contact the district website administrator.

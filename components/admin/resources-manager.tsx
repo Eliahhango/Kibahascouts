@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { Spinner } from "@/components/ui/spinner"
 
 type ResourceAdminRecord = {
   id: string
@@ -353,9 +354,16 @@ export function ResourcesManager() {
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-70"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-70"
             >
-              {isSaving ? "Saving..." : submitLabel}
+              {isSaving ? (
+                <>
+                  <Spinner size="sm" className="mr-1.5" />
+                  Saving...
+                </>
+              ) : (
+                submitLabel
+              )}
             </button>
             {editingId ? (
               <button
@@ -460,7 +468,14 @@ export function ResourcesManager() {
                           disabled={actionState?.id === item.id}
                           className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
                         >
-                          {actionState?.id === item.id && actionState.type === "publish" ? "Updating..." : item.published ? "Unpublish" : "Publish"}
+                          {actionState?.id === item.id && actionState.type === "publish" ? (
+                            <span className="inline-flex items-center">
+                              <Spinner size="sm" className="mr-1.5" />
+                              Updating...
+                            </span>
+                          ) : (
+                            (item.published ? "Unpublish" : "Publish")
+                          )}
                         </button>
                         <button
                           type="button"
@@ -468,7 +483,14 @@ export function ResourcesManager() {
                           disabled={actionState?.id === item.id}
                           className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
                         >
-                          {actionState?.id === item.id && actionState.type === "delete" ? "Deleting..." : "Delete"}
+                          {actionState?.id === item.id && actionState.type === "delete" ? (
+                            <span className="inline-flex items-center">
+                              <Spinner size="sm" className="mr-1.5" />
+                              Deleting...
+                            </span>
+                          ) : (
+                            "Delete"
+                          )}
                         </button>
                       </div>
                     </td>

@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Manrope, Source_Serif_4 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ConditionalShell } from '@/components/conditional-shell'
 import { SiteVisitTracker } from '@/components/site-visit-tracker'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -68,11 +69,15 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <SiteVisitTracker />
         </Suspense>
-        <SiteHeader />
+        <ConditionalShell>
+          <SiteHeader />
+        </ConditionalShell>
         <main id="main-content">
           {children}
         </main>
-        <SiteFooter />
+        <ConditionalShell>
+          <SiteFooter />
+        </ConditionalShell>
         <Analytics />
       </body>
     </html>

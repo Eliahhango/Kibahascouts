@@ -188,7 +188,21 @@ body > .skiptranslate {
 html,
 body {
   top: 0 !important;
+  position: static !important;
   margin-top: 0 !important;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.2s linear infinite;
 }
 
 .goog-logo-link,

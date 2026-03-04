@@ -48,6 +48,7 @@ const serverEnvSchema = z
     ADMIN_SESSION_REFRESH_BEFORE_MINUTES: positiveInt("ADMIN_SESSION_REFRESH_BEFORE_MINUTES", 1, 120).default(20),
     ADMIN_SECURITY_ALERT_THRESHOLD: positiveInt("ADMIN_SECURITY_ALERT_THRESHOLD", 1, 100).default(8),
     ADMIN_SECURITY_ALERT_WINDOW_MINUTES: positiveInt("ADMIN_SECURITY_ALERT_WINDOW_MINUTES", 1, 1_440).default(30),
+    INSTAGRAM_ACCESS_TOKEN: z.string().optional().default(""),
     ADMIN_EMAILS: z.string().optional().default(""),
     CMS_BASE_URL: z.string().optional().default(""),
     CMS_API_TOKEN: z.string().optional().default(""),

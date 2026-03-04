@@ -165,7 +165,7 @@ export function AdminNav() {
   }, [session?.email])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="notranslate sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Link href="/admin" className="flex items-center gap-2.5 rounded-md px-1 py-0.5 transition hover:bg-secondary/60">
           <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-border" aria-hidden="true">
