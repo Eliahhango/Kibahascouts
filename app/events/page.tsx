@@ -28,17 +28,20 @@ export default async function EventsPage({
   const selectedView = params.view === "calendar" ? "calendar" : "list"
   const showPast = params.past === "true"
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
   const orderedEvents = [...scoutEvents].sort((a, b) => +toDate(a.date) - +toDate(b.date))
   const visibleEvents = orderedEvents.filter((event) => (showPast ? true : toDate(event.date) >= today))
-  const monthBase = visibleEvents[0] || orderedEvents[0]
+  const shouldAutoIncludePast = !showPast && visibleEvents.length === 0 && orderedEvents.length > 0
+  const effectiveEvents = shouldAutoIncludePast ? orderedEvents : visibleEvents
+  const monthBase = effectiveEvents[0] || orderedEvents[0]
   const monthDate = monthBase ? toDate(monthBase.date) : new Date()
   const monthYearLabel = monthDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" })
   const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate()
   const firstWeekday = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1).getDay()
-  const eventLookup = new Map<number, typeof visibleEvents>()
+  const eventLookup = new Map<number, typeof effectiveEvents>()
 
-  visibleEvents
+  effectiveEvents
     .filter((event) => {
       const eventDate = toDate(event.date)
       return eventDate.getMonth() === monthDate.getMonth() && eventDate.getFullYear() === monthDate.getFullYear()
@@ -110,6 +113,12 @@ export default async function EventsPage({
               Include Past
             </Link>
           </div>
+
+          {shouldAutoIncludePast ? (
+            <p className="mt-3 rounded-md border border-tsa-gold/40 bg-tsa-gold/10 px-3 py-2 text-xs text-tsa-green-deep">
+              No upcoming events are currently scheduled. Showing published past events instead.
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -119,7 +128,7 @@ export default async function EventsPage({
             <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
               Calendar View: {monthYearLabel}
             </h2>
-            {visibleEvents.length === 0 ? (
+            {effectiveEvents.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">
                 No published events are available yet. Upcoming events will appear here automatically.
               </p>
@@ -173,9 +182,9 @@ export default async function EventsPage({
             <h2 id="list-view" className="sr-only">
               Event list
             </h2>
-            {visibleEvents.length > 0 ? (
+            {effectiveEvents.length > 0 ? (
               <div className="space-y-4">
-                {visibleEvents.map((event) => {
+                {effectiveEvents.map((event) => {
                   const eventDate = toDate(event.date)
                   return (
                     <article key={event.id} className="rounded-lg border border-border bg-card p-5">
