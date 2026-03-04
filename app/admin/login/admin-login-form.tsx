@@ -1,9 +1,11 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
+import { Shield } from "lucide-react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
@@ -204,9 +206,18 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10">
-      <section className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-card-foreground">Admin Sign In</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-tsa-green-deep to-[#1a0f3d] px-4 py-10">
+      <section className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
+        <div className="mb-4 flex justify-center">
+          <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-tsa-gold/70">
+            <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="64px" className="object-cover" priority />
+          </div>
+        </div>
+
+        <h1 className="flex items-center justify-center gap-2 text-2xl font-bold text-card-foreground">
+          <Shield className="h-5 w-5 text-tsa-green-deep" />
+          Admin Sign In
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Sign in with an allowlisted admin email to manage website content.
         </p>
@@ -242,15 +253,17 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
               onChange={(event) => setPassword(event.target.value)}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
             />
-            <div className="mt-2">
-              <div className="h-1.5 w-full rounded-full bg-secondary">
-                <div
-                  className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
-                  style={{ width: `${password ? passwordStrength.percent : 0}%` }}
-                />
+            {password ? (
+              <div className="mt-2">
+                <div className="h-1.5 w-full rounded-full bg-secondary">
+                  <div
+                    className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
+                    style={{ width: `${passwordStrength.percent}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">Password strength: {passwordStrength.label}</p>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">Password strength: {password ? passwordStrength.label : "Not entered"}</p>
-            </div>
+            ) : null}
             <button
               type="button"
               onClick={() => void handleForgotPassword()}

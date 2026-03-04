@@ -8,14 +8,14 @@ import {
   Home,
   Inbox,
   Newspaper,
-  PlusCircle,
   Settings2,
   ShieldAlert,
+  ShieldCheck,
 } from "lucide-react"
 import { AdminBreadcrumbs } from "@/components/admin/admin-breadcrumbs"
+import { AdminDashboardGreeting } from "@/components/admin/admin-dashboard-greeting"
 import { DashboardCards, DashboardCardsSkeleton } from "@/components/admin/dashboard-cards"
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button"
-import { Button } from "@/components/ui/button"
 import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 import { getAdminDashboardCounts } from "@/lib/firebase/admin-dashboard"
 import { redirect } from "next/navigation"
@@ -25,31 +25,39 @@ async function DashboardCountsSection({ adminEmail }: { adminEmail: string }) {
 
   const cards = [
     {
+      href: "/admin/news",
       title: "Published News",
       value: counts.publishedNews.value,
       description: "Public newsroom items currently published.",
       icon: Newspaper,
+      accent: "purple" as const,
       error: counts.publishedNews.error,
     },
     {
+      href: "/admin/events",
       title: "Published Events",
       value: counts.publishedEvents.value,
       description: "Public events currently visible on the website.",
       icon: CalendarDays,
+      accent: "blue" as const,
       error: counts.publishedEvents.error,
     },
     {
+      href: "/admin/resources",
       title: "Published Resources",
       value: counts.publishedResources.value,
       description: "Public resource files and links currently published.",
       icon: FileText,
+      accent: "green" as const,
       error: counts.publishedResources.error,
     },
     {
+      href: "/admin/messages",
       title: "Unread Messages",
       value: counts.unreadMessages.value,
       description: "Contact submissions still awaiting review.",
       icon: Inbox,
+      accent: "amber" as const,
       error: counts.unreadMessages.error,
     },
   ]
@@ -71,6 +79,84 @@ async function DashboardCountsSection({ adminEmail }: { adminEmail: string }) {
 export default async function AdminHomePage() {
   try {
     const admin = await requireAdmin("dashboard:view")
+    const roleBadge = admin.role === "super_admin"
+      ? { label: "Super Admin", className: "border-violet-200 bg-violet-100 text-violet-700" }
+      : admin.role === "content_admin"
+        ? { label: "Content Admin", className: "border-blue-200 bg-blue-100 text-blue-700" }
+        : { label: "Viewer", className: "border-slate-200 bg-slate-100 text-slate-700" }
+
+    const toolCards = [
+      {
+        href: "/admin/news",
+        label: "News Manager",
+        description: "Create and publish official district stories.",
+        icon: Newspaper,
+        iconTone: "bg-violet-100 text-violet-700",
+      },
+      {
+        href: "/admin/events",
+        label: "Events Calendar",
+        description: "Manage upcoming events, details, and publishing.",
+        icon: CalendarDays,
+        iconTone: "bg-blue-100 text-blue-700",
+      },
+      {
+        href: "/admin/resources",
+        label: "Resources Library",
+        description: "Upload or update forms, files, and links.",
+        icon: FileText,
+        iconTone: "bg-emerald-100 text-emerald-700",
+      },
+      {
+        href: "/admin/media",
+        label: "Media Center",
+        description: "Maintain videos and gallery content for homepage.",
+        icon: Clapperboard,
+        iconTone: "bg-fuchsia-100 text-fuchsia-700",
+      },
+      {
+        href: "/admin/messages",
+        label: "Inbox",
+        description: "Review and manage contact submissions.",
+        icon: Inbox,
+        iconTone: "bg-amber-100 text-amber-700",
+      },
+      {
+        href: "/admin/homepage",
+        label: "Homepage",
+        description: "Edit featured sections and homepage highlights.",
+        icon: Home,
+        iconTone: "bg-indigo-100 text-indigo-700",
+      },
+      {
+        href: "/admin/navigation",
+        label: "Navigation",
+        description: "Update header menus and navigation labels.",
+        icon: Compass,
+        iconTone: "bg-cyan-100 text-cyan-700",
+      },
+      {
+        href: "/admin/site-content",
+        label: "Site Content",
+        description: "Update text content across public pages.",
+        icon: Settings2,
+        iconTone: "bg-slate-100 text-slate-700",
+      },
+      {
+        href: "/admin/admins",
+        label: "Admin Access",
+        description: "Manage admin roles, invitations, and status.",
+        icon: ShieldCheck,
+        iconTone: "bg-purple-100 text-purple-700",
+      },
+      {
+        href: "/admin/security",
+        label: "Security Center",
+        description: "Review logs, blocks, and threat alerts.",
+        icon: ShieldAlert,
+        iconTone: "bg-rose-100 text-rose-700",
+      },
+    ]
 
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-10">
@@ -80,65 +166,20 @@ export default async function AdminHomePage() {
               <AdminBreadcrumbs currentPage="Overview" />
               <div>
                 <h1 className="text-2xl font-bold text-card-foreground">Admin Dashboard</h1>
+                <AdminDashboardGreeting email={admin.email} />
                 <p className="mt-2 text-sm text-muted-foreground">
                   Signed in as <span className="font-medium text-foreground">{admin.email}</span>.
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">Use this area to monitor content and incoming requests.</p>
+                <div className="mt-2">
+                  <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${roleBadge.className}`}>
+                    {roleBadge.label}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">Use this area to monitor content and incoming requests.</p>
               </div>
             </div>
 
             <AdminLogoutButton />
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Button asChild size="sm">
-              <Link href="/admin/events">
-                <PlusCircle className="h-4 w-4" />
-                Create New Event
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="secondary">
-              <Link href="/admin/news">
-                <PlusCircle className="h-4 w-4" />
-                Create News Item
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/homepage">
-                <Home className="h-4 w-4" />
-                Edit Homepage Content
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/navigation">
-                <Compass className="h-4 w-4" />
-                Edit Navigation
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/site-content">
-                <Settings2 className="h-4 w-4" />
-                Edit Page Content
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/resources">
-                <PlusCircle className="h-4 w-4" />
-                Add Resource
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/media">
-                <PlusCircle className="h-4 w-4" />
-                Add Media
-              </Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/admin/security">
-                <ShieldAlert className="h-4 w-4" />
-                Security Center
-              </Link>
-            </Button>
           </div>
         </header>
 
@@ -148,54 +189,28 @@ export default async function AdminHomePage() {
           </Suspense>
         </section>
 
-        <section className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-card-foreground">Content Tools</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/news">Manage News</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/events">Manage Events</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/homepage">
-                <Home className="h-4 w-4" />
-                Homepage Settings
+        <hr className="mt-8 border-border/70" />
+
+        <section className="mt-8 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground">Management Tools</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Access content, security, and communication modules from one place.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+            {toolCards.map((tool) => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="rounded-xl border border-border bg-background p-4 transition-transform hover:-translate-y-0.5 hover:bg-secondary/30"
+              >
+                <span className={`inline-flex h-11 w-11 items-center justify-center rounded-lg ${tool.iconTone}`}>
+                  <tool.icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-3 text-sm font-semibold text-card-foreground">{tool.label}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{tool.description}</p>
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/navigation">
-                <Compass className="h-4 w-4" />
-                Navigation Settings
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/site-content">
-                <Settings2 className="h-4 w-4" />
-                Site Content Settings
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/resources">Manage Resources</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/media">
-                <Clapperboard className="h-4 w-4" />
-                Manage Media
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/messages">Contact Inbox</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/admins">Manage Admins</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/security">
-                <ShieldAlert className="h-4 w-4" />
-                Security Center
-              </Link>
-            </Button>
+            ))}
           </div>
         </section>
       </main>

@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Clock3, Download, MapPin } from "lucide-react"
+import { ArrowRight, ChevronDown, ChevronRight, Clock3, Download, Flag, MapPin, ShieldCheck, Users } from "lucide-react"
 import { MediaGalleryGrid } from "@/components/home/media-gallery-grid"
 import { getEventsFromCms, getHomepageSettingsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
 import { contentGovernance } from "@/lib/content-governance"
@@ -35,6 +35,24 @@ function getMediaEmbedUrl(item: { kind: "video" | "gallery"; embedUrl?: string; 
   }
 
   return derivedEmbed.embedUrl
+}
+
+function getSnapshotVisual(label: string) {
+  const normalized = label.toLowerCase()
+
+  if (normalized.includes("youth")) {
+    return { icon: Users, iconTone: "bg-indigo-100 text-indigo-700" }
+  }
+
+  if (normalized.includes("service")) {
+    return { icon: Clock3, iconTone: "bg-amber-100 text-amber-700" }
+  }
+
+  if (normalized.includes("adult") || normalized.includes("volunteer")) {
+    return { icon: ShieldCheck, iconTone: "bg-emerald-100 text-emerald-700" }
+  }
+
+  return { icon: Flag, iconTone: "bg-fuchsia-100 text-fuchsia-700" }
 }
 
 export default async function HomePage() {
@@ -102,14 +120,29 @@ export default async function HomePage() {
           <div className="section-shell bg-primary-foreground p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {homepageSettings.districtSnapshot.map((item, index) => (
-                <div key={`snapshot-${index}-${item.label}`} className="rounded-lg bg-secondary p-3">
-                  <p className="text-base font-bold text-tsa-green-deep md:text-xl">{item.value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{item.label}</p>
-                </div>
-              ))}
+              {homepageSettings.districtSnapshot.map((item, index) => {
+                const visual = getSnapshotVisual(item.label)
+
+                return (
+                  <div key={`snapshot-${index}-${item.label}`} className="rounded-lg border border-border/70 bg-secondary p-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${visual.iconTone}`}>
+                        <visual.icon className="h-4 w-4" />
+                      </span>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">{item.label}</p>
+                    </div>
+                    <p className="mt-3 border-b border-tsa-gold/80 pb-2 text-2xl font-extrabold text-tsa-green-deep md:text-3xl">
+                      {item.value}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
           </div>
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center">
+          <ChevronDown className="h-6 w-6 animate-bounce text-primary-foreground/80" />
         </div>
       </section>
 
@@ -132,7 +165,7 @@ export default async function HomePage() {
             {latestNews.length > 0 ? (
               latestNews.map((article) => (
                 <Link key={article.id} href={`/newsroom/${article.slug}`} className="section-shell card-lift group overflow-hidden">
-                  <div className="relative aspect-[16/10]">
+                  <div className="relative aspect-[16/9]">
                     <Image
                       src={article.image}
                       alt={article.title}
@@ -140,7 +173,7 @@ export default async function HomePage() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <span className="absolute left-3 top-3 rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                    <span className="absolute left-3 top-3 rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-medium text-primary-foreground transition-colors group-hover:bg-tsa-gold">
                       {article.category}
                     </span>
                   </div>
@@ -232,9 +265,9 @@ export default async function HomePage() {
                   <Link
                     key={event.id}
                     href={`/events/${event.slug}`}
-                    className="grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
+                    className="group grid gap-4 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[auto_1fr_auto] lg:items-center hover:bg-secondary"
                   >
-                    <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md bg-tsa-green-deep text-primary-foreground">
+                    <div className="flex h-16 w-16 flex-col items-center justify-center rounded-md border-b-2 border-tsa-gold bg-tsa-green-deep text-primary-foreground">
                       <span className="text-lg font-bold leading-none">{date.getDate()}</span>
                       <span className="text-xs uppercase">{date.toLocaleDateString("en-GB", { month: "short" })}</span>
                     </div>
@@ -251,11 +284,14 @@ export default async function HomePage() {
                         </span>
                       </div>
                     </div>
-                    {event.registrationOpen && (
-                      <span className="inline-flex h-fit rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
-                        Registration Open
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 lg:justify-end">
+                      {event.registrationOpen && (
+                        <span className="inline-flex h-fit rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
+                          Registration Open
+                        </span>
+                      )}
+                      <ChevronRight className="h-4 w-4 text-tsa-green-deep opacity-0 transition-opacity group-hover:opacity-100" />
+                    </div>
                   </Link>
                 )
               })
@@ -358,8 +394,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-tsa-gold py-12 md:py-16" aria-label="Call to action">
-        <div className="mx-auto max-w-7xl px-4 text-center">
+      <section className="relative overflow-hidden bg-tsa-gold py-12 md:py-16" aria-label="Call to action">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "linear-gradient(135deg, rgba(255,255,255,0.7) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.7) 75%, transparent 75%, transparent)",
+            backgroundSize: "32px 32px",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="relative mx-auto max-w-7xl px-4 text-center">
           <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
             Start Your Scouting Journey with {name}
           </h2>
@@ -370,15 +416,17 @@ export default async function HomePage() {
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/join#youth"
-              className="inline-flex items-center gap-2 rounded-md bg-tsa-green-deep px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-tsa-green-mid"
+              className="inline-flex items-center gap-2 rounded-md bg-tsa-green-deep px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-tsa-green-mid"
             >
               Join as Youth
+              <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/join#volunteer"
-              className="inline-flex items-center gap-2 rounded-md border-2 border-primary-foreground px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground hover:text-tsa-green-deep"
+              className="inline-flex items-center gap-2 rounded-md border-2 border-primary-foreground px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground hover:text-tsa-green-deep"
             >
               Volunteer as Leader
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

@@ -260,6 +260,8 @@ export function SiteHeader() {
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
+                    } relative after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-center after:rounded-full after:bg-tsa-gold after:transition-transform after:duration-300 after:content-[''] ${
+                      isActive ? "after:scale-x-100" : "after:scale-x-0"
                     }`}
                     aria-expanded={item.children ? isExpanded : undefined}
                     aria-haspopup={item.children ? "true" : undefined}
@@ -328,7 +330,7 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {mobileOpen && <MobileNav pathname={pathname} navItems={navItems} onClose={() => setMobileOpen(false)} />}
+        <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </header>
 
       <SafeClientBoundary>
@@ -341,17 +343,23 @@ export function SiteHeader() {
 function MobileNav({
   pathname,
   navItems,
+  open,
   onClose,
 }: {
   pathname: string
   navItems: NavigationItem[]
+  open: boolean
   onClose: () => void
 }) {
   const [expanded, setExpanded] = useState<string | null>(null)
 
   return (
-    <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-border bg-background/95 shadow-2xl backdrop-blur xl:hidden">
-      <nav className="mx-auto max-w-7xl px-4 py-4" aria-label="Mobile navigation">
+    <div
+      className={`absolute inset-x-0 top-full z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out xl:hidden ${
+        open ? "max-h-[calc(100dvh-4.5rem)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+      }`}
+    >
+      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-7xl overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
           return (
@@ -360,9 +368,9 @@ function MobileNav({
                 <>
                   <button
                     type="button"
-                    className={`flex min-h-14 w-full items-center justify-between py-3 text-left text-base font-medium focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`relative flex min-h-14 w-full items-center justify-between py-3 text-left text-base font-medium focus-visible:ring-2 focus-visible:ring-ring after:absolute after:bottom-2 after:left-0 after:h-0.5 after:bg-tsa-gold after:transition-all after:duration-300 after:content-[''] ${
                       isActive ? "text-tsa-green-deep" : "text-foreground"
-                    }`}
+                    } ${isActive ? "after:w-10" : "after:w-0"}`}
                     onClick={() => setExpanded((current) => (current === item.label ? null : item.label))}
                     aria-expanded={expanded === item.label}
                   >
@@ -392,9 +400,9 @@ function MobileNav({
               ) : (
                 <Link
                   href={item.href}
-                  className={`block min-h-14 py-3 text-base font-medium transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`relative block min-h-14 py-3 text-base font-medium transition-colors hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring after:absolute after:bottom-2 after:left-0 after:h-0.5 after:bg-tsa-gold after:transition-all after:duration-300 after:content-[''] ${
                     isActive ? "text-tsa-green-deep" : "text-foreground"
-                  }`}
+                  } ${isActive ? "after:w-10" : "after:w-0"}`}
                   onClick={onClose}
                 >
                   {item.label}

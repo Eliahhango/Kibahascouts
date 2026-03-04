@@ -1,7 +1,9 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 import {
   CalendarDays,
   Clapperboard,
@@ -15,6 +17,7 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from "lucide-react"
+import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
 const adminNavItems = [
@@ -86,28 +89,112 @@ const adminNavItems = [
   },
 ]
 
+type SessionResponse = {
+  ok?: boolean
+  data?: {
+    email?: string
+    role?: string
+  }
+}
+
+function formatRoleLabel(role: string | undefined) {
+  if (role === "super_admin") {
+    return "Super Admin"
+  }
+
+  if (role === "content_admin") {
+    return "Content Admin"
+  }
+
+  if (role === "viewer") {
+    return "Viewer"
+  }
+
+  return "Admin"
+}
+
 export function AdminNav() {
   const pathname = usePathname()
+  const [session, setSession] = useState<{ email: string; role: string } | null>(null)
   const hideAdminNav = pathname === "/admin/login" || pathname === "/admin/register"
+
+  useEffect(() => {
+    if (hideAdminNav) {
+      return
+    }
+
+    let canceled = false
+
+    const loadSession = async () => {
+      try {
+        const response = await fetch("/api/admin/session", { method: "GET", cache: "no-store" })
+        if (!response.ok) {
+          return
+        }
+
+        const payload = (await response.json().catch(() => null)) as SessionResponse | null
+        if (!payload?.ok || !payload.data?.email) {
+          return
+        }
+
+        if (!canceled) {
+          setSession({
+            email: payload.data.email,
+            role: payload.data.role || "viewer",
+          })
+        }
+      } catch {
+        // Keep static fallback UI when session read fails.
+      }
+    }
+
+    void loadSession()
+
+    return () => {
+      canceled = true
+    }
+  }, [hideAdminNav])
 
   if (hideAdminNav) {
     return null
   }
 
+  const avatarInitial = useMemo(() => {
+    const source = session?.email?.trim() || "admin"
+    return source.charAt(0).toUpperCase()
+  }, [session?.email])
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/admin" className="text-sm font-semibold text-foreground hover:text-primary">
-          Admin Dashboard
+        <Link href="/admin" className="flex items-center gap-2.5 rounded-md px-1 py-0.5 transition hover:bg-secondary/60">
+          <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-border" aria-hidden="true">
+            <Image src={siteConfig.branding.primaryLogo} alt="" fill sizes="32px" className="object-cover" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
+            <p className="text-[11px] text-muted-foreground">Kibaha Scouts CMS</p>
+          </div>
         </Link>
-        <Link href="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
-          Public Website
-        </Link>
+
+        <div className="flex items-center gap-2">
+          <Link href="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
+            Public Website
+          </Link>
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/70 px-2 py-1">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+              {avatarInitial}
+            </span>
+            <span className="hidden text-[11px] font-medium text-muted-foreground sm:inline">
+              {formatRoleLabel(session?.role)}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="border-t border-border/70">
+      <div className="relative border-t border-border/70">
         <nav
-          className="mx-auto flex w-full max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="mx-auto flex w-full max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 pr-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           aria-label="Admin navigation"
         >
           {adminNavItems.map((item) => {
@@ -117,8 +204,8 @@ export function AdminNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                  active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
                 aria-current={active ? "page" : undefined}
               >
@@ -128,6 +215,7 @@ export function AdminNav() {
             )
           })}
         </nav>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background via-background/90 to-transparent" />
       </div>
     </header>
   )
