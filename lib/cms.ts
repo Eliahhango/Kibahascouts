@@ -1,5 +1,5 @@
-import { leadershipProfiles, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
-import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import { leadershipProfiles, mediaItems, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
+import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
 const sampleModeEnabled = process.env.SAMPLE_MODE === "true"
 
@@ -48,4 +48,11 @@ export async function getLeadersFromCms(): Promise<LeaderProfile[]> {
     const { getPublishedLeadersFromFirestore } = await import("@/lib/firebase/content")
     return getPublishedLeadersFromFirestore()
   }, leadershipProfiles)
+}
+
+export async function getMediaItemsFromCms(): Promise<MediaItem[]> {
+  return withSampleFallback(async () => {
+    const { getPublishedMediaItemsFromFirestore } = await import("@/lib/firebase/content")
+    return getPublishedMediaItemsFromFirestore()
+  }, mediaItems)
 }

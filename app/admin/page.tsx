@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import Link from "next/link"
-import { CalendarDays, FileText, Inbox, Newspaper, PlusCircle } from "lucide-react"
+import { CalendarDays, Clapperboard, FileText, Inbox, Newspaper, PlusCircle } from "lucide-react"
 import { AdminBreadcrumbs } from "@/components/admin/admin-breadcrumbs"
 import { DashboardCards, DashboardCardsSkeleton } from "@/components/admin/dashboard-cards"
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button"
@@ -98,6 +98,12 @@ export default async function AdminHomePage() {
                 Add Resource
               </Link>
             </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/admin/media">
+                <PlusCircle className="h-4 w-4" />
+                Add Media
+              </Link>
+            </Button>
           </div>
         </header>
 
@@ -118,6 +124,12 @@ export default async function AdminHomePage() {
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link href="/admin/resources">Manage Resources</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/admin/media">
+                <Clapperboard className="h-4 w-4" />
+                Manage Media
+              </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link href="/admin/messages">Contact Inbox</Link>

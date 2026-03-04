@@ -17,6 +17,15 @@ const optionalImageSchema = z
   .optional()
   .transform((value) => value || "")
 
+const optionalMediaHrefSchema = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value) => value || "")
+  .refine((value) => value === "" || /^https?:\/\/.+/i.test(value) || value.startsWith("/"), {
+    message: "Must be a valid http(s) URL or internal path starting with '/'.",
+  })
+
 export const newsInputSchema = z.object({
   title: z.string().trim().min(3, "Title is required."),
   slug: z
@@ -76,5 +85,19 @@ export const resourceInputSchema = z.object({
 })
 
 export const resourceUpdateSchema = resourceInputSchema.partial().refine((data) => Object.keys(data).length > 0, {
+  message: "At least one field is required.",
+})
+
+export const mediaInputSchema = z.object({
+  title: z.string().trim().min(3, "Title is required."),
+  kind: z.enum(["video", "gallery"]),
+  thumbnail: z.string().trim().min(1, "Thumbnail image URL/path is required."),
+  href: optionalMediaHrefSchema,
+  description: z.string().trim().optional().transform((value) => value || ""),
+  displayOrder: z.coerce.number().int().min(0).max(999).optional().default(0),
+  published: z.boolean().optional().default(false),
+})
+
+export const mediaUpdateSchema = mediaInputSchema.partial().refine((data) => Object.keys(data).length > 0, {
   message: "At least one field is required.",
 })

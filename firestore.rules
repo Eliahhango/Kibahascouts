@@ -20,6 +20,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /mediaItems/{documentId} {
+      allow read: if isPublished();
+      allow write: if false;
+    }
+
     match /units/{documentId} {
       allow read: if isPublished();
       allow write: if false;

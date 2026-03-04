@@ -2,6 +2,7 @@ import type {
   Campaign,
   FAQ,
   LeaderProfile,
+  MediaItem,
   NewsArticle,
   Programme,
   Resource,
@@ -280,6 +281,39 @@ export const leadershipProfiles: LeaderProfile[] = [
     image: "/images/leaders/dtc.jpg",
     bio: "Replace this with verified profile details.",
     since: "[CONFIRM YEAR]",
+  },
+]
+
+export const mediaItems: MediaItem[] = [
+  {
+    id: "m1",
+    title: "Kibaha Camporee Highlights",
+    kind: "video",
+    thumbnail: "/images/campaigns/trees.jpg",
+    href: "",
+    description: "Camp activities and leadership moments from district participants.",
+    displayOrder: 1,
+    published: true,
+  },
+  {
+    id: "m2",
+    title: "Youth Leadership Stories",
+    kind: "gallery",
+    thumbnail: "/images/about-hero.jpg",
+    href: "",
+    description: "A photo gallery of youth-led service and training activities.",
+    displayOrder: 2,
+    published: true,
+  },
+  {
+    id: "m3",
+    title: "District Training Sessions",
+    kind: "video",
+    thumbnail: "/images/campaigns/membership.jpg",
+    href: "",
+    description: "Leader training highlights and field exercises across the district.",
+    displayOrder: 3,
+    published: true,
   },
 ]
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { CalendarDays, FileText, Inbox, LayoutDashboard, Newspaper, ShieldCheck } from "lucide-react"
+import { CalendarDays, Clapperboard, FileText, Inbox, LayoutDashboard, Newspaper, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const adminNavItems = [
@@ -29,6 +29,12 @@ const adminNavItems = [
     label: "Resources",
     icon: FileText,
     match: (pathname: string) => pathname.startsWith("/admin/resources"),
+  },
+  {
+    href: "/admin/media",
+    label: "Media",
+    icon: Clapperboard,
+    match: (pathname: string) => pathname.startsWith("/admin/media"),
   },
   {
     href: "/admin/messages",

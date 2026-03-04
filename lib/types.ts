@@ -77,6 +77,19 @@ export interface LeaderProfile {
   since: string
 }
 
+export interface MediaItem {
+  id: string
+  title: string
+  kind: "video" | "gallery"
+  thumbnail: string
+  href: string
+  description: string
+  displayOrder: number
+  published?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
 export interface Campaign {
   id: string
   title: string

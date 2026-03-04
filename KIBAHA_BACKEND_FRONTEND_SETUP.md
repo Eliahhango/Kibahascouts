@@ -166,6 +166,7 @@ Expected collections:
 - `news`
 - `events`
 - `resources`
+- `mediaItems`
 - `contactMessages`
 - `adminUsers`
 - `adminSessions`

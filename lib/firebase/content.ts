@@ -4,7 +4,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { z } from "zod"
 import { getAdminDb } from "@/lib/firebase/admin"
 import { hasMeaningfulText, normalizePublicText } from "@/lib/public-text"
-import type { LeaderProfile, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
+import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
 const newsDocSchema = z.object({
   title: z.string().min(1),
@@ -76,6 +76,18 @@ const leaderDocSchema = z.object({
   bio: z.string().min(1),
   since: z.string().min(1),
   published: z.boolean().optional(),
+})
+
+const mediaDocSchema = z.object({
+  title: z.string().min(1),
+  kind: z.enum(["video", "gallery"]),
+  thumbnail: z.string().min(1),
+  href: z.string().optional(),
+  description: z.string().optional(),
+  displayOrder: z.number().int().optional(),
+  published: z.boolean().optional(),
+  createdAt: z.unknown().optional(),
+  updatedAt: z.unknown().optional(),
 })
 
 type ParsedDoc<T> = { id: string; data: T }
@@ -282,4 +294,23 @@ export async function getPublishedLeadersFromFirestore(): Promise<LeaderProfile[
     bio: normalizePublicText(data.bio),
     since: normalizePublicText(data.since),
   }))
+}
+
+export async function getPublishedMediaItemsFromFirestore(): Promise<MediaItem[]> {
+  const docs = await readPublishedCollection("mediaItems", mediaDocSchema)
+
+  return docs
+    .map(({ id, data }) => ({
+      id,
+      title: normalizePublicText(data.title, "District media item"),
+      kind: data.kind,
+      thumbnail: data.thumbnail || "/images/about-hero.jpg",
+      href: data.href || "",
+      description: normalizePublicText(data.description, "Media details will be published soon."),
+      displayOrder: Number.isInteger(data.displayOrder) ? data.displayOrder : 0,
+      published: true,
+      createdAt: toIsoString(data.createdAt),
+      updatedAt: toIsoString(data.updatedAt),
+    }))
+    .sort((a, b) => a.displayOrder - b.displayOrder || +new Date(b.updatedAt || 0) - +new Date(a.updatedAt || 0))
 }
