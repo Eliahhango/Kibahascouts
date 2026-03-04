@@ -3,7 +3,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, CalendarDays, Clock3, Download, MapPin } from "lucide-react"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import { EventLocationMap } from "@/components/events/event-location-map"
 import { getEventsFromCms } from "@/lib/cms"
+import { hasValidCoordinates } from "@/lib/maps"
 
 export async function generateStaticParams() {
   const scoutEvents = (await getEventsFromCms()).filter((event) => event.published !== false)
@@ -45,6 +47,9 @@ export default async function EventDetailPage({
 
   const related = scoutEvents.filter((item) => item.id !== event.id).slice(0, 3)
   const hasRegistrationUrl = Boolean(event.registrationUrl && /^https?:\/\//.test(event.registrationUrl))
+  const hasMapCoordinates = hasValidCoordinates(event.latitude, event.longitude)
+  const fallbackMapUrl =
+    event.mapUrl && event.mapUrl.includes("output=embed") ? event.mapUrl : mapEmbedUrl(event.location)
   const dateLabel = new Date(event.date).toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
@@ -137,14 +142,26 @@ export default async function EventDetailPage({
       <section className="bg-secondary py-12">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-bold text-foreground">Event Location Map</h2>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
-            <iframe
-              src={event.mapUrl || mapEmbedUrl(event.location)}
-              title={`${event.title} map`}
-              className="h-[320px] w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+          <div className="mt-4">
+            {hasMapCoordinates ? (
+              <EventLocationMap
+                latitude={event.latitude as number}
+                longitude={event.longitude as number}
+                mapZoom={event.mapZoom}
+                title={event.title}
+                location={event.location}
+              />
+            ) : (
+              <div className="overflow-hidden rounded-lg border border-border">
+                <iframe
+                  src={fallbackMapUrl}
+                  title={`${event.title} map`}
+                  className="h-[320px] w-full"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

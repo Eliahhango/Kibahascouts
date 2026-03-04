@@ -2,10 +2,19 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, assertAdminRequest, toApiErrorResponse } from "../_utils"
 import { eventInputSchema } from "@/lib/validation/admin-content"
+import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 
 export const runtime = "nodejs"
 
 function normalizeEventDoc(id: string, data: Record<string, unknown>) {
+  const latitude = normalizeCoordinate(data.latitude)
+  const longitude = normalizeCoordinate(data.longitude)
+  const hasCoordinates = hasValidCoordinates(latitude, longitude)
+  const mapZoom = normalizeMapZoom(data.mapZoom)
+  const mapUrl = hasCoordinates
+    ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
+    : String(data.mapUrl || "")
+
   return {
     id,
     title: String(data.title || ""),
@@ -14,6 +23,10 @@ function normalizeEventDoc(id: string, data: Record<string, unknown>) {
     date: String(data.date || ""),
     time: String(data.time || ""),
     location: String(data.location || ""),
+    latitude: hasCoordinates ? (latitude as number) : null,
+    longitude: hasCoordinates ? (longitude as number) : null,
+    mapZoom,
+    mapUrl,
     image: String(data.image || ""),
     category: String(data.category || "General"),
     registrationOpen: Boolean(data.registrationOpen),

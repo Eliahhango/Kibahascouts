@@ -3,6 +3,7 @@ import "server-only"
 import { Timestamp } from "firebase-admin/firestore"
 import { z } from "zod"
 import { getAdminDb } from "@/lib/firebase/admin"
+import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 import { hasMeaningfulText, normalizePublicText } from "@/lib/public-text"
 import type { LeaderProfile, MediaItem, NewsArticle, Resource, ScoutEvent, ScoutUnit } from "@/lib/types"
 
@@ -29,6 +30,10 @@ const eventDocSchema = z.object({
   date: z.string().min(1),
   time: z.string().min(1),
   location: z.string().min(1),
+  latitude: z.unknown().optional(),
+  longitude: z.unknown().optional(),
+  mapZoom: z.unknown().optional(),
+  mapUrl: z.string().optional(),
   image: z.string().optional(),
   registrationOpen: z.boolean().optional(),
   registrationUrl: z.string().optional(),
@@ -184,6 +189,13 @@ export async function getPublishedNewsFromFirestore(): Promise<NewsArticle[]> {
     .map(({ id, data }) => {
       const createdAt = toIsoString(data.createdAt) ?? data.date
       const updatedAt = toIsoString(data.updatedAt) ?? data.date
+      const latitude = normalizeCoordinate(data.latitude)
+      const longitude = normalizeCoordinate(data.longitude)
+      const hasCoordinates = hasValidCoordinates(latitude, longitude)
+      const mapZoom = normalizeMapZoom(data.mapZoom)
+      const mapUrl = hasCoordinates
+        ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
+        : data.mapUrl || ""
 
       return {
         id,
@@ -222,6 +234,10 @@ export async function getPublishedEventsFromFirestore(): Promise<ScoutEvent[]> {
         date: data.date,
         time: normalizePublicText(data.time),
         location: normalizePublicText(data.location),
+        latitude: hasCoordinates ? (latitude as number) : undefined,
+        longitude: hasCoordinates ? (longitude as number) : undefined,
+        mapZoom: hasCoordinates ? mapZoom : undefined,
+        mapUrl,
         image: data.image || "/images/events/placeholder.jpg",
         registrationOpen: Boolean(data.registrationOpen),
         registrationUrl: data.registrationUrl || "",

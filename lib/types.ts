@@ -25,6 +25,9 @@ export interface ScoutEvent {
   endDate?: string
   time: string
   location: string
+  latitude?: number
+  longitude?: number
+  mapZoom?: number
   mapUrl?: string
   image: string
   registrationOpen: boolean

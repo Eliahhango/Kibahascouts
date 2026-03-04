@@ -1,7 +1,19 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { FormEvent, useEffect, useMemo, useState } from "react"
+import { EVENT_MAP_DEFAULT_ZOOM, buildOpenStreetMapPlaceUrl } from "@/lib/maps"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+
+const EventLocationPicker = dynamic(
+  () => import("@/components/admin/event-location-picker").then((module) => module.EventLocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[320px] w-full animate-pulse rounded-md border border-border bg-secondary" />
+    ),
+  },
+)
 
 type EventAdminRecord = {
   id: string
@@ -11,6 +23,10 @@ type EventAdminRecord = {
   date: string
   time: string
   location: string
+  latitude: number | null
+  longitude: number | null
+  mapZoom: number
+  mapUrl: string
   image: string
   category: string
   registrationOpen: boolean
@@ -19,7 +35,7 @@ type EventAdminRecord = {
   updatedAt: string
 }
 
-type EventFormState = Omit<EventAdminRecord, "id" | "updatedAt">
+type EventFormState = Omit<EventAdminRecord, "id" | "updatedAt" | "mapUrl">
 
 const initialFormState: EventFormState = {
   title: "",
@@ -28,6 +44,9 @@ const initialFormState: EventFormState = {
   date: "",
   time: "",
   location: "",
+  latitude: null,
+  longitude: null,
+  mapZoom: EVENT_MAP_DEFAULT_ZOOM,
   image: "",
   category: "General",
   registrationOpen: false,
@@ -49,6 +68,13 @@ function createSlug(value: string) {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
+}
+
+function formatCoordinates(latitude: number | null, longitude: number | null) {
+  if (typeof latitude !== "number" || typeof longitude !== "number") {
+    return "No map point selected yet."
+  }
+  return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
 }
 
 export function EventsManager() {
@@ -117,6 +143,9 @@ export function EventsManager() {
       date: item.date,
       time: item.time,
       location: item.location,
+      latitude: typeof item.latitude === "number" ? item.latitude : null,
+      longitude: typeof item.longitude === "number" ? item.longitude : null,
+      mapZoom: item.mapZoom || EVENT_MAP_DEFAULT_ZOOM,
       image: item.image || "",
       category: item.category,
       registrationOpen: item.registrationOpen,
@@ -129,8 +158,24 @@ export function EventsManager() {
     setError(null)
   }
 
+  function handleMapSelect(latitude: number, longitude: number) {
+    setForm((current) => ({
+      ...current,
+      latitude,
+      longitude,
+      location: current.location.trim() || `Map selected (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`,
+    }))
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (typeof form.latitude !== "number" || typeof form.longitude !== "number") {
+      setError("Please select the event location from the map before saving.")
+      setSuccess(null)
+      return
+    }
+
     const actionText = editingId ? "update" : "create"
     const publishText = form.published ? "and publish" : "as draft"
     const confirmed = window.confirm(`Are you sure you want to ${actionText} this event ${publishText}?`)
@@ -226,7 +271,9 @@ export function EventsManager() {
     <section className="space-y-6">
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit Event" : "Create Event"}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Registration URL must be a full http(s) URL when provided.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Select location from the map to place an exact event marker for public users.
+        </p>
 
         <form className="mt-5 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
           <label className="text-sm">
@@ -293,15 +340,58 @@ export function EventsManager() {
             />
           </label>
 
-          <label className="text-sm">
-            <span className="font-medium text-card-foreground">Location</span>
+          <label className="text-sm md:col-span-2">
+            <span className="font-medium text-card-foreground">Location Label</span>
             <input
               required
               value={form.location}
               onChange={(event) => setForm((current) => ({ ...current, location: event.target.value }))}
+              placeholder="Kibaha District Grounds, Pwani"
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
+
+          <div className="text-sm md:col-span-2">
+            <p className="font-medium text-card-foreground">Event Point on Map</p>
+            <div className="mt-1">
+              <EventLocationPicker
+                latitude={form.latitude}
+                longitude={form.longitude}
+                zoom={form.mapZoom}
+                eventTitle={form.title}
+                locationName={form.location}
+                onSelectLocation={handleMapSelect}
+                onZoomChange={(zoom) => setForm((current) => ({ ...current, mapZoom: zoom }))}
+              />
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+              <span>Selected coordinates: {formatCoordinates(form.latitude, form.longitude)}</span>
+              {typeof form.latitude === "number" && typeof form.longitude === "number" ? (
+                <a
+                  href={buildOpenStreetMapPlaceUrl(form.latitude, form.longitude, form.mapZoom)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-tsa-green-deep hover:text-tsa-green-mid"
+                >
+                  Open selected point in map
+                </a>
+              ) : null}
+              <button
+                type="button"
+                className="rounded border border-border px-2 py-1 text-[11px] font-semibold text-foreground"
+                onClick={() =>
+                  setForm((current) => ({
+                    ...current,
+                    latitude: null,
+                    longitude: null,
+                    mapZoom: EVENT_MAP_DEFAULT_ZOOM,
+                  }))
+                }
+              >
+                Clear Map Point
+              </button>
+            </div>
+          </div>
 
           <label className="text-sm">
             <span className="font-medium text-card-foreground">Category</span>
@@ -310,6 +400,20 @@ export function EventsManager() {
               value={form.category}
               onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
               placeholder="Training"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
+
+          <label className="text-sm">
+            <span className="font-medium text-card-foreground">Map Zoom</span>
+            <input
+              type="number"
+              min={3}
+              max={19}
+              value={form.mapZoom}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, mapZoom: Math.max(3, Math.min(19, Number(event.target.value || EVENT_MAP_DEFAULT_ZOOM))) }))
+              }
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
@@ -445,7 +549,10 @@ export function EventsManager() {
                       <p className="text-xs text-muted-foreground">/{item.slug}</p>
                     </td>
                     <td className="py-2 pr-3 text-card-foreground">{item.date}</td>
-                    <td className="py-2 pr-3 text-card-foreground">{item.location}</td>
+                    <td className="py-2 pr-3 text-card-foreground">
+                      <p>{item.location}</p>
+                      <p className="text-xs text-muted-foreground">{formatCoordinates(item.latitude, item.longitude)}</p>
+                    </td>
                     <td className="py-2 pr-3 text-card-foreground">{item.published ? "Yes" : "No"}</td>
                     <td className="py-2">
                       <div className="flex flex-wrap gap-2">
@@ -467,7 +574,7 @@ export function EventsManager() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(item)}
+                          onClick={() => void handleDelete(item)}
                           disabled={actionState?.id === item.id}
                           className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
                         >

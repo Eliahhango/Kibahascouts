@@ -2,11 +2,43 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { assertAdminMutationRequest, toApiErrorResponse } from "../../_utils"
 import { eventUpdateSchema } from "@/lib/validation/admin-content"
+import { buildOpenStreetMapPlaceUrl, hasValidCoordinates, normalizeCoordinate, normalizeMapZoom } from "@/lib/maps"
 
 export const runtime = "nodejs"
 
 type Params = {
   params: Promise<{ id: string }>
+}
+
+function normalizeEventDoc(id: string, data: Record<string, unknown>) {
+  const latitude = normalizeCoordinate(data.latitude)
+  const longitude = normalizeCoordinate(data.longitude)
+  const hasCoordinates = hasValidCoordinates(latitude, longitude)
+  const mapZoom = normalizeMapZoom(data.mapZoom)
+  const mapUrl = hasCoordinates
+    ? buildOpenStreetMapPlaceUrl(latitude as number, longitude as number, mapZoom)
+    : String(data.mapUrl || "")
+
+  return {
+    id,
+    title: String(data.title || ""),
+    slug: String(data.slug || ""),
+    description: String(data.description || ""),
+    date: String(data.date || ""),
+    time: String(data.time || ""),
+    location: String(data.location || ""),
+    latitude: hasCoordinates ? (latitude as number) : null,
+    longitude: hasCoordinates ? (longitude as number) : null,
+    mapZoom,
+    mapUrl,
+    image: String(data.image || ""),
+    category: String(data.category || "General"),
+    registrationOpen: Boolean(data.registrationOpen),
+    registrationUrl: String(data.registrationUrl || ""),
+    published: Boolean(data.published),
+    createdAt: String(data.createdAt || ""),
+    updatedAt: String(data.updatedAt || ""),
+  }
 }
 
 export async function PATCH(request: Request, { params }: Params) {
@@ -45,7 +77,10 @@ export async function PATCH(request: Request, { params }: Params) {
 
     await docRef.update(payload)
     const updated = await docRef.get()
-    return NextResponse.json({ ok: true, data: { id: updated.id, ...(updated.data() || {}) } })
+    return NextResponse.json({
+      ok: true,
+      data: normalizeEventDoc(updated.id, (updated.data() || {}) as Record<string, unknown>),
+    })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ ok: false, error: error.issues[0]?.message || "Invalid payload." }, { status: 400 })

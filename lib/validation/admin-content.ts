@@ -35,6 +35,25 @@ const optionalExternalUrlSchema = z
     message: "Must be a valid http(s) URL.",
   })
 
+const optionalCoordinateSchema = z
+  .union([z.number(), z.string().trim()])
+  .optional()
+  .transform((value) => {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : undefined
+    }
+
+    if (typeof value === "string") {
+      if (!value) {
+        return undefined
+      }
+      const numeric = Number(value)
+      return Number.isFinite(numeric) ? numeric : undefined
+    }
+
+    return undefined
+  })
+
 export const newsInputSchema = z.object({
   title: z.string().trim().min(3, "Title is required."),
   slug: z
@@ -55,7 +74,7 @@ export const newsUpdateSchema = newsInputSchema.partial().refine((data) => Objec
   message: "At least one field is required.",
 })
 
-export const eventInputSchema = z.object({
+const eventBaseSchema = z.object({
   title: z.string().trim().min(3, "Title is required."),
   slug: z
     .string()
@@ -66,6 +85,9 @@ export const eventInputSchema = z.object({
   date: z.string().trim().min(1, "Date is required."),
   time: z.string().trim().min(1, "Time is required."),
   location: z.string().trim().min(3, "Location is required."),
+  latitude: optionalCoordinateSchema,
+  longitude: optionalCoordinateSchema,
+  mapZoom: z.coerce.number().int().min(3).max(19).optional().default(14),
   image: optionalImageSchema,
   category: z.string().trim().min(2, "Category is required."),
   registrationOpen: z.boolean().optional().default(false),
@@ -73,8 +95,57 @@ export const eventInputSchema = z.object({
   published: z.boolean().optional().default(false),
 })
 
-export const eventUpdateSchema = eventInputSchema.partial().refine((data) => Object.keys(data).length > 0, {
-  message: "At least one field is required.",
+function assertEventCoordinates(
+  data: {
+    latitude?: number
+    longitude?: number
+  },
+  context: z.RefinementCtx,
+) {
+  const hasLatitude = typeof data.latitude === "number"
+  const hasLongitude = typeof data.longitude === "number"
+
+  if (hasLatitude !== hasLongitude) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [hasLatitude ? "longitude" : "latitude"],
+      message: "Both latitude and longitude are required when setting map coordinates.",
+    })
+    return
+  }
+
+  if (!hasLatitude || !hasLongitude) {
+    return
+  }
+
+  if (data.latitude < -90 || data.latitude > 90) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["latitude"],
+      message: "Latitude must be between -90 and 90.",
+    })
+  }
+
+  if (data.longitude < -180 || data.longitude > 180) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["longitude"],
+      message: "Longitude must be between -180 and 180.",
+    })
+  }
+}
+
+export const eventInputSchema = eventBaseSchema.superRefine((data, context) => {
+  assertEventCoordinates(data, context)
+})
+
+export const eventUpdateSchema = eventBaseSchema
+  .partial()
+  .superRefine((data, context) => {
+    assertEventCoordinates(data, context)
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required.",
 })
 
 export const resourceInputSchema = z.object({
