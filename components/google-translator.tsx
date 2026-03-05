@@ -2,13 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
-import { X } from "lucide-react"
-import { languageCodes, normalizeLanguageCode } from "@/lib/translate-languages"
-
-type LanguageOption = {
-  code: string
-  label: string
-}
+import { Loader2, X } from "lucide-react"
+import { normalizeLanguageCode } from "@/lib/translate-languages"
 
 type LocaleDetectResponse = {
   language: string
@@ -16,351 +11,292 @@ type LocaleDetectResponse = {
   country: string | null
 }
 
+type TranslateResponse = {
+  ok: boolean
+  translations?: string[]
+  error?: string
+}
+
 const storageKey = "tsa-translate-language"
 const dismissKey = "tsa-translate-dismissed"
 
-const customLanguageLabels: Record<string, string> = {
-  en: "English",
-  sw: "Kiswahili",
-  zh: "Chinese",
-  "zh-CN": "Chinese (Simplified)",
-  "zh-TW": "Chinese (Traditional)",
-  jw: "Javanese",
-  hmn: "Hmong",
+const languageOptions = [
+  { code: "en", label: "English" },
+  { code: "sw", label: "Kiswahili" },
+  { code: "fr", label: "French" },
+  { code: "ar", label: "Arabic" },
+  { code: "es", label: "Spanish" },
+  { code: "pt", label: "Portuguese" },
+  { code: "de", label: "German" },
+  { code: "hi", label: "Hindi" },
+  { code: "it", label: "Italian" },
+  { code: "ru", label: "Russian" },
+  { code: "tr", label: "Turkish" },
+  { code: "ja", label: "Japanese" },
+  { code: "ko", label: "Korean" },
+  { code: "zh-CN", label: "Chinese (Simplified)" },
+  { code: "zh-TW", label: "Chinese (Traditional)" },
+] as const
+
+const supportedCodes = new Set<string>(languageOptions.map((item) => item.code))
+
+function sanitizeLanguageCode(value: string | null | undefined) {
+  const normalized = normalizeLanguageCode(value)
+  if (!normalized || !supportedCodes.has(normalized)) return "en"
+  return normalized
 }
 
-declare global {
-  interface Window {
-    googleTranslateElementInit?: () => void
-    google?: {
-      translate?: {
-        TranslateElement?: new (options: Record<string, unknown>, elementId: string) => unknown
-      }
-    }
+function containsTranslatableText(text: string) {
+  const trimmed = text.trim()
+  if (trimmed.length < 2) return false
+  return /[A-Za-z]/.test(trimmed)
+}
+
+function isSkippableParent(element: Element | null) {
+  if (!element) return true
+  if (element.closest(".notranslate")) return true
+  const tag = element.tagName
+  return (
+    tag === "SCRIPT" ||
+    tag === "STYLE" ||
+    tag === "NOSCRIPT" ||
+    tag === "CODE" ||
+    tag === "PRE" ||
+    tag === "SVG" ||
+    tag === "PATH" ||
+    tag === "META" ||
+    tag === "LINK" ||
+    tag === "IFRAME" ||
+    tag === "CANVAS"
+  )
+}
+
+function chunkArray<T>(array: T[], chunkSize: number) {
+  const chunks: T[][] = []
+  for (let index = 0; index < array.length; index += chunkSize) {
+    chunks.push(array.slice(index, index + chunkSize))
   }
-}
-
-function setGoogTransCookie(code: string) {
-  const value = `/en/${code}`
-  const expires = "Fri, 31 Dec 2099 23:59:59 GMT"
-  const baseParts = [`googtrans=${value}`, "path=/", `expires=${expires}`, "SameSite=Lax"]
-  if (window.location.protocol === "https:") {
-    baseParts.push("Secure")
-  }
-
-  const baseCookie = baseParts.join(";")
-  document.cookie = baseCookie
-
-  const host = window.location.hostname
-  if (host && host !== "localhost" && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
-    document.cookie = `${baseCookie};domain=${host}`
-    document.cookie = `${baseCookie};domain=.${host}`
-  }
-}
-
-function getTranslateCombo() {
-  return document.querySelector<HTMLSelectElement>(".goog-te-combo")
-}
-
-function hasTranslateApplied() {
-  return document.body.classList.contains("translated-ltr") || document.body.classList.contains("translated-rtl")
-}
-
-function suppressTranslateToolbar() {
-  const selectors = [
-    "iframe.goog-te-banner-frame",
-    "iframe.goog-te-banner-frame.skiptranslate",
-    'iframe[class*="VIpgJd-ZVi9od-ORHb"]',
-    ".goog-te-banner-frame",
-    ".goog-te-banner-frame.skiptranslate",
-    ".VIpgJd-ZVi9od-ORHb-OEVmcd",
-    ".VIpgJd-ZVi9od-aZ2wEe-wOHMyf",
-    "body > .skiptranslate",
-  ]
-
-  selectors.forEach((selector) => {
-    document.querySelectorAll<HTMLElement>(selector).forEach((element) => {
-      element.style.setProperty("display", "none", "important")
-      element.style.setProperty("visibility", "hidden", "important")
-      element.style.setProperty("height", "0", "important")
-      element.style.setProperty("min-height", "0", "important")
-    })
-  })
-
-  document.documentElement.style.setProperty("top", "0px", "important")
-  document.documentElement.style.setProperty("margin-top", "0px", "important")
-  document.body.style.setProperty("top", "0px", "important")
-  document.body.style.setProperty("margin-top", "0px", "important")
-}
-
-function startToolbarGuard(durationMs = 12000) {
-  suppressTranslateToolbar()
-
-  const interval = window.setInterval(() => {
-    suppressTranslateToolbar()
-  }, 350)
-
-  const timeout = window.setTimeout(() => {
-    window.clearInterval(interval)
-  }, durationMs)
-
-  return () => {
-    window.clearInterval(interval)
-    window.clearTimeout(timeout)
-  }
-}
-
-function applyLanguage(code: string) {
-  setGoogTransCookie(code)
-
-  const combo = getTranslateCombo()
-  if (!combo) return false
-
-  const optionExists = Array.from(combo.options).some((option) => option.value === code)
-  if (!optionExists) return false
-
-  const currentScrollY = window.scrollY
-  combo.value = code
-  combo.dispatchEvent(new Event("change", { bubbles: true }))
-  combo.dispatchEvent(new Event("input", { bubbles: true }))
-
-  window.requestAnimationFrame(() => {
-    window.scrollTo({ top: currentScrollY, behavior: "auto" })
-  })
-
-  return true
-}
-
-function createLanguageOptions() {
-  const displayNames =
-    typeof Intl !== "undefined" && "DisplayNames" in Intl
-      ? new Intl.DisplayNames(["en"], { type: "language" })
-      : null
-
-  return languageCodes.map((code) => {
-    const base = code.split("-")[0]
-    const label = customLanguageLabels[code] ?? displayNames?.of(base) ?? code
-    return { code, label }
-  }) satisfies LanguageOption[]
+  return chunks
 }
 
 export function GoogleTranslator() {
   const pathname = usePathname()
   const [selectedLanguage, setSelectedLanguage] = useState("en")
-  const [ready, setReady] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
   const [suggestedLanguage, setSuggestedLanguage] = useState<LocaleDetectResponse | null>(null)
-  const toolbarGuardCleanupRef = useRef<null | (() => void)>(null)
-  const applyTimerRef = useRef<number | null>(null)
-  const observerRef = useRef<MutationObserver | null>(null)
-  const pendingLanguageRef = useRef<string | null>(null)
-  const lastAppliedRef = useRef<string | null>(null)
+  const originalTextMapRef = useRef(new Map<Text, string>())
+  const originalAttrMapRef = useRef(new Map<HTMLElement, Map<string, string>>())
+  const translationCacheRef = useRef(new Map<string, string>())
+  const activeRunIdRef = useRef(0)
+  const mountedRef = useRef(false)
 
-  const languageOptions = useMemo(createLanguageOptions, [])
   const languageLabelByCode = useMemo(
-    () => new Map(languageOptions.map((language) => [language.code, language.label])),
-    [languageOptions],
+    () => new Map<string, string>(languageOptions.map((item) => [item.code, item.label])),
+    [],
   )
-  const includedLanguages = useMemo(() => languageCodes.join(","), [])
-  const normalizedSuggestedLanguage = suggestedLanguage
-    ? normalizeLanguageCode(suggestedLanguage.language) ?? "en"
-    : null
 
-  const startGuard = () => {
-    toolbarGuardCleanupRef.current?.()
-    toolbarGuardCleanupRef.current = startToolbarGuard()
-  }
+  const restoreOriginalContent = () => {
+    for (const [node, original] of originalTextMapRef.current) {
+      if (!node.isConnected) {
+        originalTextMapRef.current.delete(node)
+        continue
+      }
+      node.nodeValue = original
+    }
 
-  const clearApplyTimer = () => {
-    if (applyTimerRef.current !== null) {
-      window.clearTimeout(applyTimerRef.current)
-      applyTimerRef.current = null
+    for (const [element, attributes] of originalAttrMapRef.current) {
+      if (!element.isConnected) {
+        originalAttrMapRef.current.delete(element)
+        continue
+      }
+
+      for (const [attribute, originalValue] of attributes) {
+        element.setAttribute(attribute, originalValue)
+      }
     }
   }
 
-  const attemptApplyLanguage = (code: string) => {
-    const applied = applyLanguage(code)
-    const translationActive = hasTranslateApplied()
-    const done = code === "en" ? applied && !translationActive : applied && translationActive
+  const translateStrings = async (texts: string[], targetLang: string) => {
+    const response = await fetch("/api/translate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        texts,
+        sourceLang: "en",
+        targetLang,
+      }),
+      cache: "no-store",
+    })
 
-    if (done) {
-      pendingLanguageRef.current = null
-      lastAppliedRef.current = code
-      startGuard()
-    }
-    return done
-  }
-
-  const applyLanguageWhenReady = (code: string, initialDelayMs = 0) => {
-    pendingLanguageRef.current = code
-    clearApplyTimer()
-
-    const runWithRetry = (attempt: number) => {
-      const pending = pendingLanguageRef.current
-      if (!pending) {
-        clearApplyTimer()
-        return
-      }
-
-      if (attemptApplyLanguage(pending)) {
-        clearApplyTimer()
-        return
-      }
-
-      if (attempt >= 30) {
-        // Keep selected value and cookie even if the widget did not attach in time.
-        clearApplyTimer()
-        return
-      }
-
-      const delayMs = Math.min(300 * (attempt + 1), 2000)
-      applyTimerRef.current = window.setTimeout(() => runWithRetry(attempt + 1), delayMs)
+    const payload = (await response.json()) as TranslateResponse
+    if (!response.ok || !payload.ok || !Array.isArray(payload.translations)) {
+      throw new Error(payload.error || "Translation request failed")
     }
 
-    applyTimerRef.current = window.setTimeout(() => {
-      runWithRetry(0)
-    }, Math.max(0, initialDelayMs))
+    return payload.translations
   }
 
-  const startComboObserver = () => {
-    if (observerRef.current) {
+  const applyLanguage = async (languageCode: string) => {
+    const normalizedLanguage = sanitizeLanguageCode(languageCode)
+    const runId = ++activeRunIdRef.current
+    setErrorMessage("")
+
+    restoreOriginalContent()
+
+    if (normalizedLanguage === "en") {
+      document.documentElement.lang = "en"
       return
     }
 
-    observerRef.current = new MutationObserver(() => {
-      const pending = pendingLanguageRef.current
-      if (!pending) {
-        return
-      }
-      if (attemptApplyLanguage(pending)) {
-        clearApplyTimer()
-      }
-    })
+    setIsTranslating(true)
 
-    observerRef.current.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-  }
+    try {
+      const textBindings: Array<{ node: Text; source: string }> = []
+      const attributeBindings: Array<{ element: HTMLElement; attribute: string; source: string }> = []
 
-  useEffect(() => {
-    startGuard()
-    startComboObserver()
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+      while (walker.nextNode()) {
+        const textNode = walker.currentNode as Text
+        const parent = textNode.parentElement
+        if (isSkippableParent(parent)) continue
 
-    return () => {
-      toolbarGuardCleanupRef.current?.()
-      clearApplyTimer()
-      observerRef.current?.disconnect()
-      observerRef.current = null
-    }
-  }, [])
+        const sourceText = textNode.nodeValue || ""
+        if (!containsTranslatableText(sourceText)) continue
 
-  useEffect(() => {
-    function initWidget() {
-      if (!window.google?.translate?.TranslateElement) return
-
-      const mountPoint = document.getElementById("google_translate_element")
-      if (!mountPoint || mountPoint.childElementCount > 0) {
-        setReady(true)
-        return
-      }
-
-      const translateNamespace = window.google.translate as {
-        TranslateElement: {
-          new (options: Record<string, unknown>, elementId: string): unknown
-          InlineLayout?: {
-            SIMPLE?: unknown
-          }
+        if (!originalTextMapRef.current.has(textNode)) {
+          originalTextMapRef.current.set(textNode, sourceText)
         }
+
+        textBindings.push({
+          node: textNode,
+          source: originalTextMapRef.current.get(textNode) || sourceText,
+        })
       }
 
-      new translateNamespace.TranslateElement(
-        {
-          pageLanguage: "en",
-          includedLanguages,
-          autoDisplay: false,
-          layout: translateNamespace.TranslateElement?.InlineLayout?.SIMPLE,
-        },
-        "google_translate_element",
+      document
+        .querySelectorAll<HTMLElement>("input[placeholder], textarea[placeholder], [aria-label], [title], input[type='submit'][value], input[type='button'][value]")
+        .forEach((element) => {
+          if (isSkippableParent(element)) return
+
+          ;(["placeholder", "aria-label", "title", "value"] as const).forEach((attribute) => {
+            const current = element.getAttribute(attribute)
+            if (!current || !containsTranslatableText(current)) return
+
+            if (!originalAttrMapRef.current.has(element)) {
+              originalAttrMapRef.current.set(element, new Map())
+            }
+
+            const attributes = originalAttrMapRef.current.get(element)!
+            if (!attributes.has(attribute)) {
+              attributes.set(attribute, current)
+            }
+
+            attributeBindings.push({
+              element,
+              attribute,
+              source: attributes.get(attribute) || current,
+            })
+          })
+        })
+
+      const sources = Array.from(
+        new Set(
+          [...textBindings.map((item) => item.source), ...attributeBindings.map((item) => item.source)].slice(0, 220),
+        ),
       )
-      setReady(true)
-    }
 
-    if (window.google?.translate?.TranslateElement) {
-      initWidget()
-      return
-    }
+      for (const chunk of chunkArray(sources, 40)) {
+        if (runId !== activeRunIdRef.current) return
 
-    window.googleTranslateElementInit = initWidget
+        const unresolved = chunk.filter(
+          (text) => !translationCacheRef.current.has(`${normalizedLanguage}|${text}`),
+        )
+        if (unresolved.length === 0) continue
 
-    if (!document.getElementById("google-translate-script")) {
-      const script = document.createElement("script")
-      script.id = "google-translate-script"
-      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-      script.async = true
-      document.body.appendChild(script)
+        const translated = await translateStrings(unresolved, normalizedLanguage)
+        unresolved.forEach((original, index) => {
+          const translatedText = translated[index] ?? original
+          translationCacheRef.current.set(`${normalizedLanguage}|${original}`, translatedText)
+        })
+      }
+
+      if (runId !== activeRunIdRef.current) return
+
+      textBindings.forEach(({ node, source }) => {
+        if (!node.isConnected) return
+        const translated = translationCacheRef.current.get(`${normalizedLanguage}|${source}`)
+        if (translated) node.nodeValue = translated
+      })
+
+      attributeBindings.forEach(({ element, attribute, source }) => {
+        if (!element.isConnected) return
+        const translated = translationCacheRef.current.get(`${normalizedLanguage}|${source}`)
+        if (translated) element.setAttribute(attribute, translated)
+      })
+
+      document.documentElement.lang = normalizedLanguage
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Translation failed"
+      setErrorMessage(message)
+    } finally {
+      if (runId === activeRunIdRef.current) {
+        setIsTranslating(false)
+      }
     }
-  }, [includedLanguages])
+  }
 
   useEffect(() => {
-    if (!ready) return
+    mountedRef.current = true
 
-    const savedLanguage = normalizeLanguageCode(localStorage.getItem(storageKey))
-    if (savedLanguage) {
+    const savedLanguage = sanitizeLanguageCode(localStorage.getItem(storageKey))
+    if (savedLanguage !== "en") {
       setSelectedLanguage(savedLanguage)
-      applyLanguageWhenReady(savedLanguage)
+      void applyLanguage(savedLanguage)
       return
     }
-
-    let isCancelled = false
 
     const detectLocale = async () => {
       try {
         const response = await fetch("/api/locale-detect", { cache: "no-store" })
-        if (!response.ok) throw new Error("Locale detection failed")
-        const data = (await response.json()) as LocaleDetectResponse
+        if (!response.ok) return
 
-        if (isCancelled) return
+        const locale = (await response.json()) as LocaleDetectResponse
+        const detected = sanitizeLanguageCode(locale.language)
+        const dismissed = sanitizeLanguageCode(localStorage.getItem(dismissKey))
 
-        const detectedLanguage = normalizeLanguageCode(data.language) ?? "en"
-        setSelectedLanguage(detectedLanguage)
-        applyLanguageWhenReady(detectedLanguage)
+        if (detected !== "en") {
+          setSelectedLanguage(detected)
+          void applyLanguage(detected)
 
-        const dismissedLanguage = localStorage.getItem(dismissKey)
-        if (detectedLanguage !== "en" && dismissedLanguage !== detectedLanguage) {
-          setSuggestedLanguage({ ...data, language: detectedLanguage })
+          if (dismissed !== detected) {
+            setSuggestedLanguage({ ...locale, language: detected })
+          }
         }
       } catch {
-        setSelectedLanguage("en")
-        applyLanguageWhenReady("en")
+        // Keep english defaults when locale detection fails.
       }
     }
 
-    detectLocale()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [ready])
+    void detectLocale()
+  }, [])
 
   useEffect(() => {
-    if (!ready) {
-      return
-    }
+    if (!mountedRef.current || selectedLanguage === "en") return
+    const timer = window.setTimeout(() => {
+      void applyLanguage(selectedLanguage)
+    }, 120)
+    return () => window.clearTimeout(timer)
+  }, [pathname, selectedLanguage])
 
-    const lastApplied = lastAppliedRef.current
-    if (!lastApplied || lastApplied === "en") {
-      return
-    }
-
-    applyLanguageWhenReady(lastApplied, 800)
-  }, [pathname, ready])
-
-  const onChangeLanguage = (nextLanguage: string, persist = true) => {
-    const normalized = normalizeLanguageCode(nextLanguage) ?? "en"
+  const onChangeLanguage = (nextLanguage: string) => {
+    const normalized = sanitizeLanguageCode(nextLanguage)
     setSelectedLanguage(normalized)
-    if (persist) localStorage.setItem(storageKey, normalized)
     setSuggestedLanguage(null)
-    applyLanguageWhenReady(normalized)
+    localStorage.setItem(storageKey, normalized)
+    void applyLanguage(normalized)
   }
 
   return (
@@ -379,8 +315,15 @@ export function GoogleTranslator() {
             </option>
           ))}
         </select>
-        <div id="google_translate_element" className="fixed -left-[9999px] top-0 h-0 w-0 overflow-hidden" />
+        {isTranslating && <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-foreground" aria-hidden="true" />}
       </div>
+
+      {errorMessage ? (
+        <div className="fixed bottom-4 right-4 z-[80] w-[min(22rem,calc(100vw-2rem))] rounded-md border border-destructive/30 bg-card p-3 shadow-xl">
+          <p className="text-xs font-semibold text-destructive">Translation issue</p>
+          <p className="mt-1 text-xs text-muted-foreground">{errorMessage}</p>
+        </div>
+      ) : null}
 
       {suggestedLanguage ? (
         <div className="fixed bottom-4 right-4 z-[80] w-[min(22rem,calc(100vw-2rem))] rounded-md border border-border bg-card p-3 shadow-xl">
@@ -388,7 +331,7 @@ export function GoogleTranslator() {
             type="button"
             aria-label="Dismiss language suggestion"
             onClick={() => {
-              localStorage.setItem(dismissKey, normalizedSuggestedLanguage || "en")
+              localStorage.setItem(dismissKey, sanitizeLanguageCode(suggestedLanguage.language))
               setSuggestedLanguage(null)
             }}
             className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary"
@@ -404,15 +347,15 @@ export function GoogleTranslator() {
           <p className="mt-1 text-xs text-muted-foreground">
             Showing this page in{" "}
             <span className="font-semibold text-foreground">
-              {languageLabelByCode.get(normalizedSuggestedLanguage || "en") ?? suggestedLanguage.language}
+              {languageLabelByCode.get(sanitizeLanguageCode(suggestedLanguage.language)) ?? suggestedLanguage.language}
             </span>
-            . You can switch back anytime.
+            .
           </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => onChangeLanguage("en", true)}
+              onClick={() => onChangeLanguage("en")}
               className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
             >
               Show original
@@ -420,7 +363,7 @@ export function GoogleTranslator() {
             <button
               type="button"
               onClick={() => {
-                localStorage.setItem(storageKey, normalizedSuggestedLanguage || "en")
+                localStorage.setItem(storageKey, sanitizeLanguageCode(suggestedLanguage.language))
                 setSuggestedLanguage(null)
               }}
               className="rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-tsa-green-mid"
