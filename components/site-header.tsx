@@ -239,7 +239,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Main navigation">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 xl:flex" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
@@ -249,18 +249,18 @@ export function SiteHeader() {
               return (
                 <div
                   key={item.label}
-                  className="relative"
+                  className="relative shrink-0"
                   onMouseEnter={() => item.children && handleMenuEnter(item.label)}
                   onMouseLeave={handleMenuLeave}
                 >
                   <Link
                     href={item.href}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    className={`inline-flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring 2xl:px-3 2xl:text-sm ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
-                    } relative after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-center after:rounded-full after:bg-tsa-gold after:transition-transform after:duration-300 after:content-[''] ${
+                    } after:absolute after:bottom-0 after:left-2.5 after:right-2.5 after:h-0.5 after:origin-center after:rounded-full after:bg-tsa-gold after:transition-transform after:duration-300 after:content-[''] 2xl:after:left-3 2xl:after:right-3 ${
                       isActive ? "after:scale-x-100" : "after:scale-x-0"
                     }`}
                     aria-expanded={item.children ? isExpanded : undefined}
