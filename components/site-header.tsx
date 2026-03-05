@@ -240,7 +240,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-6 2xl:flex" aria-label="Main navigation">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 lg:flex xl:pl-6" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
@@ -257,7 +257,7 @@ export function SiteHeader() {
                   <Link
                     href={item.href}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring 2xl:px-3 2xl:text-sm ${
+                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:px-2 lg:text-xs 2xl:px-3 2xl:text-sm ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
@@ -314,14 +314,14 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring 2xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
               aria-label="Open search"
             >
               <Search className="h-5 w-5" />
             </button>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring 2xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
               onClick={() => setMobileOpen((current) => !current)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -331,8 +331,9 @@ export function SiteHeader() {
           </div>
         </div>
 
-      <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </header>
+
+      <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <SafeClientBoundary>
         <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
@@ -356,7 +357,7 @@ function MobileNav({
 
   return (
     <div
-      className={`absolute inset-x-0 top-full z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out 2xl:hidden ${
+      className={`fixed inset-x-0 top-[4.5rem] z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out lg:hidden ${
         open ? "max-h-[calc(100dvh-4.5rem)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
       }`}
     >

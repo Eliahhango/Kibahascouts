@@ -79,6 +79,12 @@ function chunkArray<T>(array: T[], chunkSize: number) {
   return chunks
 }
 
+function waitForNextFrame() {
+  return new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => resolve())
+  })
+}
+
 export function GoogleTranslator() {
   const pathname = usePathname()
   const [selectedLanguage, setSelectedLanguage] = useState("en")
@@ -145,6 +151,8 @@ export function GoogleTranslator() {
     setErrorMessage("")
 
     restoreOriginalContent()
+    await waitForNextFrame()
+    if (runId !== activeRunIdRef.current) return
 
     if (normalizedLanguage === "en") {
       document.documentElement.lang = "en"
@@ -204,7 +212,7 @@ export function GoogleTranslator() {
 
       const sources = Array.from(
         new Set(
-          [...textBindings.map((item) => item.source), ...attributeBindings.map((item) => item.source)].slice(0, 220),
+          [...textBindings.map((item) => item.source), ...attributeBindings.map((item) => item.source)],
         ),
       )
 
