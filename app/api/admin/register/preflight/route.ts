@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { getValidAdminInvite } from "@/lib/auth/admin-invites"
 import { getAdminUserByEmail, normalizeAdminEmail } from "@/lib/auth/admin-users"
 import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
 import { resolveBlockingRule } from "@/lib/security/admin-blocks"
@@ -12,6 +13,7 @@ const REGISTRATION_NOT_AVAILABLE_MESSAGE = "Registration not available."
 
 const RegisterPreflightSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address."),
+  inviteId: z.string().trim().optional(),
 })
 
 function getErrorCode(error: unknown) {
@@ -43,6 +45,7 @@ export async function POST(request: Request) {
     }
 
     const email = normalizeAdminEmail(parsedBody.data.email) || ""
+    const inviteId = parsedBody.data.inviteId?.trim() || ""
     attemptedEmail = email
 
     const actorBlock = await resolveBlockingRule({ email, ip, scope: "admin_auth" })
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     const adminUser = await getAdminUserByEmail(email)
-    if (!adminUser || !adminUser.active) {
+    if (!adminUser) {
       await logAuthEvent({
         outcome: "failure",
         email,
@@ -74,6 +77,60 @@ export async function POST(request: Request) {
         reason: "email_not_allowlisted_register",
       })
       return NextResponse.json({ ok: false, error: REGISTRATION_NOT_AVAILABLE_MESSAGE }, { status: 403 })
+    }
+
+    if (adminUser.onboardingStatus === "revoked" || adminUser.onboardingStatus === "deleted") {
+      await logAuthEvent({
+        outcome: "failure",
+        email,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "admin_status_not_eligible_for_registration",
+        metadata: { onboardingStatus: adminUser.onboardingStatus },
+      })
+      return NextResponse.json({ ok: false, error: REGISTRATION_NOT_AVAILABLE_MESSAGE }, { status: 403 })
+    }
+
+    const inviteRequired = adminUser.onboardingStatus === "invited" || adminUser.onboardingStatus === "pending"
+    let validInviteId = ""
+
+    if (inviteRequired) {
+      if (!inviteId) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Invitation link is required. Use the latest invite email.",
+          },
+          { status: 400 },
+        )
+      }
+
+      const invite = await getValidAdminInvite({ inviteId, email })
+      if (!invite) {
+        await logAuthEvent({
+          outcome: "failure",
+          email,
+          ip,
+          userAgent,
+          method: request.method,
+          path,
+          status: 403,
+          reason: "invalid_or_expired_invite",
+          metadata: { inviteId },
+        })
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "This invitation is invalid or expired. Request a new invitation.",
+          },
+          { status: 403 },
+        )
+      }
+
+      validInviteId = invite.id
     }
 
     const { getAdminAuth } = await import("@/lib/firebase/admin")
@@ -110,7 +167,7 @@ export async function POST(request: Request) {
         path,
         status: 200,
         reason: "register_preflight_existing_account",
-        metadata: { role: adminUser.role },
+        metadata: { role: adminUser.role, onboardingStatus: adminUser.onboardingStatus },
       })
 
       return NextResponse.json({
@@ -118,6 +175,8 @@ export async function POST(request: Request) {
         data: {
           email: adminUser.email,
           role: adminUser.role,
+          inviteId: validInviteId || adminUser.inviteId || "",
+          onboardingStatus: adminUser.onboardingStatus,
           registrationRequired: false,
         },
       })
@@ -137,7 +196,7 @@ export async function POST(request: Request) {
       path,
       status: 200,
       reason: "register_preflight_eligible",
-      metadata: { role: adminUser.role },
+      metadata: { role: adminUser.role, onboardingStatus: adminUser.onboardingStatus },
     })
 
     return NextResponse.json({
@@ -145,6 +204,8 @@ export async function POST(request: Request) {
       data: {
         email: adminUser.email,
         role: adminUser.role,
+        inviteId: validInviteId || adminUser.inviteId || "",
+        onboardingStatus: adminUser.onboardingStatus,
         registrationRequired: true,
       },
     })

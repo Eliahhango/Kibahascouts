@@ -47,6 +47,36 @@ async function getAdminSessionsCollection() {
   return getAdminDb().collection(ADMIN_SESSIONS_COLLECTION)
 }
 
+async function revokeTrackedAdminSessionsByField(params: {
+  field: "uid" | "email"
+  value: string
+  reason: string
+}) {
+  if (!params.value) {
+    return 0
+  }
+
+  const collection = await getAdminSessionsCollection()
+  const snapshot = await collection.where(params.field, "==", params.value).where("active", "==", true).get()
+  if (snapshot.empty) {
+    return 0
+  }
+
+  const now = new Date().toISOString()
+  const writer = collection.firestore.batch()
+  for (const doc of snapshot.docs) {
+    writer.update(doc.ref, {
+      active: false,
+      revokedAt: now,
+      revokedReason: params.reason,
+      updatedAt: now,
+    })
+  }
+
+  await writer.commit()
+  return snapshot.size
+}
+
 async function enforceConcurrentSessionLimit(uid: string) {
   const collection = await getAdminSessionsCollection()
   const snapshot = await collection.where("uid", "==", uid).get()
@@ -164,4 +194,12 @@ export async function revokeTrackedAdminSession(sessionCookie: string, reason: s
     revokedReason: reason,
     updatedAt: now,
   })
+}
+
+export async function revokeTrackedAdminSessionsByEmail(email: string, reason: string) {
+  return revokeTrackedAdminSessionsByField({ field: "email", value: email.trim().toLowerCase(), reason })
+}
+
+export async function revokeTrackedAdminSessionsByUid(uid: string, reason: string) {
+  return revokeTrackedAdminSessionsByField({ field: "uid", value: uid.trim(), reason })
 }

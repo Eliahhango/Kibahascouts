@@ -36,6 +36,10 @@ const envSchema = z
     ADMIN_SECURITY_ALERT_WINDOW_MINUTES: positiveInt("ADMIN_SECURITY_ALERT_WINDOW_MINUTES", 1, 1_440).default(30),
     INSTAGRAM_ACCESS_TOKEN: z.string().optional().default(""),
     ADMIN_EMAILS: z.string().optional(),
+    RESEND_API_KEY: z.string().optional().default(""),
+    RESEND_FROM_EMAIL: z.string().optional().default(""),
+    RESEND_FROM_NAME: z.string().optional().default("Kibaha Scouts"),
+    RESEND_REPLY_TO: z.string().optional().default(""),
   })
   .superRefine((env, ctx) => {
     if (!env.FIREBASE_ADMIN_PRIVATE_KEY.includes("PRIVATE KEY")) {

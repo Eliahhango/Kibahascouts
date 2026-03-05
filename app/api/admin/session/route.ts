@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { createTrackedAdminSession, getTrackedAdminSession } from "@/lib/auth/admin-session-store"
-import { getAdminUserByEmail, markAdminLogin } from "@/lib/auth/admin-users"
+import { getAdminUserByEmail, getAdminUserByUid, isApprovedAdmin, markAdminLogin } from "@/lib/auth/admin-users"
 import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
 import { AdminAuthError, readCookieFromHeader, requireAdminFromRequest } from "@/lib/auth/require-admin"
 import { getAdminSessionCookieName, getAdminSessionExpiresInMs, getAdminSessionMaxAgeSeconds } from "@/lib/auth/session-cookie"
@@ -175,8 +175,11 @@ export async function POST(request: Request) {
       }
     }
 
-    const adminUser = await getAdminUserByEmail(email)
-    if (!adminUser || !adminUser.active) {
+    const adminByEmail = await getAdminUserByEmail(email)
+    const adminByUid = await getAdminUserByUid(decodedToken.uid)
+    const adminUser = adminByEmail || adminByUid
+
+    if (!adminUser) {
       const failureState = await recordFailedLoginAttempt(email, ip, "email_not_allowlisted")
       await logAuthEvent({
         outcome: "failure",
@@ -195,6 +198,80 @@ export async function POST(request: Request) {
         {
           ok: false,
           error: "Email not found in admin allowlist.",
+        },
+        { status: 403 },
+      )
+    }
+
+    if (adminUser.uid && adminUser.uid !== decodedToken.uid) {
+      await logAuthEvent({
+        outcome: "failure",
+        email: adminUser.email,
+        uid: decodedToken.uid,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "admin_identity_mismatch",
+      })
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Admin identity mismatch detected. Contact a super admin.",
+        },
+        { status: 403 },
+      )
+    }
+
+    if (email && adminUser.email !== email) {
+      await logAuthEvent({
+        outcome: "failure",
+        email: adminUser.email,
+        uid: decodedToken.uid,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason: "admin_email_changed_requires_reapproval",
+      })
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Your account email changed. Ask a super admin to send a new invite.",
+        },
+        { status: 403 },
+      )
+    }
+
+    if (!isApprovedAdmin(adminUser)) {
+      const reason =
+        adminUser.onboardingStatus === "pending" || adminUser.onboardingStatus === "invited"
+          ? "admin_awaiting_approval"
+          : "admin_access_revoked"
+      await logAuthEvent({
+        outcome: "failure",
+        email: adminUser.email,
+        uid: decodedToken.uid,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason,
+        metadata: { onboardingStatus: adminUser.onboardingStatus, active: adminUser.active },
+      })
+
+      const errorMessage =
+        adminUser.onboardingStatus === "pending" || adminUser.onboardingStatus === "invited"
+          ? "Your admin account is awaiting approval."
+          : "Your admin access has been revoked."
+
+      return NextResponse.json(
+        {
+          ok: false,
+          error: errorMessage,
         },
         { status: 403 },
       )

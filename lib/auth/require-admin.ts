@@ -2,7 +2,15 @@ import "server-only"
 
 import type { DecodedIdToken } from "firebase-admin/auth"
 import { cookies } from "next/headers"
-import { getAdminUserByEmail, getRolePermissions, hasAdminPermission, type AdminPermission, type AdminRole } from "./admin-users"
+import {
+  getAdminUserByEmail,
+  getAdminUserByUid,
+  getRolePermissions,
+  hasAdminPermission,
+  isApprovedAdmin,
+  type AdminPermission,
+  type AdminRole,
+} from "./admin-users"
 import { getTrackedAdminSession, touchTrackedAdminSession } from "./admin-session-store"
 import { resolveBlockingRule } from "@/lib/security/admin-blocks"
 import { getRequestIp } from "@/lib/security/request-context"
@@ -23,6 +31,7 @@ export type AdminSession = {
   email: string
   role: AdminRole
   permissions: readonly AdminPermission[]
+  onboardingStatus: "approved"
   sessionExpiresAt: string
   token: DecodedIdToken
 }
@@ -64,9 +73,24 @@ export async function verifyAdminSessionCookie(
       throw new AdminAuthError("Invalid or expired admin session.", 401)
     }
 
-    const adminUser = await getAdminUserByEmail(email)
-    if (!adminUser || !adminUser.active) {
+    const adminByEmail = await getAdminUserByEmail(email)
+    const adminByUid = await getAdminUserByUid(decoded.uid)
+    const adminUser = adminByEmail || adminByUid
+
+    if (!adminUser) {
       throw new AdminAuthError("Email not found in admin allowlist.", 403)
+    }
+
+    if (!isApprovedAdmin(adminUser)) {
+      throw new AdminAuthError("Your admin account is awaiting approval or has been revoked.", 403)
+    }
+
+    if (adminUser.uid && adminUser.uid !== decoded.uid) {
+      throw new AdminAuthError("Admin identity mismatch detected. Contact a super admin.", 403)
+    }
+
+    if (email && adminUser.email !== email) {
+      throw new AdminAuthError("Your account email changed. Admin access must be re-approved.", 403)
     }
 
     const actorBlock = await resolveBlockingRule({ email: adminUser.email, scope: "admin_api" })
@@ -81,6 +105,7 @@ export async function verifyAdminSessionCookie(
       uid: decoded.uid,
       email: adminUser.email,
       role: adminUser.role,
+      onboardingStatus: "approved",
       permissions: getRolePermissions(adminUser.role),
       sessionExpiresAt: trackedSession.expiresAt,
       token: decoded,

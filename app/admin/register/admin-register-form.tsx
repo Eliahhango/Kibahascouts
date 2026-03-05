@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
@@ -12,12 +12,16 @@ type AdminRole = "super_admin" | "content_admin" | "viewer"
 
 type AdminRegisterFormProps = {
   nextPath: string
+  defaultEmail?: string
+  defaultInviteId?: string
   inviteOnly?: boolean
 }
 
 type RegisterPreflightPayload = {
   email: string
   role: AdminRole
+  inviteId: string
+  onboardingStatus: "invited" | "pending" | "approved" | "revoked" | "deleted"
   registrationRequired: boolean
 }
 
@@ -64,6 +68,14 @@ function mapRegisterError(error: unknown) {
     return REGISTRATION_NOT_AVAILABLE_MESSAGE
   }
 
+  if (message.includes("Invitation link is required") || message.includes("invalid or expired")) {
+    return message
+  }
+
+  if (message.includes("pending super admin approval")) {
+    return "Account setup is complete and pending super admin approval."
+  }
+
   if (message.includes("disabled")) {
     return REGISTRATION_NOT_AVAILABLE_MESSAGE
   }
@@ -95,9 +107,17 @@ async function parseApiResponse<T>(response: Response) {
   }
 }
 
-export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegisterFormProps) {
-  const [email, setEmail] = useState("")
+export function AdminRegisterForm({
+  nextPath,
+  defaultEmail = "",
+  defaultInviteId = "",
+  inviteOnly = true,
+}: AdminRegisterFormProps) {
+  const initialEmail = useMemo(() => defaultEmail.trim().toLowerCase(), [defaultEmail])
+  const initialInviteId = useMemo(() => defaultInviteId?.trim() || "", [defaultInviteId])
+  const [email, setEmail] = useState(initialEmail)
   const [eligibleEmail, setEligibleEmail] = useState("")
+  const [inviteId, setInviteId] = useState(initialInviteId)
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -106,11 +126,11 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
   const [isSubmitting, setIsSubmitting] = useState(false)
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
 
-  async function checkEligibility(normalizedEmail: string) {
+  async function checkEligibility(normalizedEmail: string, currentInviteId: string) {
     const response = await adminFetch("/api/admin/register/preflight", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: normalizedEmail }),
+      body: JSON.stringify({ email: normalizedEmail, inviteId: currentInviteId || undefined }),
     })
 
     const { payload, error: message } = await parseApiResponse<RegisterPreflightPayload>(response)
@@ -134,10 +154,16 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
     setEligibilityStatus("checking")
 
     try {
-      const preflight = await checkEligibility(normalizedEmail)
+      const preflight = await checkEligibility(normalizedEmail, inviteId)
+      setInviteId(preflight.inviteId || inviteId)
 
       if (!preflight.registrationRequired) {
         setEligibilityStatus("rejected")
+        if (preflight.onboardingStatus === "pending" || preflight.onboardingStatus === "invited") {
+          setInfo("Account setup is complete and pending super admin approval.")
+          return
+        }
+
         setInfo("Registration already completed for this account. Please sign in.")
         return
       }
@@ -145,9 +171,9 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
       setEligibleEmail(normalizedEmail)
       setEligibilityStatus("approved")
       setInfo("Invitation verified. Set your password to continue.")
-    } catch {
+    } catch (checkError) {
       setEligibilityStatus("rejected")
-      setError(REGISTRATION_NOT_AVAILABLE_MESSAGE)
+      setError(mapRegisterError(checkError))
     }
   }
 
@@ -157,7 +183,7 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
     setInfo(null)
 
     const normalizedEmail = email.trim().toLowerCase()
-    if (eligibilityStatus !== "approved" || eligibleEmail !== normalizedEmail) {
+    if (eligibilityStatus !== "approved" || eligibleEmail !== normalizedEmail || !inviteId) {
       setError(REGISTRATION_NOT_AVAILABLE_MESSAGE)
       return
     }
@@ -184,10 +210,10 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
       const credentials = await createUserWithEmailAndPassword(auth, normalizedEmail, password)
       const idToken = await credentials.user.getIdToken(true)
 
-      const response = await adminFetch("/api/admin/session", {
+      const response = await adminFetch("/api/admin/register/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken, mode: "login" }),
+        body: JSON.stringify({ idToken, inviteId }),
       })
       const { payload, error: message } = await parseApiResponse<unknown>(response)
 
@@ -195,7 +221,9 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
         throw new Error(message)
       }
 
-      window.location.assign(nextPath)
+      await signOut(auth).catch(() => null)
+      const loginPath = `/admin/login?next=${encodeURIComponent(nextPath)}&email=${encodeURIComponent(normalizedEmail)}`
+      window.location.assign(loginPath)
     } catch (submitError) {
       setError(mapRegisterError(submitError))
     } finally {
@@ -203,7 +231,10 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
     }
   }
 
-  const loginHref = `/admin/login?next=${encodeURIComponent(nextPath)}`
+  const normalizedEmail = email.trim().toLowerCase()
+  const loginHref = isValidEmail(normalizedEmail)
+    ? `/admin/login?next=${encodeURIComponent(nextPath)}&email=${encodeURIComponent(normalizedEmail)}`
+    : `/admin/login?next=${encodeURIComponent(nextPath)}`
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10">
@@ -235,6 +266,7 @@ export function AdminRegisterForm({ nextPath, inviteOnly = true }: AdminRegister
                 if (eligibleEmail && normalizedNext !== eligibleEmail) {
                   setEligibleEmail("")
                   setEligibilityStatus("idle")
+                  setInviteId(initialInviteId)
                   setPassword("")
                   setConfirmPassword("")
                 }

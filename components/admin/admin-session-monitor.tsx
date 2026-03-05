@@ -29,6 +29,7 @@ const TIMER_CIRCUMFERENCE = 2 * Math.PI * TIMER_RADIUS
 export function AdminSessionMonitor() {
   const router = useRouter()
   const pathname = usePathname()
+  const isAuthRoute = pathname === "/admin/login" || pathname === "/admin/register"
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [status, setStatus] = useState<SessionStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -54,7 +55,7 @@ export function AdminSessionMonitor() {
   }, [])
 
   const loadStatus = useCallback(async () => {
-    if (isExpired) {
+    if (isExpired || isAuthRoute) {
       return
     }
 
@@ -84,10 +85,10 @@ export function AdminSessionMonitor() {
       setError(statusError instanceof Error ? statusError.message : "Unable to verify admin session.")
       setStatus(null)
     }
-  }, [isExpired, triggerExpiredState])
+  }, [isAuthRoute, isExpired, triggerExpiredState])
 
   const refreshSession = useCallback(async () => {
-    if (isRefreshing || isExpired) {
+    if (isRefreshing || isExpired || isAuthRoute) {
       return
     }
 
@@ -131,9 +132,25 @@ export function AdminSessionMonitor() {
     } finally {
       setIsRefreshing(false)
     }
-  }, [isExpired, isRefreshing, loadStatus, triggerExpiredState])
+  }, [isAuthRoute, isExpired, isRefreshing, loadStatus, triggerExpiredState])
 
   useEffect(() => {
+    if (!isAuthRoute) {
+      return
+    }
+
+    setIsExpired(false)
+    setError(null)
+    setStatus(null)
+    setSecondsLeft(SESSION_REDIRECT_COUNTDOWN_SECONDS)
+    hasRedirectedRef.current = false
+  }, [isAuthRoute])
+
+  useEffect(() => {
+    if (isAuthRoute) {
+      return
+    }
+
     void loadStatus()
 
     const interval = window.setInterval(() => {
@@ -141,10 +158,10 @@ export function AdminSessionMonitor() {
     }, 60_000)
 
     return () => window.clearInterval(interval)
-  }, [loadStatus])
+  }, [isAuthRoute, loadStatus])
 
   useEffect(() => {
-    if (!isExpired) {
+    if (!isExpired || isAuthRoute) {
       return
     }
 
@@ -161,10 +178,10 @@ export function AdminSessionMonitor() {
     }, 1000)
 
     return () => window.clearInterval(interval)
-  }, [isExpired, redirectToLogin])
+  }, [isAuthRoute, isExpired, redirectToLogin])
 
   useEffect(() => {
-    if (!status) {
+    if (!status || isAuthRoute) {
       return
     }
 
@@ -185,7 +202,7 @@ export function AdminSessionMonitor() {
     }
 
     void refreshSession()
-  }, [isExpired, refreshSession, status])
+  }, [isAuthRoute, isExpired, refreshSession, status])
 
   const warningText = useMemo(() => {
     if (!status) {
@@ -203,7 +220,7 @@ export function AdminSessionMonitor() {
     return `Session expires in ${status.minutesRemaining} minute${status.minutesRemaining === 1 ? "" : "s"}.`
   }, [isExpired, status])
 
-  if (pathname === "/admin/login") {
+  if (isAuthRoute) {
     return null
   }
 

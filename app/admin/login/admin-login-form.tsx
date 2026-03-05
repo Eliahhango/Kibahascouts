@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useEffect, useMemo, useState } from "react"
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
+import { signInWithEmailAndPassword } from "firebase/auth"
 import { Shield } from "lucide-react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { getFirebaseClientAuth } from "@/lib/firebase/client"
@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/spinner"
 
 type AdminLoginFormProps = {
   nextPath: string
+  defaultEmail?: string
 }
 
 type ApiResponse = {
@@ -55,6 +56,22 @@ function mapSignInError(error: unknown) {
     return "Email not found in admin allowlist."
   }
 
+  if (message.includes("awaiting approval")) {
+    return "Your admin account is awaiting super admin approval."
+  }
+
+  if (message.includes("revoked")) {
+    return "Your admin access has been revoked. Contact a super admin."
+  }
+
+  if (message.includes("email changed")) {
+    return "Your account email changed. Request a fresh invitation."
+  }
+
+  if (message.includes("identity mismatch")) {
+    return "Admin identity mismatch detected. Contact a super admin."
+  }
+
   if (message.includes("Too many login attempts")) {
     return message
   }
@@ -78,16 +95,60 @@ function mapSignInError(error: unknown) {
   return message || "Unable to sign in."
 }
 
-async function parseApiResponse(response: Response) {
-  const payload = (await response.json().catch(() => null)) as ApiResponse | null
+function mapResetError(error: unknown) {
+  const code = typeof error === "object" && error && "code" in error ? String(error.code) : ""
+  const message = error instanceof Error ? error.message : "Unable to send password reset email."
+
+  if (message.includes("Email not found in admin allowlist.")) {
+    return "Email not found in admin allowlist."
+  }
+
+  if (message.includes("No password is set for this email yet")) {
+    return "No password is set for this email yet. Use \"Set your password first\" or ask a super admin for help."
+  }
+
+  if (message.includes("service is not configured")) {
+    return "Password reset email service is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL in Vercel."
+  }
+
+  if (message.includes("account is disabled")) {
+    return "This account is disabled. Contact a super admin."
+  }
+
+  if (message.includes("awaiting approval")) {
+    return "Your admin account is awaiting super admin approval."
+  }
+
+  if (message.includes("revoked")) {
+    return "Your admin access has been revoked. Contact a super admin."
+  }
+
+  if (code === "auth/invalid-email") {
+    return "Please enter a valid email address."
+  }
+
+  if (code === "auth/user-not-found") {
+    return "No password is set for this email yet. Use \"Set your password first\" or ask a super admin for help."
+  }
+
+  if (code === "auth/too-many-requests") {
+    return "Too many requests. Please wait a few minutes before requesting another reset email."
+  }
+
+  return message || "Unable to send password reset email."
+}
+
+async function parseApiResponse<T>(response: Response, fallbackError: string) {
+  const payload = (await response.json().catch(() => null)) as (ApiResponse & { data?: T }) | null
   return {
     payload,
-    error: payload?.error || "Unable to sign in.",
+    error: payload?.error || fallbackError,
   }
 }
 
-export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
-  const [email, setEmail] = useState("")
+export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormProps) {
+  const initialEmail = useMemo(() => defaultEmail.trim().toLowerCase(), [defaultEmail])
+  const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
@@ -95,7 +156,10 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
   const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("Verifying credentials...")
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
-  const registerHref = `/admin/register?next=${encodeURIComponent(nextPath)}`
+  const normalizedInputEmail = email.trim().toLowerCase()
+  const registerHref = isValidEmail(normalizedInputEmail)
+    ? `/admin/register?next=${encodeURIComponent(nextPath)}&email=${encodeURIComponent(normalizedInputEmail)}`
+    : `/admin/register?next=${encodeURIComponent(nextPath)}`
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -118,7 +182,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
       body: JSON.stringify({ email: normalizedEmail, action: "check" }),
     })
 
-    const { payload, error: message } = await parseApiResponse(response)
+    const { payload, error: message } = await parseApiResponse(response, "Unable to sign in.")
     if (!response.ok || !payload?.ok) {
       throw new Error(message)
     }
@@ -130,7 +194,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: normalizedEmail, action: "failure", reason }),
     })
-    const { payload, error: message } = await parseApiResponse(response)
+    const { payload, error: message } = await parseApiResponse(response, "Unable to sign in.")
 
     if (response.status === 429 || (payload && payload.error)) {
       return message
@@ -177,7 +241,7 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken, mode: "login" }),
       })
-      const { payload, error: message } = await parseApiResponse(response)
+      const { payload, error: message } = await parseApiResponse(response, "Unable to sign in.")
 
       if (!response.ok || !payload?.ok) {
         throw new Error(message)
@@ -209,10 +273,23 @@ export function AdminLoginForm({ nextPath }: AdminLoginFormProps) {
 
     setIsResettingPassword(true)
     try {
-      await sendPasswordResetEmail(getFirebaseClientAuth(), normalizedEmail)
-      setInfo("Password reset email sent. Check your inbox and spam folder.")
+      const response = await adminFetch("/api/admin/password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail }),
+      })
+      const { payload, error: message } = await parseApiResponse<{ provider: string }>(
+        response,
+        "Unable to send password reset email.",
+      )
+
+      if (!response.ok || !payload?.ok) {
+        throw new Error(message)
+      }
+
+      setInfo("Password reset email sent. Check your inbox and spam folder, then follow the secure link to set a new password.")
     } catch (resetError) {
-      setError(mapSignInError(resetError))
+      setError(mapResetError(resetError))
     } finally {
       setIsResettingPassword(false)
     }

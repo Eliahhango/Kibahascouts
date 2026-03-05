@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
 type AdminRole = "super_admin" | "content_admin" | "viewer"
+type AdminOnboardingStatus = "invited" | "pending" | "approved" | "revoked" | "deleted"
 
 type AdminUserRecord = {
   email: string
   role: AdminRole
   active: boolean
+  onboardingStatus: AdminOnboardingStatus
   createdAt: string
   updatedAt: string
   lastLoginAt?: string
@@ -24,6 +26,13 @@ type ApiResponse<T> = {
   ok: boolean
   data?: T
   error?: string
+}
+
+type CreateAdminResponseData = {
+  invitationEmailSent: boolean
+  invitationEmailSkipped: boolean
+  invitationEmailError?: string
+  inviteId?: string
 }
 
 type SessionResponse = {
@@ -111,14 +120,22 @@ export function AdminUsersManager() {
         body: JSON.stringify({ email: normalizedEmail, role }),
       })
 
-      const payload = (await response.json()) as ApiResponse<null>
+      const payload = (await response.json()) as ApiResponse<CreateAdminResponseData>
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || "Unable to add admin user.")
       }
 
       setEmail("")
       setRole("content_admin")
-      setSuccess("Admin user saved.")
+      if (payload.data?.invitationEmailSent) {
+        setSuccess("Admin user saved and invitation email sent.")
+      } else if (payload.data?.invitationEmailError) {
+        setSuccess(`Admin user saved. Invitation email was not sent: ${payload.data.invitationEmailError}`)
+      } else if (payload.data?.invitationEmailSkipped) {
+        setSuccess("Admin user saved. Invitation email skipped because the admin account already exists.")
+      } else {
+        setSuccess("Admin user saved.")
+      }
       await loadUsers()
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Unable to add admin user.")
@@ -129,7 +146,7 @@ export function AdminUsersManager() {
 
   async function updateUser(
     emailValue: string,
-    updates: Partial<Pick<AdminUserRecord, "role" | "active">>,
+    updates: Partial<Pick<AdminUserRecord, "role" | "active" | "onboardingStatus">>,
     successText: string,
     confirmMessage: string,
   ) {
@@ -203,6 +220,23 @@ export function AdminUsersManager() {
       user.active ? "Admin disabled." : "Admin enabled.",
       `Are you sure you want to ${user.active ? "disable" : "enable"} ${user.email}?`,
     )
+  }
+
+  async function handleApprove(user: AdminUserRecord) {
+    await updateUser(
+      user.email,
+      { onboardingStatus: "approved", active: true },
+      "Admin approved.",
+      `Approve ${user.email} for admin access?`,
+    )
+  }
+
+  function formatOnboardingStatus(status: AdminOnboardingStatus) {
+    if (status === "invited") return "Invited"
+    if (status === "pending") return "Pending Approval"
+    if (status === "approved") return "Approved"
+    if (status === "revoked") return "Revoked"
+    return "Deleted"
   }
 
   return (
@@ -284,6 +318,7 @@ export function AdminUsersManager() {
                   <th className="py-2 pr-3 font-medium">Email</th>
                   <th className="py-2 pr-3 font-medium">Role</th>
                   <th className="py-2 pr-3 font-medium">Status</th>
+                  <th className="py-2 pr-3 font-medium">Onboarding</th>
                   <th className="py-2 pr-3 font-medium">Invitation</th>
                   <th className="py-2 pr-3 font-medium">Last Login</th>
                   <th className="py-2 font-medium">Actions</th>
@@ -327,6 +362,7 @@ export function AdminUsersManager() {
                         </select>
                       </td>
                       <td className="py-2 pr-3 align-top text-card-foreground">{user.active ? "Active" : "Disabled"}</td>
+                      <td className="py-2 pr-3 align-top text-card-foreground">{formatOnboardingStatus(user.onboardingStatus)}</td>
                       <td className="py-2 pr-3 align-top text-card-foreground">
                         <div className="space-y-1">
                           <p className={user.invitationAccepted ? "text-emerald-700" : "text-amber-700"}>
@@ -352,6 +388,15 @@ export function AdminUsersManager() {
                             onClick={() => void handleActiveToggle(user)}
                           >
                             {user.active ? "Disable" : "Enable"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            disabled={controlsLocked || user.onboardingStatus === "approved"}
+                            onClick={() => void handleApprove(user)}
+                          >
+                            {user.onboardingStatus === "approved" ? "Approved" : "Approve"}
                           </Button>
                           <Button
                             type="button"

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAdminUserByEmail, normalizeAdminEmail } from "@/lib/auth/admin-users"
+import { getAdminUserByEmail, isApprovedAdmin, normalizeAdminEmail } from "@/lib/auth/admin-users"
 import { CsrfValidationError, verifyCsrfRequest } from "@/lib/auth/csrf"
 import { resolveBlockingRule } from "@/lib/security/admin-blocks"
 import { logAuthEvent } from "@/lib/security/audit-log"
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
     }
 
     const adminUser = await getAdminUserByEmail(email)
-    if (!adminUser || !adminUser.active) {
+    if (!adminUser) {
       await logAuthEvent({
         outcome: "failure",
         email,
@@ -131,6 +131,36 @@ export async function POST(request: Request) {
         reason: "email_not_allowlisted",
       })
       return NextResponse.json({ ok: false, error: "Email not found in admin allowlist." }, { status: 403 })
+    }
+
+    if (!isApprovedAdmin(adminUser)) {
+      const reason =
+        adminUser.onboardingStatus === "pending" || adminUser.onboardingStatus === "invited"
+          ? "admin_awaiting_approval_preflight"
+          : "admin_access_revoked_preflight"
+
+      await logAuthEvent({
+        outcome: "failure",
+        email,
+        ip,
+        userAgent,
+        method: request.method,
+        path,
+        status: 403,
+        reason,
+        metadata: { onboardingStatus: adminUser.onboardingStatus, active: adminUser.active },
+      })
+
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            adminUser.onboardingStatus === "pending" || adminUser.onboardingStatus === "invited"
+              ? "Your admin account is awaiting approval."
+              : "Your admin access has been revoked.",
+        },
+        { status: 403 },
+      )
     }
 
     return NextResponse.json({ ok: true })
