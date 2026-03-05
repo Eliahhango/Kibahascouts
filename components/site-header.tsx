@@ -182,7 +182,7 @@ export function SiteHeader() {
 
       <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
-          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-2.5 sm:px-6 lg:flex-nowrap lg:gap-4 lg:px-8"
+          className="mx-auto flex max-w-[92rem] flex-wrap items-center gap-2 px-4 py-2.5 sm:px-6 lg:flex-nowrap lg:gap-4 lg:px-8"
           aria-label={utilityLabel}
         >
           <div className="inline-flex items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2.5 py-1 text-xs font-medium text-tsa-green-deep shadow-sm">
@@ -217,30 +217,30 @@ export function SiteHeader() {
         className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="relative z-10 flex shrink-0 items-center gap-3 rounded pr-4 focus-visible:ring-2 focus-visible:ring-ring xl:min-w-[16.5rem] 2xl:min-w-[18rem]"
+            className="relative z-10 flex shrink-0 items-center gap-3 rounded pr-4 focus-visible:ring-2 focus-visible:ring-ring 2xl:min-w-[17.5rem]"
             aria-label={`${name} - Home`}
           >
-            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg" aria-hidden="true">
+            <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg" aria-hidden="true">
               <Image
                 src={branding.primaryLogo}
                 alt=""
                 fill
-                sizes="40px"
+                sizes="44px"
                 className="object-cover"
                 priority
               />
             </div>
             <div className="flex flex-col">
               <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
-              <span className="hidden text-xs leading-tight text-muted-foreground xl:block 2xl:hidden">TSA</span>
-              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground 2xl:block">{organization}</span>
+              <span className="hidden text-xs leading-tight text-muted-foreground md:block lg:hidden">TSA</span>
+              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground lg:block">{organization}</span>
             </div>
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 xl:flex 2xl:pl-6" aria-label="Main navigation">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-6 2xl:flex" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
@@ -314,14 +314,14 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring 2xl:hidden"
               aria-label="Open search"
             >
               <Search className="h-5 w-5" />
             </button>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring 2xl:hidden"
               onClick={() => setMobileOpen((current) => !current)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -331,7 +331,7 @@ export function SiteHeader() {
           </div>
         </div>
 
-        <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </header>
 
       <SafeClientBoundary>
@@ -356,11 +356,11 @@ function MobileNav({
 
   return (
     <div
-      className={`absolute inset-x-0 top-full z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out xl:hidden ${
+      className={`absolute inset-x-0 top-full z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out 2xl:hidden ${
         open ? "max-h-[calc(100dvh-4.5rem)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
       }`}
     >
-      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-7xl overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
+      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-[92rem] overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
           return (
