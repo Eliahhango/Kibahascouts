@@ -220,7 +220,7 @@ export function SiteHeader() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex items-center gap-3 rounded focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative z-10 flex shrink-0 items-center gap-3 rounded pr-4 focus-visible:ring-2 focus-visible:ring-ring xl:min-w-[16.5rem] 2xl:min-w-[18rem]"
             aria-label={`${name} - Home`}
           >
             <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg" aria-hidden="true">
@@ -234,12 +234,13 @@ export function SiteHeader() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold leading-tight text-foreground">{name}</span>
-              <span className="hidden text-xs leading-tight text-muted-foreground sm:block">{organization}</span>
+              <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
+              <span className="hidden text-xs leading-tight text-muted-foreground xl:block 2xl:hidden">TSA</span>
+              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground 2xl:block">{organization}</span>
             </div>
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 xl:flex" aria-label="Main navigation">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 xl:flex 2xl:pl-6" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
