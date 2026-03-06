@@ -190,6 +190,23 @@ export function SiteHeader() {
             Kibaha District
           </div>
 
+          <a
+            href={branding.wosmUrl}
+            target="_blank"
+            rel="noreferrer"
+            title="Member of the World Organization of the Scout Movement"
+            className="hidden items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2 py-1 shadow-sm sm:inline-flex"
+          >
+            <Image
+              src={branding.wosmBadge}
+              alt="WOSM Member"
+              width={16}
+              height={16}
+              className="h-4 w-4 rounded-full object-contain"
+            />
+            <span className="text-[10px] font-semibold text-tsa-green-deep">WOSM Member</span>
+          </a>
+
           <div className="hidden flex-1 md:block">
             <SafeClientBoundary>
               <GlobalSearch />
@@ -233,22 +250,6 @@ export function SiteHeader() {
                 priority
               />
             </Link>
-
-            <a
-              href={branding.wosmUrl}
-              target="_blank"
-              rel="noreferrer"
-              title="Member of the World Organization of the Scout Movement"
-              className="hidden sm:block"
-            >
-              <Image
-                src={branding.wosmBadge}
-                alt={branding.wosmBadgeAlt}
-                width={32}
-                height={32}
-                className="h-8 w-8 rounded-full object-contain"
-              />
-            </a>
 
             <Link
               href="/"

@@ -134,13 +134,25 @@ export default async function ContactPage() {
 
       <SectionShell eyebrow="Map" title={normalizePublicText(pageContent.mapTitle, "Map")} tone="white">
         <div className="overflow-hidden rounded-2xl border border-border">
-          <iframe
-            title="Kibaha Scouts office map"
-            src={pageContent.mapEmbedUrl}
-            className="h-[320px] w-full"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+          {(() => {
+            const KIBAHA_MAP_FALLBACK =
+              "https://maps.google.com/maps?q=Kibaha+District+Council,+Kibaha,+Pwani,+Tanzania&t=&z=14&ie=UTF8&iwloc=&output=embed"
+            const mapSrc =
+              pageContent.mapEmbedUrl?.trim() && pageContent.mapEmbedUrl.trim().length > 10
+                ? pageContent.mapEmbedUrl.trim()
+                : KIBAHA_MAP_FALLBACK
+
+            return (
+              <iframe
+                title="Kibaha Scouts office map - Kibaha District, Pwani, Tanzania"
+                src={mapSrc}
+                className="h-[380px] w-full"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            )
+          })()}
         </div>
       </SectionShell>
     </>

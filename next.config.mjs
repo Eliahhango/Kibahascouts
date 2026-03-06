@@ -26,12 +26,12 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   "frame-ancestors 'none'",
   "object-src 'none'",
-  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://translate.google.com https://translate.googleapis.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   `img-src 'self' data: blob: ${trustedImageHostnames.map((hostname) => `https://${hostname}`).join(" ")}`,
-  "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com",
-  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.instagram.com https://maps.google.com https://www.google.com",
+  "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://translate.googleapis.com",
+  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.instagram.com https://maps.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com",
 ].join("; ")
 
 /** @type {import('next').NextConfig} */

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { ArrowRight, Eye, Handshake, Heart, Target, Users } from "lucide-react"
 import { FAQSection } from "./faq-section"
+import { PartnerLogo } from "@/components/public/partner-logo"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
 import { getLeadersFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
@@ -222,7 +223,7 @@ export default async function AboutPage() {
         subtitle="Kibaha Scouts works in partnership with national and international organisations to advance Scouting and youth development across the district."
         tone="white"
       >
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {siteConfig.partners.map((partner) => (
             <a
               key={partner.name}
@@ -230,16 +231,10 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer"
               title={partner.name}
-              className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-white p-5 shadow-sm transition-all duration-200 hover:border-tsa-gold hover:shadow-md"
+              className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm transition-all duration-200 hover:border-tsa-gold hover:shadow-md"
             >
-              <div className="flex h-20 w-20 items-center justify-center">
-                <Image
-                  src={partner.logo}
-                  alt={partner.name}
-                  width={80}
-                  height={80}
-                  className="h-full w-full object-contain"
-                />
+              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center sm:h-20 sm:w-20">
+                <PartnerLogo src={partner.logo} alt={partner.name} />
               </div>
               <p className="text-center text-xs font-semibold leading-tight text-foreground group-hover:text-tsa-green-deep">
                 {partner.name}
