@@ -46,7 +46,7 @@ export default function GlobalError({
 
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 rounded-md border border-tsa-green-light bg-tsa-green-light px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-[#9d85e8]"
+                className="inline-flex items-center gap-2 rounded-md border border-tsa-green-light bg-tsa-green-light px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-[#3d7a52]"
               >
                 <Home className="h-4 w-4" />
                 Back to Home

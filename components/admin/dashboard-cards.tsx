@@ -131,17 +131,21 @@ export function DashboardCardsSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
       {Array.from({ length: 6 }).map((_, index) => (
-        <article key={`dashboard-skeleton-${index}`} className="rounded-xl border border-border bg-white p-3 shadow-sm sm:p-5">
+        <article
+          key={`dashboard-skeleton-${index}`}
+          className="rounded-xl border border-border bg-white p-3 shadow-sm sm:p-5"
+          style={{ animationDelay: `${index * 0.1}s` }}
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-2">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-3 w-24 animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
+              <Skeleton className="h-8 w-16 animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
             </div>
-            <Skeleton className="h-11 w-11 rounded-lg" />
+            <Skeleton className="h-11 w-11 rounded-lg animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
           </div>
-          <Skeleton className="mt-3 h-4 w-full" />
-          <Skeleton className="mt-3 h-3 w-24" />
-          <Skeleton className="mt-3 h-1.5 w-full" />
+          <Skeleton className="mt-3 h-4 w-full animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
+          <Skeleton className="mt-3 h-3 w-24 animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
+          <Skeleton className="mt-3 h-1.5 w-full animate-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
         </article>
       ))}
     </div>
