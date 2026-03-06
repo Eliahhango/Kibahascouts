@@ -49,8 +49,8 @@ export default async function AboutPage() {
               const StatIcon = statIcons[index % statIcons.length]
               return (
                 <article key={`${stat.label}-${index}`} className="card-shell p-5 text-center">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                    <StatIcon className="h-5 w-5" />
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                    <StatIcon className="h-5 w-5 stroke-[1.5]" />
                   </span>
                   <p className="mt-3 text-2xl font-bold text-foreground">{normalizePublicText(stat.value)}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{normalizePublicText(stat.label)}</p>
@@ -64,8 +64,8 @@ export default async function AboutPage() {
       <SectionShell eyebrow="Values" title="Mission, Vision and Values" tone="white">
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <article className="card-shell p-6">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-              <Target className="h-6 w-6" />
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+              <Target className="h-6 w-6 stroke-[1.5]" />
             </span>
             <h3 className="mt-4 text-lg font-semibold text-foreground">
               {normalizePublicText(aboutContent.missionTitle, "Our Mission")}
@@ -76,8 +76,8 @@ export default async function AboutPage() {
           </article>
 
           <article className="card-shell p-6">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tsa-gold/15 text-tsa-gold">
-              <Eye className="h-6 w-6" />
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-tsa-gold text-white shadow-sm">
+              <Eye className="h-6 w-6 stroke-[1.5]" />
             </span>
             <h3 className="mt-4 text-lg font-semibold text-foreground">
               {normalizePublicText(aboutContent.visionTitle, "Our Vision")}
@@ -88,8 +88,8 @@ export default async function AboutPage() {
           </article>
 
           <article className="card-shell p-6">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tsa-green-mid/15 text-tsa-green-mid">
-              <Heart className="h-6 w-6" />
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+              <Heart className="h-6 w-6 stroke-[1.5]" />
             </span>
             <h3 className="mt-4 text-lg font-semibold text-foreground">
               {normalizePublicText(aboutContent.valuesTitle, "Our Values")}

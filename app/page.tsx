@@ -161,8 +161,8 @@ export default async function HomePage() {
           <div className="grid content-center grid-cols-2 gap-4">
             {statTiles.map((tile) => (
               <article key={tile.label} className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-tsa-gold/25 text-tsa-gold">
-                  <tile.icon className="h-5 w-5" />
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-tsa-gold text-white shadow-sm">
+                  <tile.icon className="h-5 w-5 stroke-[1.5]" />
                 </span>
                 <p className="mt-3 text-2xl font-bold text-white">{tile.value}</p>
                 <p className="mt-1 text-sm text-white/85">{tile.label}</p>
@@ -222,7 +222,7 @@ export default async function HomePage() {
             {homepageSettings.priorityInitiatives.map((item, index) => {
               const Icon = highlightIcons[index % highlightIcons.length]
               const accentBorder = index % 2 === 0 ? "border-l-tsa-green-deep" : "border-l-tsa-gold"
-              const iconBg = index % 2 === 0 ? "bg-tsa-green-deep/10 text-tsa-green-deep" : "bg-tsa-gold/15 text-tsa-gold"
+              const iconBg = index % 2 === 0 ? "bg-tsa-green-deep text-white shadow-sm" : "bg-tsa-gold text-white shadow-sm"
               const isExternalLink = /^https?:\/\//i.test(item.href)
 
               return (
@@ -233,8 +233,8 @@ export default async function HomePage() {
                   rel={isExternalLink ? "noreferrer" : undefined}
                   className={`card-shell border-l-4 ${accentBorder} p-5 hover:border-tsa-green-deep`}
                 >
-                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${iconBg}`}>
-                    <Icon className="h-5 w-5" />
+                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${iconBg}`}>
+                    <Icon className="h-5 w-5 stroke-[1.5]" />
                   </span>
                   <h3 className="mt-3 text-lg font-semibold text-foreground">{item.title}</h3>
                   <p className="mt-2 text-base leading-relaxed text-muted-foreground">{item.description}</p>
@@ -315,8 +315,8 @@ export default async function HomePage() {
               return (
                 <article key={resource.id} className="card-shell p-5">
                   <div className="flex items-start gap-3">
-                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                      <ResourceIcon className="h-5 w-5" />
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                      <ResourceIcon className="h-5 w-5 stroke-[1.5]" />
                     </span>
                     <div className="min-w-0">
                       <h3 className="line-clamp-2 text-lg font-semibold text-foreground">{resource.title}</h3>

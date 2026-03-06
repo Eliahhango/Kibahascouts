@@ -71,8 +71,8 @@ export default async function ResourcesPage({
             {sorted.map((resource) => (
               <article key={resource.id} className="card-shell p-5">
                 <div className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                    <FileText className="h-5 w-5" />
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                    <FileText className="h-5 w-5 stroke-[1.5]" />
                   </span>
                   <div className="min-w-0">
                     <span className="inline-flex rounded-full bg-tsa-green-deep/10 px-2.5 py-0.5 text-xs font-semibold text-tsa-green-deep">

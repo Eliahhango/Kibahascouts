@@ -30,8 +30,8 @@ export default async function SafetyPage() {
       <SectionShell eyebrow="Protection" title="Safeguarding Framework" tone="background">
         <div className="grid gap-4 md:grid-cols-2">
           <article className="card-shell p-5">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-              <ShieldCheck className="h-5 w-5" />
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+              <ShieldCheck className="h-5 w-5 stroke-[1.5]" />
             </span>
             <h2 className="mt-3 text-xl font-semibold text-foreground">
               {normalizePublicText(pageContent.policyTitle, "Child Safeguarding Policy")}
@@ -42,8 +42,8 @@ export default async function SafetyPage() {
           </article>
 
           <article className="card-shell p-5">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-              <BadgeCheck className="h-5 w-5" />
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+              <BadgeCheck className="h-5 w-5 stroke-[1.5]" />
             </span>
             <h2 className="mt-3 text-xl font-semibold text-foreground">
               {normalizePublicText(pageContent.screeningTitle, "Adult Screening & Training")}
@@ -90,8 +90,8 @@ export default async function SafetyPage() {
 
           <aside className="space-y-4">
             <article id="conduct" className="card-shell p-5">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                <FileText className="h-5 w-5" />
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                <FileText className="h-5 w-5 stroke-[1.5]" />
               </span>
               <h2 className="mt-3 text-lg font-semibold text-foreground">
                 {normalizePublicText(pageContent.codeTitle, "Code of Conduct")}
@@ -113,8 +113,8 @@ export default async function SafetyPage() {
             </article>
 
             <article id="terms" className="card-shell p-5">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                <AlertTriangle className="h-5 w-5" />
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                <AlertTriangle className="h-5 w-5 stroke-[1.5]" />
               </span>
               <h2 className="mt-3 text-lg font-semibold text-foreground">
                 {normalizePublicText(pageContent.termsTitle, "Terms of Use")}

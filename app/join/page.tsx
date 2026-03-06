@@ -29,8 +29,8 @@ export default async function JoinPage() {
 
       <SectionShell id="youth" eyebrow="Join" title={normalizePublicText(pageContent.youthTitle, "Join as Youth")} tone="background">
         <article className="space-y-5">
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-            <Users className="h-5 w-5" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+            <Users className="h-5 w-5 stroke-[1.5]" />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {pageContent.youthSteps.map((step, index) => (
@@ -79,8 +79,8 @@ export default async function JoinPage() {
         tone="white"
       >
         <article className="space-y-5">
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-            <CheckCircle2 className="h-5 w-5" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+            <CheckCircle2 className="h-5 w-5 stroke-[1.5]" />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {pageContent.volunteerSteps.map((step, index) => (
@@ -120,14 +120,14 @@ export default async function JoinPage() {
 
       <SectionShell id="donate" eyebrow="Support" title={normalizePublicText(pageContent.donateTitle, "Donate / Support")} tone="background">
         <article className="space-y-5">
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-            <HandHeart className="h-5 w-5" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+            <HandHeart className="h-5 w-5 stroke-[1.5]" />
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {pageContent.donateItems.map((item, index) => (
               <article key={`${item}-${index}`} className="card-shell p-4">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                  {index % 2 === 0 ? <HandHeart className="h-4 w-4" /> : <Gift className="h-4 w-4" />}
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-tsa-green-deep text-white shadow-sm">
+                  {index % 2 === 0 ? <HandHeart className="h-4 w-4 stroke-[1.5]" /> : <Gift className="h-4 w-4 stroke-[1.5]" />}
                 </span>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{normalizePublicText(item)}</p>
               </article>
