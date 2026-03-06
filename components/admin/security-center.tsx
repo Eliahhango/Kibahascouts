@@ -305,7 +305,7 @@ export function SecurityCenter() {
         </article>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="security-block-form" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-card-foreground">Block Management</h2>
           <Button type="button" variant="outline" size="sm" onClick={() => void loadSecurityData()} disabled={isLoading}>
@@ -329,7 +329,7 @@ export function SecurityCenter() {
             <select
               value={form.targetType}
               onChange={(event) => setForm((current) => ({ ...current, targetType: event.target.value as AdminBlockTargetType }))}
-              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               <option value="ip">IP Address</option>
               <option value="email">Email</option>
@@ -343,7 +343,7 @@ export function SecurityCenter() {
               value={form.targetValue}
               onChange={(event) => setForm((current) => ({ ...current, targetValue: event.target.value }))}
               placeholder={form.targetType === "ip" ? "203.0.113.10" : "person@example.com"}
-              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -352,7 +352,7 @@ export function SecurityCenter() {
             <select
               value={form.scope}
               onChange={(event) => setForm((current) => ({ ...current, scope: event.target.value as AdminBlockScope }))}
-              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               <option value="admin_auth">Admin Login Only</option>
               <option value="admin_api">Admin API Only</option>
@@ -366,7 +366,7 @@ export function SecurityCenter() {
               type="datetime-local"
               value={form.expiresAt}
               onChange={(event) => setForm((current) => ({ ...current, expiresAt: event.target.value }))}
-              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -378,7 +378,7 @@ export function SecurityCenter() {
               value={form.reason}
               onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))}
               placeholder="Reason for blocking this actor..."
-              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 

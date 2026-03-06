@@ -221,7 +221,7 @@ export function NewsManager() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="news-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit News Item" : "Create News Item"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Use verified district content only. Leave image empty if no approved image URL/path is available.
@@ -241,7 +241,7 @@ export function NewsManager() {
                   slug: slugTouched ? current.slug : createSlug(nextTitle),
                 }))
               }}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -256,7 +256,7 @@ export function NewsManager() {
               }}
               placeholder="example-news-item"
               pattern="[a-z0-9-]+"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -267,7 +267,7 @@ export function NewsManager() {
               value={form.summary}
               onChange={(event) => setForm((current) => ({ ...current, summary: event.target.value }))}
               rows={3}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -291,7 +291,7 @@ export function NewsManager() {
                   category: event.target.value as NewsAdminRecord["category"],
                 }))
               }
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             >
               <option value="Announcements">Announcements</option>
               <option value="Training">Training</option>
@@ -308,7 +308,7 @@ export function NewsManager() {
               type="date"
               value={form.date}
               onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -318,7 +318,7 @@ export function NewsManager() {
               value={form.image}
               onChange={(event) => setForm((current) => ({ ...current, image: event.target.value }))}
               placeholder="/images/news/example.jpg"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -398,7 +398,7 @@ export function NewsManager() {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Title, slug, category..."
-              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -407,7 +407,7 @@ export function NewsManager() {
             <select
               value={publishFilter}
               onChange={(event) => setPublishFilter(event.target.value as "all" | "published" | "draft")}
-              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               <option value="all">All</option>
               <option value="published">Published</option>

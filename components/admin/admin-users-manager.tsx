@@ -241,7 +241,7 @@ export function AdminUsersManager() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="admin-invite" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">Add Admin User</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Allowlist admin emails here. Invitation is considered accepted after the admin sets a password and creates an account.
@@ -257,7 +257,7 @@ export function AdminUsersManager() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="admin@example.com"
-              className="mt-1 block w-72 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-72 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -266,7 +266,7 @@ export function AdminUsersManager() {
             <select
               value={role}
               onChange={(event) => setRole(event.target.value as AdminRole)}
-              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -352,7 +352,7 @@ export function AdminUsersManager() {
                           value={user.role}
                           disabled={controlsLocked}
                           onChange={(event) => void handleRoleChange(user, event.target.value as AdminRole)}
-                          className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
+                          className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground admin-input"
                         >
                           {roleOptions.map((option) => (
                             <option key={`${user.email}-${option.value}`} value={option.value}>

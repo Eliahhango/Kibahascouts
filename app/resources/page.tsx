@@ -57,7 +57,7 @@ export default async function ResourcesPage({
                   isActive ? "bg-tsa-green-deep text-white" : "bg-secondary text-foreground hover:bg-border"
                 }`}
               >
-                <Filter className="h-3.5 w-3.5" />
+                {category === "All" ? null : <Filter className="h-3.5 w-3.5" />}
                 {category}
               </Link>
             )

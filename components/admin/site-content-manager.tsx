@@ -401,13 +401,13 @@ function Field({ label, value, onChange, rows = 0 }: FieldProps) {
           rows={rows}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
         />
       ) : (
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
         />
       )}
     </label>
@@ -538,7 +538,7 @@ export function SiteContentManager() {
 
   return (
     <section className="space-y-6">
-      <form className="space-y-6" onSubmit={handleSave}>
+      <form id="site-content-editor" className="space-y-6" onSubmit={handleSave}>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">
             This section controls the text and structured content for pages linked in the main navigation.

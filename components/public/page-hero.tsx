@@ -18,8 +18,8 @@ export function PageHero({ title, subtitle, breadcrumbs = [], className }: PageH
   const fullBreadcrumbs = [{ label: "Home", href: "/" }, ...breadcrumbs]
 
   return (
-    <section className={cn("border-b border-tsa-green-mid bg-tsa-green-deep", className)}>
-      <div className="mx-auto flex min-h-[200px] max-w-7xl flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
+    <section className={cn("relative overflow-hidden border-b border-tsa-green-mid bg-tsa-green-deep", className)}>
+      <div className="mx-auto flex min-h-[260px] max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <nav aria-label="Breadcrumb" className="mb-3">
           <ol className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-primary-foreground/80">
             {fullBreadcrumbs.map((crumb, index) => {
@@ -39,8 +39,14 @@ export function PageHero({ title, subtitle, breadcrumbs = [], className }: PageH
             })}
           </ol>
         </nav>
-        <h1 className="text-balance text-4xl font-bold text-white md:text-5xl">{title}</h1>
+        <h1 className="max-w-4xl text-balance text-3xl font-bold text-white sm:text-4xl md:text-5xl">{title}</h1>
         {subtitle ? <p className="mt-3 max-w-3xl text-base leading-relaxed text-white/85">{subtitle}</p> : null}
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 text-background">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="h-[80px] w-full fill-current md:h-[100px]">
+          <path d="M0,32L80,48C160,64,320,96,480,101.3C640,107,800,85,960,69.3C1120,53,1280,43,1360,37.3L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" />
+        </svg>
       </div>
     </section>
   )

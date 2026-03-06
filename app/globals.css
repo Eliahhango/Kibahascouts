@@ -181,11 +181,53 @@
     @apply inline-flex min-h-11 items-center justify-center rounded-lg bg-tsa-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-tsa-gold-light;
   }
   .btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center rounded-lg border-2 border-tsa-green-deep px-5 py-2.5 text-sm font-semibold text-tsa-green-deep hover:bg-tsa-green-deep hover:text-white;
+    @apply inline-flex min-h-11 items-center justify-center rounded-lg border border-tsa-green-deep px-5 py-2.5 text-sm font-semibold text-tsa-green-deep hover:bg-tsa-green-deep hover:text-white;
   }
   .btn-ghost {
     @apply text-sm font-medium text-tsa-green-deep hover:underline;
   }
+  .admin-input {
+    @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-tsa-gold focus:ring-2 focus:ring-tsa-gold/20;
+  }
+}
+
+.prose-brand {
+  max-width: none;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.prose-brand :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.prose-brand p,
+.prose-brand li {
+  color: var(--muted-foreground);
+}
+
+.prose-brand a {
+  color: var(--tsa-gold);
+  text-decoration: none;
+}
+
+.prose-brand a:hover {
+  text-decoration: underline;
+}
+
+.prose-brand strong {
+  color: var(--foreground);
+}
+
+.prose-brand blockquote {
+  border-left: 3px solid var(--tsa-gold);
+  padding-left: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.prose-brand img {
+  border-radius: 0.75rem;
 }
 
 /* Force-disable frosted/glass blur effects */

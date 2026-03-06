@@ -224,7 +224,7 @@ export function HomepageSettingsManager() {
   return (
     <section className="space-y-6">
       <form className="space-y-6" onSubmit={handleSave}>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div id="homepage-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">District Snapshot</h2>
@@ -248,7 +248,7 @@ export function HomepageSettingsManager() {
                     maxLength={40}
                     value={item.label}
                     onChange={(event) => updateSnapshotItem(index, "label", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -258,7 +258,7 @@ export function HomepageSettingsManager() {
                     maxLength={80}
                     value={item.value}
                     onChange={(event) => updateSnapshotItem(index, "value", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
               </div>
@@ -283,7 +283,7 @@ export function HomepageSettingsManager() {
                     maxLength={80}
                     value={item.title}
                     onChange={(event) => updatePriorityItem(index, "title", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -294,7 +294,7 @@ export function HomepageSettingsManager() {
                     maxLength={220}
                     value={item.description}
                     onChange={(event) => updatePriorityItem(index, "description", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -304,7 +304,7 @@ export function HomepageSettingsManager() {
                     value={item.href}
                     onChange={(event) => updatePriorityItem(index, "href", event.target.value)}
                     placeholder="/newsroom"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
               </div>
@@ -329,7 +329,7 @@ export function HomepageSettingsManager() {
                     maxLength={40}
                     value={item.id}
                     onChange={(event) => updateCampaignItem(index, "id", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -339,7 +339,7 @@ export function HomepageSettingsManager() {
                     maxLength={100}
                     value={item.title}
                     onChange={(event) => updateCampaignItem(index, "title", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -350,7 +350,7 @@ export function HomepageSettingsManager() {
                     maxLength={240}
                     value={item.description}
                     onChange={(event) => updateCampaignItem(index, "description", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -360,7 +360,7 @@ export function HomepageSettingsManager() {
                     maxLength={500}
                     value={item.image}
                     onChange={(event) => updateCampaignItem(index, "image", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
                 <label className="mt-3 block text-sm">
@@ -368,7 +368,7 @@ export function HomepageSettingsManager() {
                   <select
                     value={item.status}
                     onChange={(event) => updateCampaignItem(index, "status", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   >
                     <option value="Active">Active</option>
                     <option value="Upcoming">Upcoming</option>
@@ -382,7 +382,7 @@ export function HomepageSettingsManager() {
                     value={item.link}
                     onChange={(event) => updateCampaignItem(index, "link", event.target.value)}
                     placeholder="/newsroom"
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
               </div>

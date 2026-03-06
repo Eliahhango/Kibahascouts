@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Mail, MapPin, Phone } from "lucide-react"
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import { ContactForm } from "@/components/contact-form"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
@@ -64,33 +64,53 @@ export default async function ContactPage() {
             <h3 className="mt-6 text-lg font-semibold text-foreground">
               {normalizePublicText(pageContent.socialTitle, "Social Media")}
             </h3>
-            <ul className="mt-2 space-y-1 text-base text-tsa-green-deep">
+            <ul className="mt-2 space-y-2 text-base text-tsa-green-deep">
               <li>
-                <a href="https://www.facebook.com/profile.php?id=61588095737784" target="_blank" rel="noreferrer" className="hover:text-tsa-green-mid">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61588095737784"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:border-tsa-gold hover:bg-secondary"
+                >
+                  <Facebook className="h-4 w-4 text-tsa-green-deep" />
                   Facebook: Kibaha Scouts
                 </a>
               </li>
               <li>
-                <a href="https://www.instagram.com/kibahascouts/" target="_blank" rel="noreferrer" className="hover:text-tsa-green-mid">
+                <a
+                  href="https://www.instagram.com/kibahascouts/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:border-tsa-gold hover:bg-secondary"
+                >
+                  <Instagram className="h-4 w-4 text-tsa-green-deep" />
                   Instagram: @kibahascouts
                 </a>
               </li>
               <li>
-                <a href="https://www.youtube.com/channel/UCOdbCJouM-b66bOPjw9V-8Q" target="_blank" rel="noreferrer" className="hover:text-tsa-green-mid">
+                <a
+                  href="https://www.youtube.com/channel/UCOdbCJouM-b66bOPjw9V-8Q"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:border-tsa-gold hover:bg-secondary"
+                >
+                  <Youtube className="h-4 w-4 text-tsa-green-deep" />
                   YouTube: Kibaha Scouts
                 </a>
               </li>
             </ul>
           </article>
 
-          <article id="reporting" className="card-shell p-6">
+          <article id="reporting" className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">
               {normalizePublicText(pageContent.formTitle, "Contact Form")}
             </h2>
             <p className="mt-2 text-base text-muted-foreground">
               {normalizePublicText(pageContent.formDescription)}
             </p>
-            <ContactForm />
+            <div className="card-shell p-6">
+              <ContactForm />
+            </div>
           </article>
         </div>
       </SectionShell>

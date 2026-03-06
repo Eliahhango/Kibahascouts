@@ -271,7 +271,7 @@ export function EventsManager() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="event-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit Event" : "Create Event"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Select location from the map to place an exact event marker for public users.
@@ -291,7 +291,7 @@ export function EventsManager() {
                   slug: slugTouched ? current.slug : createSlug(nextTitle),
                 }))
               }}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -305,7 +305,7 @@ export function EventsManager() {
                 setForm((current) => ({ ...current, slug: event.target.value }))
               }}
               pattern="[a-z0-9-]+"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -326,7 +326,7 @@ export function EventsManager() {
               type="date"
               value={form.date}
               onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -337,7 +337,7 @@ export function EventsManager() {
               value={form.time}
               onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
               placeholder="e.g. 09:00 - 13:00"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -348,7 +348,7 @@ export function EventsManager() {
               value={form.location}
               onChange={(event) => setForm((current) => ({ ...current, location: event.target.value }))}
               placeholder="Kibaha District Grounds, Pwani"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -401,7 +401,7 @@ export function EventsManager() {
               value={form.category}
               onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
               placeholder="Training"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -415,7 +415,7 @@ export function EventsManager() {
               onChange={(event) =>
                 setForm((current) => ({ ...current, mapZoom: Math.max(3, Math.min(19, Number(event.target.value || EVENT_MAP_DEFAULT_ZOOM))) }))
               }
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -425,7 +425,7 @@ export function EventsManager() {
               value={form.image}
               onChange={(event) => setForm((current) => ({ ...current, image: event.target.value }))}
               placeholder="/images/events/example.jpg"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -453,7 +453,7 @@ export function EventsManager() {
               value={form.registrationUrl}
               onChange={(event) => setForm((current) => ({ ...current, registrationUrl: event.target.value }))}
               placeholder="https://..."
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -515,7 +515,7 @@ export function EventsManager() {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Title, slug, location..."
-              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -524,7 +524,7 @@ export function EventsManager() {
             <select
               value={publishFilter}
               onChange={(event) => setPublishFilter(event.target.value as "all" | "published" | "draft")}
-              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               <option value="all">All</option>
               <option value="published">Published</option>

@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth"
@@ -237,10 +238,17 @@ export function AdminRegisterForm({
     : `/admin/login?next=${encodeURIComponent(nextPath)}`
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10">
-      <section className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-card-foreground">Admin Account Setup</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+    <main className="flex min-h-screen items-center justify-center bg-[#0d1f17] px-4">
+      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-8 shadow-2xl">
+        <div className="flex flex-col items-center text-center">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-[#c9910a]">
+            <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="48px" className="object-cover" priority />
+          </div>
+          <h1 className="mt-4 text-xl font-bold text-[#c9910a]">Kibaha Scouts CMS</h1>
+          <p className="mt-1 text-sm text-white/60">Complete your admin registration</p>
+        </div>
+
+        <p className="mt-4 text-sm text-white/60">
           {inviteOnly
             ? "Enter your invited admin email first. If eligible, you can set your password and continue."
             : "Enter an allowlisted admin email, set your password once, then use the normal admin sign-in page."}
@@ -248,7 +256,7 @@ export function AdminRegisterForm({
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="admin-register-email" className="text-sm font-medium text-card-foreground">
+            <label htmlFor="admin-register-email" className="text-sm font-medium text-white/90">
               Admin Email
             </label>
             <input
@@ -271,14 +279,14 @@ export function AdminRegisterForm({
                   setConfirmPassword("")
                 }
               }}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-[#c9910a] focus:ring-2 focus:ring-[#c9910a]/20"
             />
           </div>
 
           {eligibilityStatus === "approved" ? (
             <>
               <div>
-                <label htmlFor="admin-register-password" className="text-sm font-medium text-card-foreground">
+                <label htmlFor="admin-register-password" className="text-sm font-medium text-white/90">
                   Password
                 </label>
                 <input
@@ -289,23 +297,23 @@ export function AdminRegisterForm({
                   minLength={8}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+                  className="mt-1 w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-[#c9910a] focus:ring-2 focus:ring-[#c9910a]/20"
                 />
                 {password ? (
                   <div className="mt-2">
-                    <div className="h-1.5 w-full rounded-full bg-secondary">
+                    <div className="h-1.5 w-full rounded-full bg-white/10">
                       <div
                         className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
                         style={{ width: `${passwordStrength.percent}%` }}
                       />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Password strength: {passwordStrength.label}</p>
+                    <p className="mt-1 text-xs text-white/60">Password strength: {passwordStrength.label}</p>
                   </div>
                 ) : null}
               </div>
 
               <div>
-                <label htmlFor="admin-register-confirm-password" className="text-sm font-medium text-card-foreground">
+                <label htmlFor="admin-register-confirm-password" className="text-sm font-medium text-white/90">
                   Confirm Password
                 </label>
                 <input
@@ -316,7 +324,7 @@ export function AdminRegisterForm({
                   minLength={8}
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+                  className="mt-1 w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-[#c9910a] focus:ring-2 focus:ring-[#c9910a]/20"
                 />
               </div>
             </>
@@ -359,17 +367,21 @@ export function AdminRegisterForm({
           )}
         </form>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-xs text-white/60">
           Already set up?{" "}
-          <Link href={loginHref} className="font-medium text-primary hover:underline">
+          <Link href={loginHref} className="font-medium text-[#c9910a] hover:underline">
             Sign in here
           </Link>
           .
         </p>
 
-        <Link href="/" className="mt-4 inline-flex text-sm font-medium text-primary hover:underline">
+        <Link href="/" className="mt-4 inline-flex text-sm font-medium text-[#c9910a] hover:underline">
           Back to website
         </Link>
+
+        <p className="mt-6 text-center text-[10px] uppercase tracking-widest text-white/40">
+          Secure Admin Access · Tanzania Scouts Association
+        </p>
       </section>
     </main>
   )

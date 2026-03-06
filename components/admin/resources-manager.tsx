@@ -219,7 +219,7 @@ export function ResourcesManager() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="resource-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit Resource" : "Create Resource"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           External downloads are supported. If no approved file URL exists yet, leave Download URL empty.
@@ -239,7 +239,7 @@ export function ResourcesManager() {
                   slug: slugTouched ? current.slug : createSlug(nextTitle),
                 }))
               }}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -253,7 +253,7 @@ export function ResourcesManager() {
                 setForm((current) => ({ ...current, slug: event.target.value }))
               }}
               pattern="[a-z0-9-]+"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -264,7 +264,7 @@ export function ResourcesManager() {
               rows={4}
               value={form.description}
               onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -278,7 +278,7 @@ export function ResourcesManager() {
                   category: event.target.value as ResourceAdminRecord["category"],
                 }))
               }
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             >
               <option value="Forms">Forms</option>
               <option value="Training">Training</option>
@@ -299,7 +299,7 @@ export function ResourcesManager() {
                   fileType: event.target.value as ResourceAdminRecord["fileType"],
                 }))
               }
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             >
               <option value="PDF">PDF</option>
               <option value="DOCX">DOCX</option>
@@ -316,7 +316,7 @@ export function ResourcesManager() {
               value={form.fileSize}
               onChange={(event) => setForm((current) => ({ ...current, fileSize: event.target.value }))}
               placeholder="e.g. 2.4 MB"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -327,7 +327,7 @@ export function ResourcesManager() {
               type="date"
               value={form.publishDate}
               onChange={(event) => setForm((current) => ({ ...current, publishDate: event.target.value }))}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -337,7 +337,7 @@ export function ResourcesManager() {
               value={form.downloadUrl}
               onChange={(event) => setForm((current) => ({ ...current, downloadUrl: event.target.value }))}
               placeholder="https://..."
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
             />
           </label>
 
@@ -408,7 +408,7 @@ export function ResourcesManager() {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Title, slug, category..."
-              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             />
           </label>
 
@@ -417,7 +417,7 @@ export function ResourcesManager() {
             <select
               value={publishFilter}
               onChange={(event) => setPublishFilter(event.target.value as "all" | "published" | "draft")}
-              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
             >
               <option value="all">All</option>
               <option value="published">Published</option>

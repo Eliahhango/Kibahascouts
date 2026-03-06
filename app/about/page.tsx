@@ -133,10 +133,13 @@ export default async function AboutPage() {
           subtitle={normalizePublicText(aboutContent.historyIntro, "Key milestones in Kibaha District scouting.")}
           tone="white"
         >
-          <div className="relative ml-2 border-l-2 border-tsa-green-deep/20 pl-6 md:ml-4 md:pl-8">
+          <div className="space-y-4">
             {timelineEntries.map((entry, index) => (
-              <article key={`${entry.year}-${index}`} className="relative pb-10 last:pb-0">
-                <span className="absolute -left-[33px] inline-flex h-6 w-6 items-center justify-center rounded-full bg-tsa-green-deep text-xs font-bold text-white md:-left-[41px]">
+              <article
+                key={`${entry.year}-${index}`}
+                className="relative pl-8 before:absolute before:bottom-0 before:left-3 before:top-0 before:w-0.5 before:bg-tsa-gold/30 last:before:hidden"
+              >
+                <span className="absolute left-0 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-xs font-bold text-white">
                   {index + 1}
                 </span>
                 <p className="eyebrow">{normalizePublicText(entry.year)}</p>

@@ -67,7 +67,7 @@ export function SiteFooter() {
         <div className="hidden gap-8 xl:grid xl:grid-cols-[repeat(4,minmax(0,1fr))_240px]">
           {footer.sections.map((section) => (
             <div key={section.title}>
-              <h2 className="mb-4 text-2xl font-bold text-primary-foreground">{section.title}</h2>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary-foreground/70">{section.title}</h2>
               <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.href}>
@@ -84,7 +84,7 @@ export function SiteFooter() {
           ))}
 
           <div>
-            <h2 className="mb-4 text-2xl font-bold text-primary-foreground">Contact us</h2>
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary-foreground/70">Contact us</h2>
             <div className="space-y-2.5">
               {footer.actions.map((action) => (
                 <Link
@@ -161,9 +161,9 @@ export function SiteFooter() {
                   aria-label={social.label}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-tsa-green-light text-primary-foreground transition-colors hover:bg-primary-foreground hover:text-tsa-green-mid"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-tsa-green-light/60 bg-transparent text-primary-foreground transition-colors hover:border-tsa-gold hover:bg-primary-foreground hover:text-tsa-green-mid"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </a>
               )
             })}

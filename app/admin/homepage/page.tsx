@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { redirect } from "next/navigation"
 import { AdminBreadcrumbs } from "@/components/admin/admin-breadcrumbs"
 import { HomepageSettingsManager } from "@/components/admin/homepage-settings-manager"
@@ -8,15 +9,20 @@ export default async function AdminHomepageSettingsPage() {
     await requireAdmin("content:write")
 
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
-        <header className="mb-6 space-y-3">
-          <AdminBreadcrumbs currentPage="Homepage" />
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Homepage Content Settings</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Configure District Snapshot, Priority Initiatives, and Campaign cards shown on the public homepage.
-            </p>
+      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <header className="mb-6 flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border bg-white p-5 shadow-sm">
+          <div className="space-y-3">
+            <AdminBreadcrumbs currentPage="Homepage" />
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Homepage Content Settings</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Configure District Snapshot, Priority Initiatives, and Campaign cards shown on the public homepage.
+              </p>
+            </div>
           </div>
+          <Link href="/admin/homepage#homepage-editor" className="btn-primary">
+            Edit Homepage Modules
+          </Link>
         </header>
         <HomepageSettingsManager />
       </main>

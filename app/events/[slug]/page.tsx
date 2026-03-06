@@ -72,55 +72,56 @@ export default async function EventDetailPage({
           <article>
             {hasRichDescription ? (
               <div
-                className="prose prose-sm max-w-3xl text-muted-foreground"
+                className="prose-brand max-w-3xl"
                 dangerouslySetInnerHTML={{ __html: sanitizedDescriptionHtml }}
               />
             ) : (
-              <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">{event.description}</p>
+              <div className="prose-brand max-w-3xl">
+                <p>{event.description}</p>
+              </div>
             )}
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="card-shell p-4">
-                <p className="eyebrow">Date</p>
-                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
-                  <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
-                  {dateLabel}
-                </p>
-              </div>
-              <div className="card-shell p-4">
-                <p className="eyebrow">Time</p>
-                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
-                  <Clock3 className="h-4 w-4 text-tsa-green-deep" />
-                  {event.time}
-                </p>
-              </div>
-              <div className="card-shell p-4 sm:col-span-2">
-                <p className="eyebrow">Location</p>
-                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
-                  <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                  {event.location}
-                </p>
-              </div>
-            </div>
           </article>
 
-          <aside className="card-shell p-5">
-            <h3 className="text-lg font-semibold text-foreground">Registration</h3>
-            <p className="mt-2 text-base text-muted-foreground">
+          <aside className="card-shell space-y-3 bg-tsa-green-deep/5 p-5">
+            <h3 className="text-lg font-semibold text-foreground">Event Information</h3>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p className="inline-flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
+                <span className="font-semibold text-foreground">{dateLabel}</span>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <Clock3 className="h-4 w-4 text-tsa-green-deep" />
+                <span className="font-semibold text-foreground">{event.time}</span>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                <span className="font-semibold text-foreground">{event.location}</span>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <span className="inline-flex rounded-full bg-tsa-green-deep/10 px-2.5 py-1 text-xs font-semibold text-tsa-green-deep">
+                  {event.category}
+                </span>
+              </p>
+            </div>
+
+            <hr className="border-tsa-gold/20" />
+
+            <h4 className="text-base font-semibold text-foreground">Registration</h4>
+            <p className="text-base text-muted-foreground">
               {event.registrationOpen
                 ? "Registration is open. Complete participant information and parent/guardian permissions."
                 : "Online registration is currently closed for this event."}
             </p>
             {event.registrationOpen && hasRegistrationUrl ? (
-              <Link href={event.registrationUrl!} target="_blank" rel="noreferrer" className="btn-primary mt-4 w-full">
+              <Link href={event.registrationUrl!} target="_blank" rel="noreferrer" className="btn-primary mt-2 w-full">
                 Register Now
               </Link>
             ) : (
-              <p className="mt-4 rounded-lg bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
+              <p className="mt-2 rounded-lg bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
                 {event.registrationOpen ? "Registration link will be available soon" : "Registration Closed"}
               </p>
             )}
-            <Link href="/resources?category=Forms" className="btn-ghost mt-4 inline-flex items-center gap-1">
+            <Link href="/resources?category=Forms" className="btn-ghost mt-2 inline-flex items-center gap-1">
               <Download className="h-4 w-4" />
               Download Permission Slip
             </Link>

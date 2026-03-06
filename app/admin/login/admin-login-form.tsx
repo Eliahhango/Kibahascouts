@@ -296,25 +296,25 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-tsa-green-deep to-[#11251d] px-4 py-10">
-      <section className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
-        <div className="mb-4 flex justify-center">
-          <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-tsa-gold/70">
-            <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="64px" className="object-cover" priority />
+    <main className="flex min-h-screen items-center justify-center bg-[#0d1f17] px-4">
+      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-8 shadow-2xl">
+        <div className="flex flex-col items-center text-center">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-[#c9910a]">
+            <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="48px" className="object-cover" priority />
           </div>
+          <h1 className="mt-4 text-xl font-bold text-[#c9910a]">Kibaha Scouts CMS</h1>
+          <p className="mt-1 inline-flex items-center gap-1 text-sm text-white/70">
+            <Shield className="h-4 w-4 text-[#c9910a]" />
+            Secure sign in
+          </p>
+          <p className="mt-2 text-sm text-white/60">
+            Sign in with an allowlisted admin email to manage website content.
+          </p>
         </div>
-
-        <h1 className="flex items-center justify-center gap-2 text-2xl font-bold text-card-foreground">
-          <Shield className="h-5 w-5 text-tsa-green-deep" />
-          Admin Sign In
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Sign in with an allowlisted admin email to manage website content.
-        </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="admin-email" className="text-sm font-medium text-card-foreground">
+            <label htmlFor="admin-email" className="text-sm font-medium text-white/90">
               Email
             </label>
             <input
@@ -325,12 +325,12 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-[#c9910a] focus:ring-2 focus:ring-[#c9910a]/20"
             />
           </div>
 
           <div>
-            <label htmlFor="admin-password" className="text-sm font-medium text-card-foreground">
+            <label htmlFor="admin-password" className="text-sm font-medium text-white/90">
               Password
             </label>
             <input
@@ -341,24 +341,24 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-[#c9910a] focus:ring-2 focus:ring-[#c9910a]/20"
             />
             {password ? (
               <div className="mt-2">
-                <div className="h-1.5 w-full rounded-full bg-secondary">
+                <div className="h-1.5 w-full rounded-full bg-white/10">
                   <div
                     className={`h-1.5 rounded-full transition-all ${passwordStrength.tone}`}
                     style={{ width: `${passwordStrength.percent}%` }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">Password strength: {passwordStrength.label}</p>
+                <p className="mt-1 text-xs text-white/60">Password strength: {passwordStrength.label}</p>
               </div>
             ) : null}
             <button
               type="button"
               onClick={() => void handleForgotPassword()}
               disabled={isResettingPassword}
-              className="mt-2 text-xs font-medium text-primary hover:underline disabled:opacity-70"
+              className="mt-2 text-xs font-medium text-[#c9910a] hover:underline disabled:opacity-70"
             >
               {isResettingPassword ? "Sending reset email..." : "Forgot password?"}
             </button>
@@ -390,26 +390,30 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
         </form>
 
         {isSubmitting ? (
-          <p className="mt-3 text-center text-xs text-muted-foreground">
+          <p className="mt-3 text-center text-xs text-white/60">
             {submitMessage}
           </p>
         ) : null}
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-xs text-white/60">
           If your account is not allowlisted, contact the district website administrator.
         </p>
 
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-2 text-xs text-white/60">
           First-time invited admin?{" "}
-          <Link href={registerHref} className="font-medium text-primary hover:underline">
+          <Link href={registerHref} className="font-medium text-[#c9910a] hover:underline">
             Set your password first
           </Link>
           .
         </p>
 
-        <Link href="/" className="mt-4 inline-flex text-sm font-medium text-primary hover:underline">
+        <Link href="/" className="mt-4 inline-flex text-sm font-medium text-[#c9910a] hover:underline">
           Back to website
         </Link>
+
+        <p className="mt-6 text-center text-[10px] uppercase tracking-widest text-white/40">
+          Secure Admin Access · Tanzania Scouts Association
+        </p>
       </section>
     </main>
   )

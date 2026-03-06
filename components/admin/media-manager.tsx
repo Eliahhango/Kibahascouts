@@ -350,7 +350,7 @@ export function MediaManager() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div id="media-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit Media Item" : "Create Media Item"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Paste a video link and click fetch to auto-fill caption/title and embed settings. Gallery items can still be entered manually.

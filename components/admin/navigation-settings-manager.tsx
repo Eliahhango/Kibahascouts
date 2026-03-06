@@ -247,7 +247,7 @@ export function NavigationSettingsManager() {
   return (
     <section className="space-y-6">
       <form className="space-y-6" onSubmit={handleSave}>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div id="navigation-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">Main Navigation</h2>
@@ -295,7 +295,7 @@ export function NavigationSettingsManager() {
                       maxLength={70}
                       value={item.label}
                       onChange={(event) => updateItem(itemIndex, "label", event.target.value)}
-                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                     />
                   </label>
                   <label className="text-sm">
@@ -304,7 +304,7 @@ export function NavigationSettingsManager() {
                       required
                       value={item.href}
                       onChange={(event) => updateItem(itemIndex, "href", event.target.value)}
-                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                     />
                   </label>
                 </div>
@@ -316,7 +316,7 @@ export function NavigationSettingsManager() {
                     maxLength={180}
                     value={item.description || ""}
                     onChange={(event) => updateItem(itemIndex, "description", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
 
@@ -343,7 +343,7 @@ export function NavigationSettingsManager() {
                                 maxLength={70}
                                 value={child.label}
                                 onChange={(event) => updateChild(itemIndex, childIndex, "label", event.target.value)}
-                                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                               />
                             </label>
                             <label className="text-sm">
@@ -352,7 +352,7 @@ export function NavigationSettingsManager() {
                                 required
                                 value={child.href}
                                 onChange={(event) => updateChild(itemIndex, childIndex, "href", event.target.value)}
-                                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                               />
                             </label>
                             <Button type="button" variant="destructive" size="sm" onClick={() => removeChild(itemIndex, childIndex)}>

@@ -30,12 +30,19 @@ export default async function ProgrammesPage() {
       {programmes.length > 0 ? (
         <SectionShell eyebrow="Programmes" title="Age-Based Scout Sections" tone="background">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {programmes.map((prog) => (
+            {programmes.map((prog, index) => (
               <Link key={prog.slug} href={`/programmes/${prog.slug}`} className="card-shell group overflow-hidden">
-                <div className="relative aspect-[16/10] bg-tsa-green-deep/10">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Users className="h-16 w-16 text-tsa-green-deep/30" />
+                <div
+                  className={`relative aspect-[16/10] ${
+                    index % 2 === 0
+                      ? "bg-gradient-to-br from-tsa-green-deep to-tsa-green-mid"
+                      : "bg-gradient-to-br from-tsa-green-mid to-tsa-green-light"
+                  }`}
+                >
+                  <div className="absolute inset-0 flex items-center px-5">
+                    <h2 className="text-2xl font-bold leading-tight text-white">{prog.title}</h2>
                   </div>
+                  <Users className="absolute bottom-3 right-3 h-16 w-16 text-white/20" />
                 </div>
                 <div className="p-5">
                   <span className="inline-flex rounded-full bg-tsa-gold/15 px-3 py-1 text-xs font-semibold text-tsa-gold">

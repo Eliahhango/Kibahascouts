@@ -10,7 +10,7 @@ const quickLinks = [
 
 export default function NotFound() {
   return (
-    <section className="relative overflow-hidden border-y border-border bg-tsa-green-deep py-20 md:py-28">
+    <section className="relative min-h-screen overflow-hidden border-y border-border bg-tsa-green-deep py-20 md:py-28">
       <div className="relative mx-auto max-w-4xl px-4 text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-tsa-green-mid bg-tsa-green-mid px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary-foreground">
           <Compass className="h-3.5 w-3.5" />

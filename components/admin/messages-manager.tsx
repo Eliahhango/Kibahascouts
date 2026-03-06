@@ -279,7 +279,7 @@ export function MessagesManager() {
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <div className={cn("rounded-xl border border-border bg-card p-4 shadow-sm", selectedId ? "hidden lg:block" : "block")}>
+        <div id="inbox-list" className={cn("rounded-xl border border-border bg-card p-4 shadow-sm", selectedId ? "hidden lg:block" : "block")}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-card-foreground">Inbox</h2>
             <div className="flex flex-wrap items-center gap-2">
@@ -323,7 +323,7 @@ export function MessagesManager() {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Subject, name, email..."
-                className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                className="mt-1 block w-60 max-w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
               />
             </label>
 
@@ -332,7 +332,7 @@ export function MessagesManager() {
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as "all" | MessageStatus)}
-                className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                className="mt-1 block rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground admin-input"
               >
                 <option value="all">All</option>
                 <option value="unread">Unread</option>

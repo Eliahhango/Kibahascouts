@@ -55,6 +55,7 @@ export default async function NewsArticlePage({
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
   const lastUpdated = article.updatedAt || article.date
+  const authorInitial = (article.author || "A").trim().charAt(0).toUpperCase()
 
   return (
     <>
@@ -66,21 +67,31 @@ export default async function NewsArticlePage({
 
       <SectionShell eyebrow={article.category} title="Article" tone="background">
         <article className="mx-auto max-w-4xl">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <User className="h-4 w-4 text-tsa-green-deep" />
-              {article.author}
+          <div className="card-shell flex items-center gap-3 p-4">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-tsa-green-deep text-base font-bold text-white">
+              {authorInitial}
             </span>
-            <span>{new Date(article.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
-            <span className="inline-flex items-center gap-1">
-              <Clock3 className="h-4 w-4 text-tsa-green-deep" />
-              {article.readingTime}
-            </span>
-            {lastUpdated ? (
-              <span>
-                Last updated {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-              </span>
-            ) : null}
+            <div className="min-w-0">
+              <p className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                <User className="h-4 w-4 text-tsa-green-deep" />
+                {article.author}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {new Date(article.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                {" | "}
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="h-3.5 w-3.5 text-tsa-green-deep" />
+                  {article.readingTime}
+                </span>
+                {lastUpdated ? (
+                  <>
+                    {" | "}
+                    Last updated{" "}
+                    {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  </>
+                ) : null}
+              </p>
+            </div>
           </div>
 
           <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
@@ -93,15 +104,15 @@ export default async function NewsArticlePage({
             />
           </div>
 
-          <div className="prose prose-sm mt-8 max-w-none text-foreground">
+          <div className="prose-brand mt-8">
             {shouldRenderRichText ? (
               <div dangerouslySetInnerHTML={{ __html: sanitizedContentHtml }} />
             ) : (
-              contentParagraphs.map((paragraph, index) => (
-                <p key={index} className="mb-5 text-base leading-relaxed text-foreground/90">
-                  {paragraph}
-                </p>
-              ))
+              <div className="prose-brand">
+                {contentParagraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
             )}
           </div>
 

@@ -45,7 +45,7 @@ export default async function UnitProfilePage({
     <>
       <PageHero
         title={unit.name}
-        subtitle={`${unit.section} • ${unit.type} • Established ${unit.established}`}
+        subtitle={`${unit.section} | ${unit.type} | Established ${unit.established}`}
         breadcrumbs={[{ label: "Scout Units", href: "/units" }, { label: unit.name }]}
       />
 
@@ -53,40 +53,49 @@ export default async function UnitProfilePage({
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <article className="space-y-4">
             <div className="card-shell p-5">
-              <div className="space-y-2 text-base text-muted-foreground">
-                <p className="inline-flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                  {unit.meetingLocation}
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Ward:</span> {unit.ward}
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Meeting Schedule:</span> {unit.meetingDay}, {unit.meetingTime}
-                </p>
-                <p className="inline-flex items-center gap-2">
-                  <Users className="h-4 w-4 text-tsa-green-deep" />
-                  {unit.memberCount} active members
-                </p>
-                <p className="inline-flex items-center gap-2">
+              <div>
+                <p className="eyebrow">Meeting Details</p>
+                <div className="mt-2 space-y-2 text-base text-muted-foreground">
+                  <p className="inline-flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                    {unit.meetingLocation}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-foreground">Ward:</span> {unit.ward}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-foreground">Meeting Schedule:</span> {unit.meetingDay}, {unit.meetingTime}
+                  </p>
+                  <p className="inline-flex items-center gap-2">
+                    <Users className="h-4 w-4 text-tsa-green-deep" />
+                    {unit.memberCount} active members
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 border-t border-border pt-4">
+                <p className="eyebrow">Contact Information</p>
+                <p className="mt-2 inline-flex items-center gap-2 text-base text-muted-foreground">
                   <Mail className="h-4 w-4 text-tsa-green-deep" />
                   {unit.contactEmail}
                 </p>
               </div>
-            </div>
 
-            {unit.leaders.length > 0 ? (
-              <div className="card-shell p-5">
-                <h2 className="text-lg font-semibold text-foreground">Unit Leadership</h2>
-                <ul className="mt-3 space-y-2">
-                  {unit.leaders.map((leader) => (
-                    <li key={leader.name} className="rounded-lg bg-secondary px-3 py-2 text-sm text-secondary-foreground">
-                      <span className="font-semibold">{leader.name}</span> • {leader.role}
-                    </li>
-                  ))}
-                </ul>
+              <div className="mt-4 border-t border-border pt-4">
+                <p className="eyebrow">Leadership</p>
+                {unit.leaders.length > 0 ? (
+                  <ul className="mt-3 space-y-2">
+                    {unit.leaders.map((leader) => (
+                      <li key={leader.name} className="rounded-lg bg-secondary px-3 py-2 text-sm text-secondary-foreground">
+                        <span className="font-semibold">{leader.name}</span> - {leader.role}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">Leadership details will be published soon.</p>
+                )}
               </div>
-            ) : null}
+            </div>
           </article>
 
           <aside className="space-y-4">

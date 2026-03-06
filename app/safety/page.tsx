@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { AlertTriangle, BadgeCheck, FileText, ShieldCheck } from "lucide-react"
+import { AlertTriangle, BadgeCheck, FileText, ShieldAlert, ShieldCheck } from "lucide-react"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
 import { getSiteContentSettingsFromCms } from "@/lib/cms"
@@ -63,13 +63,16 @@ export default async function SafetyPage() {
       >
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <article className="card-shell p-6">
-            <div className="rounded-lg bg-secondary p-4 text-sm text-secondary-foreground">
+            <div className="rounded-xl border-2 border-red-200 bg-red-50 p-5 text-sm text-red-700">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-red-700">
+                <ShieldAlert className="h-5 w-5" />
+              </span>
               <p>
-                <span className="font-semibold">Safeguarding Hotline:</span>{" "}
+                <span className="font-bold text-red-700">Safeguarding Hotline:</span>{" "}
                 {normalizePublicText(pageContent.hotlineText)}
               </p>
               <p className="mt-1">
-                <span className="font-semibold">Confidential Email:</span>{" "}
+                <span className="font-bold text-red-700">Confidential Email:</span>{" "}
                 {normalizePublicText(pageContent.confidentialEmailText)}
               </p>
             </div>
