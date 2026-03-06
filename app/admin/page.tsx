@@ -206,6 +206,13 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
     },
   ]
 
+  const quickActions = [
+    { href: "/admin/news", label: "Add News", icon: Newspaper },
+    { href: "/admin/events", label: "Add Event", icon: CalendarDays },
+    { href: "/admin/media", label: "Upload Media", icon: Upload },
+    { href: "/admin/messages", label: "View Inbox", icon: Inbox },
+  ] as const
+
   const activityStyleByType = {
     news: { icon: Newspaper, dot: "bg-[#1e3a2f]/15 text-[#1e3a2f]" },
     event: { icon: CalendarDays, dot: "bg-[#2f6e4c]/15 text-[#2f6e4c]" },
@@ -223,6 +230,19 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
           </p>
         ) : null}
 
+        <div className="flex gap-2 overflow-x-auto pb-1 xl:hidden">
+          {quickActions.map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#1e3a2f]/30 bg-white px-3 py-1.5 text-xs font-medium text-[#1e3a2f]"
+            >
+              <action.icon className="h-3.5 w-3.5" />
+              {action.label}
+            </Link>
+          ))}
+        </div>
+
         <DashboardCards items={cards} />
 
         <DashboardActivityOverview visitsSeries={overview.visitsSeries} contentBreakdown={overview.contentBreakdown} />
@@ -231,14 +251,14 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
           <h2 className="text-xl font-semibold text-foreground">Management Tools</h2>
           <p className="mt-1 text-sm text-muted-foreground">Access content, communication, and security modules from one panel.</p>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {toolCards.map((tool) => (
               <Link
                 key={tool.href}
                 href={tool.href}
-                className="group cursor-pointer rounded-xl border border-border border-l-4 border-l-transparent bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-l-[#1e3a2f] hover:shadow-md"
+                className="group cursor-pointer rounded-xl border border-border border-l-4 border-l-transparent bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-l-[#1e3a2f] hover:shadow-md sm:p-4"
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#1e3a2f] text-white">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#1e3a2f] text-white sm:h-10 sm:w-10">
                   <tool.icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-3 text-base font-semibold text-foreground">{tool.label}</h3>
@@ -246,7 +266,7 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
 
                 <div className="mt-4 flex items-center justify-between gap-2">
                   <span className="inline-flex items-center text-sm font-semibold text-[#1e3a2f]">
-                    <span className="transition-transform group-hover:translate-x-0.5">Open →</span>
+                    <span className="transition-transform group-hover:translate-x-0.5">Open {"->"}</span>
                   </span>
                   {tool.pendingLabel ? (
                     <span
@@ -291,22 +311,16 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
           <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-foreground">Quick Actions</h3>
             <div className="mt-3 space-y-2.5">
-              <Link href="/admin/news" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
-                <Newspaper className="h-4 w-4" />
-                Add News
-              </Link>
-              <Link href="/admin/events" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
-                <CalendarDays className="h-4 w-4" />
-                Add Event
-              </Link>
-              <Link href="/admin/media" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
-                <Upload className="h-4 w-4" />
-                Upload Media
-              </Link>
-              <Link href="/admin/messages" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
-                <Inbox className="h-4 w-4" />
-                View Inbox
-              </Link>
+              {quickActions.map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5"
+                >
+                  <action.icon className="h-4 w-4" />
+                  {action.label}
+                </Link>
+              ))}
             </div>
           </section>
 
@@ -349,10 +363,10 @@ export default async function AdminHomePage() {
 
     return (
       <main className="mx-auto w-full max-w-[120rem] px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-xl border border-border bg-white p-6 shadow-sm">
+        <header className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6">
           <div className="space-y-3">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+              <h1 className="text-xl font-bold text-foreground sm:text-2xl">Admin Dashboard</h1>
               <AdminDashboardGreeting email={admin.email} />
             </div>
 

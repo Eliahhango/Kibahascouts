@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
 import { Spinner } from "@/components/ui/spinner"
+import { cn } from "@/lib/utils"
 
 type MessageStatus = "unread" | "read" | "replied"
 
@@ -278,7 +279,7 @@ export function MessagesManager() {
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+        <div className={cn("rounded-xl border border-border bg-card p-4 shadow-sm", selectedId ? "hidden lg:block" : "block")}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-card-foreground">Inbox</h2>
             <div className="flex flex-wrap items-center gap-2">
@@ -442,6 +443,14 @@ export function MessagesManager() {
 
           {selectedMessage ? (
             <div className="mt-4 space-y-4">
+              <button
+                type="button"
+                onClick={() => setSelectedId(null)}
+                className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-[#1e3a2f] lg:hidden"
+              >
+                Back to messages
+              </button>
+
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Name</p>

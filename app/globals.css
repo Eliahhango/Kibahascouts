@@ -206,3 +206,10 @@
 .animate-shimmer {
   animation: shimmer 1.2s linear infinite;
 }
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .admin-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(4rem + env(safe-area-inset-bottom));
+  }
+}

@@ -8,8 +8,8 @@ export default async function AdminSecurityPage() {
     await requireAdmin("admins:manage")
 
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
-        <header className="mb-6 space-y-3">
+      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <header className="mb-4 space-y-3 sm:mb-6">
           <AdminBreadcrumbs currentPage="Security" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">Security Center</h1>

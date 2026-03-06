@@ -30,12 +30,12 @@ export function DashboardActivityOverview({ visitsSeries, contentBreakdown }: Da
         <h2 className="mt-2 text-xl font-semibold text-foreground">Activity Overview</h2>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-5">
         <article className="rounded-xl border border-border bg-white p-4 shadow-sm xl:col-span-3">
           <h3 className="text-sm font-semibold text-foreground">Daily Site Visits</h3>
           <p className="mt-1 text-xs text-muted-foreground">Traffic trend captured from public website telemetry.</p>
 
-          <ChartContainer config={chartConfig} className="mt-4 h-[18rem] w-full">
+          <ChartContainer config={chartConfig} className="mt-4 h-[12rem] w-full sm:h-[18rem]">
             <AreaChart data={visitsSeries}>
               <defs>
                 <linearGradient id="visits-fill" x1="0" y1="0" x2="0" y2="1">
@@ -76,7 +76,7 @@ export function DashboardActivityOverview({ visitsSeries, contentBreakdown }: Da
           <p className="mt-1 text-xs text-muted-foreground">Published content split by module.</p>
 
           <div className="mt-4 flex justify-center">
-            <ChartContainer config={{}} className="h-[14rem] w-full max-w-[16rem]">
+            <ChartContainer config={{}} className="h-[10rem] w-full max-w-[16rem] sm:h-[14rem]">
               <PieChart>
                 <Pie
                   data={contentBreakdown}

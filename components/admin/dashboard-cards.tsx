@@ -74,7 +74,7 @@ function TrendIcon({ direction }: { direction: DashboardCardTrend["direction"] }
 
 export function DashboardCards({ items }: DashboardCardsProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
       {items.map((item) => {
         const tone = toneClasses[item.tone]
         const progress = Math.max(6, Math.min(100, item.progress))
@@ -84,7 +84,7 @@ export function DashboardCards({ items }: DashboardCardsProps) {
             key={item.title}
             href={item.href}
             className={cn(
-              "group relative cursor-pointer rounded-xl border border-border border-l-4 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md",
+              "group relative cursor-pointer rounded-xl border border-border border-l-4 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-5",
               tone.border,
             )}
           >
@@ -93,7 +93,7 @@ export function DashboardCards({ items }: DashboardCardsProps) {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{item.title}</p>
-                <p className="mt-2 text-3xl font-bold text-card-foreground">{item.value.toLocaleString()}</p>
+                <p className="mt-2 text-2xl font-bold text-card-foreground sm:text-3xl">{item.value.toLocaleString()}</p>
               </div>
               <span className={cn("inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg", tone.iconWrap)}>
                 {item.error ? (
@@ -104,21 +104,21 @@ export function DashboardCards({ items }: DashboardCardsProps) {
               </span>
             </div>
 
-            <p className="mt-3 text-sm text-muted-foreground">{item.description}</p>
+            <p className="mt-3 text-xs text-muted-foreground sm:text-sm">{item.description}</p>
 
-            <p className={cn("mt-3 inline-flex items-center gap-1 text-xs font-semibold", item.trend.direction === "flat" ? "text-slate-500" : tone.trend)}>
+            <p className={cn("mt-3 hidden items-center gap-1 text-xs font-semibold sm:inline-flex", item.trend.direction === "flat" ? "text-slate-500" : tone.trend)}>
               <TrendIcon direction={item.trend.direction} />
               {item.trend.text}
             </p>
 
-            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+            <div className="mt-3 hidden h-1.5 w-full overflow-hidden rounded-full bg-secondary sm:block">
               <div className={cn("h-full rounded-full", tone.progress)} style={{ width: `${progress}%` }} aria-hidden="true" />
             </div>
 
             {item.error ? <p className="mt-2 text-xs font-medium text-destructive">Data fallback active: {item.error}</p> : null}
 
             <p className="mt-3 inline-flex items-center text-xs font-semibold text-[#1e3a2f]">
-              <span className="transition-transform group-hover:translate-x-0.5">→ View all</span>
+              <span className="transition-transform group-hover:translate-x-0.5">{"->"} View all</span>
             </p>
           </Link>
         )
@@ -129,9 +129,9 @@ export function DashboardCards({ items }: DashboardCardsProps) {
 
 export function DashboardCardsSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
       {Array.from({ length: 6 }).map((_, index) => (
-        <article key={`dashboard-skeleton-${index}`} className="rounded-xl border border-border bg-white p-5 shadow-sm">
+        <article key={`dashboard-skeleton-${index}`} className="rounded-xl border border-border bg-white p-3 shadow-sm sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-2">
               <Skeleton className="h-3 w-24" />

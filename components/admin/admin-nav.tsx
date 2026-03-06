@@ -528,7 +528,7 @@ export function AdminNav() {
             type="button"
             title="Open navigation menu"
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground sm:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border text-foreground lg:hidden"
           >
             <Menu className="h-4 w-4" />
           </button>
@@ -616,7 +616,7 @@ export function AdminNav() {
       </header>
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent side="left" className="w-[85vw] max-w-[20rem] border-r border-white/10 bg-[#0f1923] p-0 text-white sm:hidden">
+        <SheetContent side="left" className="w-[85vw] max-w-[20rem] border-r border-white/10 bg-[#0f1923] p-0 text-white lg:hidden">
           <SheetHeader className="border-b border-white/10 px-4 py-4">
             <SheetTitle className="text-left text-sm font-semibold uppercase tracking-[0.16em] text-[#c9910a]">
               Kibaha Scouts CMS
@@ -663,7 +663,10 @@ export function AdminNav() {
         </SheetContent>
       </Sheet>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 hidden h-16 grid-cols-5 border-t border-border bg-white px-2 sm:grid lg:hidden">
+      <nav
+        className="admin-bottom-nav fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-5 border-t border-border bg-white px-2 lg:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         {compactTabItems.map((item) => {
           const active = item.match(pathname)
           const showBadge = item.href === "/admin/messages" && summary.unreadMessages > 0
