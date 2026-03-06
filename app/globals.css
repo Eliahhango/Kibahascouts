@@ -48,6 +48,7 @@
   --tsa-gold-light: #e6a812;
   --tsa-cream: #f5f0e8;
   --tsa-warm-white: #fdfcf9;
+  --admin-sidebar-width: 240px;
 }
 
 @theme inline {

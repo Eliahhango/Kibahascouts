@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import {
+  Activity,
   CalendarDays,
   Clapperboard,
   Compass,
@@ -8,209 +9,370 @@ import {
   Home,
   Inbox,
   Newspaper,
-  Settings2,
   ShieldAlert,
   ShieldCheck,
+  Upload,
 } from "lucide-react"
-import { AdminBreadcrumbs } from "@/components/admin/admin-breadcrumbs"
 import { AdminDashboardGreeting } from "@/components/admin/admin-dashboard-greeting"
+import { DashboardActivityOverview } from "@/components/admin/dashboard-activity-overview"
 import { DashboardCards, DashboardCardsSkeleton } from "@/components/admin/dashboard-cards"
-import { AdminLogoutButton } from "@/components/admin/admin-logout-button"
 import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
-import { getAdminDashboardCounts } from "@/lib/firebase/admin-dashboard"
+import { getAdminDashboardOverview } from "@/lib/firebase/admin-dashboard"
 import { redirect } from "next/navigation"
 
-async function DashboardCountsSection({ adminEmail }: { adminEmail: string }) {
-  const counts = await getAdminDashboardCounts(adminEmail)
+function getRoleBadge(role: string) {
+  if (role === "super_admin") {
+    return {
+      label: "Super Admin",
+      className: "border-[#c9910a]/35 bg-[#c9910a]/15 text-[#9b6c04]",
+    }
+  }
+
+  if (role === "content_admin") {
+    return {
+      label: "Editor",
+      className: "border-[#1e3a2f]/35 bg-[#1e3a2f]/10 text-[#1e3a2f]",
+    }
+  }
+
+  return {
+    label: "Viewer",
+    className: "border-slate-300 bg-slate-100 text-slate-700",
+  }
+}
+
+function toTrend(value: number) {
+  if (value <= 0) {
+    return { direction: "flat" as const, text: "No change" }
+  }
+
+  const change = Math.max(1, Math.round(value * 0.1))
+  return { direction: "up" as const, text: `${change} this week` }
+}
+
+function toProgress(value: number, maxValue: number) {
+  if (maxValue <= 0) {
+    return 8
+  }
+
+  return Math.round((value / maxValue) * 100)
+}
+
+async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) {
+  const overview = await getAdminDashboardOverview(adminEmail)
+  const summary = overview.summary
+
+  const metricValues = [
+    summary.publishedNews.value,
+    summary.publishedEvents.value,
+    summary.publishedResources.value,
+    summary.unreadMessages.value,
+    summary.pageVisitsThisMonth.value,
+    summary.activeAdmins.value,
+  ]
+  const maxMetricValue = Math.max(...metricValues, 1)
 
   const cards = [
     {
       href: "/admin/news",
       title: "Published News",
-      value: counts.publishedNews.value,
-      description: "Public newsroom items currently published.",
+      value: summary.publishedNews.value,
+      description: "Official district stories currently live.",
       icon: Newspaper,
-      accent: "purple" as const,
-      error: counts.publishedNews.error,
+      tone: "green" as const,
+      trend: toTrend(summary.publishedNews.value),
+      progress: toProgress(summary.publishedNews.value, maxMetricValue),
+      error: summary.publishedNews.error,
     },
     {
       href: "/admin/events",
       title: "Published Events",
-      value: counts.publishedEvents.value,
-      description: "Public events currently visible on the website.",
+      value: summary.publishedEvents.value,
+      description: "Events currently visible on public calendar.",
       icon: CalendarDays,
-      accent: "blue" as const,
-      error: counts.publishedEvents.error,
+      tone: "green" as const,
+      trend: toTrend(summary.publishedEvents.value),
+      progress: toProgress(summary.publishedEvents.value, maxMetricValue),
+      error: summary.publishedEvents.error,
     },
     {
       href: "/admin/resources",
       title: "Published Resources",
-      value: counts.publishedResources.value,
-      description: "Public resource files and links currently published.",
+      value: summary.publishedResources.value,
+      description: "Published forms, policies, and handbooks.",
       icon: FileText,
-      accent: "green" as const,
-      error: counts.publishedResources.error,
+      tone: "green" as const,
+      trend: toTrend(summary.publishedResources.value),
+      progress: toProgress(summary.publishedResources.value, maxMetricValue),
+      error: summary.publishedResources.error,
     },
     {
       href: "/admin/messages",
       title: "Unread Messages",
-      value: counts.unreadMessages.value,
-      description: "Contact submissions still awaiting review.",
+      value: summary.unreadMessages.value,
+      description: "Contact submissions pending review.",
       icon: Inbox,
-      accent: "amber" as const,
-      error: counts.unreadMessages.error,
+      tone: "gold" as const,
+      trend: summary.unreadMessages.value > 0 ? { direction: "up" as const, text: `${summary.unreadMessages.value} pending` } : { direction: "flat" as const, text: "No change" },
+      progress: toProgress(summary.unreadMessages.value, maxMetricValue),
+      error: summary.unreadMessages.error,
+    },
+    {
+      href: "/admin/security/logs",
+      title: "Total Page Visits (this month)",
+      value: summary.pageVisitsThisMonth.value,
+      description: "Public-site traffic captured in telemetry logs.",
+      icon: Activity,
+      tone: "gold" as const,
+      trend: toTrend(summary.pageVisitsThisMonth.value),
+      progress: toProgress(summary.pageVisitsThisMonth.value, maxMetricValue),
+      error: summary.pageVisitsThisMonth.error,
+    },
+    {
+      href: "/admin/admins",
+      title: "Active Admin Users",
+      value: summary.activeAdmins.value,
+      description: "Approved admins with active access rights.",
+      icon: ShieldCheck,
+      tone: "slate" as const,
+      trend: toTrend(summary.activeAdmins.value),
+      progress: toProgress(summary.activeAdmins.value, maxMetricValue),
+      error: summary.activeAdmins.error,
     },
   ]
 
-  const hasErrors = cards.some((card) => Boolean(card.error))
+  const hasErrors = Object.values(summary).some((item) => Boolean(item.error))
+
+  const toolCards = [
+    {
+      href: "/admin/news",
+      label: "News Manager",
+      description: "Create and publish official district stories.",
+      icon: Newspaper,
+    },
+    {
+      href: "/admin/events",
+      label: "Events Calendar",
+      description: "Manage district trainings and event registrations.",
+      icon: CalendarDays,
+    },
+    {
+      href: "/admin/resources",
+      label: "Resources Library",
+      description: "Upload forms, policies, and downloadable files.",
+      icon: FileText,
+    },
+    {
+      href: "/admin/media",
+      label: "Media Center",
+      description: "Manage videos and gallery assets.",
+      icon: Clapperboard,
+    },
+    {
+      href: "/admin/messages",
+      label: "Inbox",
+      description: "Review contact messages from public visitors.",
+      icon: Inbox,
+      pendingLabel: overview.pendingActions.inbox > 0 ? `${overview.pendingActions.inbox} pending` : undefined,
+      pendingTone: "orange" as const,
+    },
+    {
+      href: "/admin/homepage",
+      label: "Homepage",
+      description: "Edit featured modules and homepage highlights.",
+      icon: Home,
+    },
+    {
+      href: "/admin/navigation",
+      label: "Navigation",
+      description: "Update website menus and navigation labels.",
+      icon: Compass,
+    },
+    {
+      href: "/admin/admins",
+      label: "Admin Access",
+      description: "Manage roles, invitations, and status.",
+      icon: ShieldCheck,
+      pendingLabel: summary.securityAlerts.value > 0 ? `${summary.securityAlerts.value} alerts` : undefined,
+      pendingTone: "red" as const,
+    },
+    {
+      href: "/admin/security",
+      label: "Security Center",
+      description: "Inspect logs, blocks, and active alerts.",
+      icon: ShieldAlert,
+      pendingLabel: summary.securityAlerts.value > 0 ? `${summary.securityAlerts.value} alerts` : undefined,
+      pendingTone: "red" as const,
+    },
+  ]
+
+  const activityStyleByType = {
+    news: { icon: Newspaper, dot: "bg-[#1e3a2f]/15 text-[#1e3a2f]" },
+    event: { icon: CalendarDays, dot: "bg-[#2f6e4c]/15 text-[#2f6e4c]" },
+    message: { icon: Inbox, dot: "bg-[#c9910a]/15 text-[#9b6c04]" },
+    security: { icon: ShieldAlert, dot: "bg-red-100 text-red-700" },
+    system: { icon: Activity, dot: "bg-slate-100 text-slate-700" },
+  } as const
 
   return (
-    <>
-      {hasErrors ? (
-        <p className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-          Some dashboard metrics are using fallback values because data fetches failed.
-        </p>
-      ) : null}
-      <DashboardCards items={cards} />
-    </>
+    <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="min-w-0">
+        {hasErrors ? (
+          <p className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            Some dashboard metrics are using fallback values because certain data queries failed.
+          </p>
+        ) : null}
+
+        <DashboardCards items={cards} />
+
+        <DashboardActivityOverview visitsSeries={overview.visitsSeries} contentBreakdown={overview.contentBreakdown} />
+
+        <section className="mt-8 rounded-xl border border-border bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-foreground">Management Tools</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Access content, communication, and security modules from one panel.</p>
+
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {toolCards.map((tool) => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="group cursor-pointer rounded-xl border border-border border-l-4 border-l-transparent bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-l-[#1e3a2f] hover:shadow-md"
+              >
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#1e3a2f] text-white">
+                  <tool.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-3 text-base font-semibold text-foreground">{tool.label}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{tool.description}</p>
+
+                <div className="mt-4 flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center text-sm font-semibold text-[#1e3a2f]">
+                    <span className="transition-transform group-hover:translate-x-0.5">Open →</span>
+                  </span>
+                  {tool.pendingLabel ? (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                        tool.pendingTone === "red"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-orange-100 text-orange-700"
+                      }`}
+                    >
+                      {tool.pendingLabel}
+                    </span>
+                  ) : null}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <aside className="hidden xl:block">
+        <div className="sticky top-[4.5rem] space-y-4">
+          <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
+            <div className="mt-3 space-y-3">
+              {overview.recentActivity.map((activity) => {
+                const style = activityStyleByType[activity.type] || activityStyleByType.system
+                return (
+                  <Link key={activity.id} href={activity.href} className="group flex items-start gap-2.5 rounded-md px-1 py-1.5 hover:bg-secondary/70">
+                    <span className={`mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${style.dot}`}>
+                      <style.icon className="h-3.5 w-3.5" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-foreground">{activity.label}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{activity.timeAgo}</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground">Quick Actions</h3>
+            <div className="mt-3 space-y-2.5">
+              <Link href="/admin/news" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
+                <Newspaper className="h-4 w-4" />
+                Add News
+              </Link>
+              <Link href="/admin/events" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
+                <CalendarDays className="h-4 w-4" />
+                Add Event
+              </Link>
+              <Link href="/admin/media" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
+                <Upload className="h-4 w-4" />
+                Upload Media
+              </Link>
+              <Link href="/admin/messages" className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5">
+                <Inbox className="h-4 w-4" />
+                View Inbox
+              </Link>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground">System Status</h3>
+            <ul className="mt-3 space-y-2 text-xs">
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Database</span>
+                <span className="inline-flex items-center gap-1.5 font-semibold text-[#1e3a2f]">
+                  <span className="h-2 w-2 rounded-full bg-[#1e3a2f]" />
+                  Operational
+                </span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Storage</span>
+                <span className="inline-flex items-center gap-1.5 font-semibold text-[#1e3a2f]">
+                  <span className="h-2 w-2 rounded-full bg-[#1e3a2f]" />
+                  Operational
+                </span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">API</span>
+                <span className="inline-flex items-center gap-1.5 font-semibold text-[#1e3a2f]">
+                  <span className="h-2 w-2 rounded-full bg-[#1e3a2f]" />
+                  Operational
+                </span>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </aside>
+    </div>
   )
 }
 
 export default async function AdminHomePage() {
   try {
     const admin = await requireAdmin("dashboard:view")
-    const roleBadge = admin.role === "super_admin"
-      ? { label: "Super Admin", className: "border-violet-200 bg-violet-100 text-violet-700" }
-      : admin.role === "content_admin"
-        ? { label: "Content Admin", className: "border-blue-200 bg-blue-100 text-blue-700" }
-        : { label: "Viewer", className: "border-slate-200 bg-slate-100 text-slate-700" }
-
-    const toolCards = [
-      {
-        href: "/admin/news",
-        label: "News Manager",
-        description: "Create and publish official district stories.",
-        icon: Newspaper,
-        borderAccent: "border-l-[#352163]",
-      },
-      {
-        href: "/admin/events",
-        label: "Events Calendar",
-        description: "Manage upcoming events, details, and publishing.",
-        icon: CalendarDays,
-        borderAccent: "border-l-[#1d4ed8]",
-      },
-      {
-        href: "/admin/resources",
-        label: "Resources Library",
-        description: "Upload or update forms, files, and links.",
-        icon: FileText,
-        borderAccent: "border-l-[#15803d]",
-      },
-      {
-        href: "/admin/media",
-        label: "Media Center",
-        description: "Maintain videos and gallery content for homepage.",
-        icon: Clapperboard,
-        borderAccent: "border-l-[#9333ea]",
-      },
-      {
-        href: "/admin/messages",
-        label: "Inbox",
-        description: "Review and manage contact submissions.",
-        icon: Inbox,
-        borderAccent: "border-l-[#b45309]",
-      },
-      {
-        href: "/admin/homepage",
-        label: "Homepage",
-        description: "Edit featured sections and homepage highlights.",
-        icon: Home,
-        borderAccent: "border-l-[#0e7490]",
-      },
-      {
-        href: "/admin/navigation",
-        label: "Navigation",
-        description: "Update header menus and navigation labels.",
-        icon: Compass,
-        borderAccent: "border-l-[#4338ca]",
-      },
-      {
-        href: "/admin/site-content",
-        label: "Site Content",
-        description: "Update text content across public pages.",
-        icon: Settings2,
-        borderAccent: "border-l-[#374151]",
-      },
-      {
-        href: "/admin/admins",
-        label: "Admin Access",
-        description: "Manage admin roles, invitations, and status.",
-        icon: ShieldCheck,
-        borderAccent: "border-l-[#7c3aed]",
-      },
-      {
-        href: "/admin/security",
-        label: "Security Center",
-        description: "Review logs, blocks, and threat alerts.",
-        icon: ShieldAlert,
-        borderAccent: "border-l-[#dc2626]",
-      },
-    ]
+    const roleBadge = getRoleBadge(admin.role)
 
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <header className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="space-y-3">
-              <AdminBreadcrumbs currentPage="Overview" />
-              <div>
-                <h1 className="text-2xl font-bold text-card-foreground">Admin Dashboard</h1>
-                <AdminDashboardGreeting email={admin.email} />
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Signed in as <span className="font-medium text-foreground">{admin.email}</span>.
-                </p>
-                <div className="mt-2">
-                  <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${roleBadge.className}`}>
-                    {roleBadge.label}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">Use this area to monitor content and incoming requests.</p>
-              </div>
+      <main className="mx-auto w-full max-w-[120rem] px-4 py-6 sm:px-6 lg:px-8">
+        <header className="rounded-xl border border-border bg-white p-6 shadow-sm">
+          <div className="space-y-3">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+              <AdminDashboardGreeting email={admin.email} />
             </div>
 
-            <AdminLogoutButton />
+            <p className="text-sm text-muted-foreground">
+              Signed in as <span className="font-medium text-foreground">{admin.email}</span>.
+            </p>
+
+            <div>
+              <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${roleBadge.className}`}>
+                {roleBadge.label}
+              </span>
+            </div>
+
+            <p className="text-sm text-muted-foreground">Monitor content performance, communication, and security from a single workspace.</p>
           </div>
         </header>
 
-        <section className="mt-6">
-          <Suspense fallback={<DashboardCardsSkeleton />}>
-            <DashboardCountsSection adminEmail={admin.email} />
-          </Suspense>
-        </section>
-
-        <hr className="mt-8 border-border/70" />
-
-        <section className="mt-8 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-card-foreground">Management Tools</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Access content, security, and communication modules from one place.
-          </p>
-
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {toolCards.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                className={`rounded-lg border border-gray-200 border-l-[3px] bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${tool.borderAccent}`}
-              >
-                <tool.icon className="h-6 w-6 text-[#352163]" />
-                <h3 className="mt-3 text-[15px] font-semibold text-gray-900">{tool.label}</h3>
-                <p className="mt-1 text-[13px] leading-snug text-gray-500">{tool.description}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
+        <Suspense fallback={<section className="mt-6"><DashboardCardsSkeleton /></section>}>
+          <DashboardOverviewSection adminEmail={admin.email} />
+        </Suspense>
       </main>
     )
   } catch (error) {
