@@ -29,13 +29,17 @@ export function GoogleTranslator() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (document.getElementById("google-translate-script")) {
-      setLoaded(true)
-      return
-    }
+    const initializeTranslateElement = () => {
+      if (!window.google?.translate?.TranslateElement) {
+        return false
+      }
 
-    window.googleTranslateElementInit = () => {
-      if (!window.google?.translate?.TranslateElement) return
+      const element = document.getElementById("google-translate-element")
+      if (!element) {
+        return false
+      }
+
+      element.innerHTML = ""
       new window.google.translate.TranslateElement(
         {
           pageLanguage: "en",
@@ -48,6 +52,19 @@ export function GoogleTranslator() {
         "google-translate-element",
       )
       setLoaded(true)
+      return true
+    }
+
+    window.googleTranslateElementInit = () => {
+      initializeTranslateElement()
+    }
+
+    const existingScript = document.getElementById("google-translate-script")
+    if (existingScript) {
+      initializeTranslateElement()
+      return () => {
+        delete window.googleTranslateElementInit
+      }
     }
 
     const script = document.createElement("script")

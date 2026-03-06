@@ -3,7 +3,49 @@ import { getAdminDb } from "@/lib/firebase/admin"
 
 export const runtime = "nodejs"
 
+const membershipRateLimits = new Map<string, { count: number; resetAt: number }>()
+const MEMBERSHIP_RATE_LIMIT_MAX = 5
+const MEMBERSHIP_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000
+
+function getClientIp(request: NextRequest) {
+  const forwardedFor = request.headers.get("x-forwarded-for")
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown"
+  }
+
+  return request.headers.get("x-real-ip") || "unknown"
+}
+
+function isRateLimited(ip: string) {
+  const now = Date.now()
+  const current = membershipRateLimits.get(ip)
+
+  if (!current || current.resetAt <= now) {
+    membershipRateLimits.set(ip, {
+      count: 1,
+      resetAt: now + MEMBERSHIP_RATE_LIMIT_WINDOW_MS,
+    })
+    return false
+  }
+
+  if (current.count >= MEMBERSHIP_RATE_LIMIT_MAX) {
+    return true
+  }
+
+  current.count += 1
+  membershipRateLimits.set(ip, current)
+  return false
+}
+
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request)
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { ok: false, error: "Too many requests. Please try again later." },
+      { status: 429 },
+    )
+  }
+
   try {
     const body = await request.json()
     const { fullName, age, parentName, parentPhone, parentEmail, ward, unitType, role, message, honeypot } = body || {}
