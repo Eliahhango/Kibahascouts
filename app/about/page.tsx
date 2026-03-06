@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
-import { Eye, Handshake, Heart, Target, Users } from "lucide-react"
+import Image from "next/image"
+import { ArrowRight, Eye, Handshake, Heart, Target, Users } from "lucide-react"
 import { FAQSection } from "./faq-section"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
 import { getLeadersFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
 import { normalizePublicText } from "@/lib/public-text"
+import { siteConfig } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   title: "About Kibaha Scouts",
@@ -19,7 +21,6 @@ export default async function AboutPage() {
   ])
   const aboutContent = siteContent.about
   const statIcons = [Users, Target, Heart, Handshake] as const
-  const partners = aboutContent.partnerItems.filter((item) => item.trim().length > 0)
   const timelineEntries = siteContent.aboutTimeline.filter((item) => item.title.trim().length > 0)
   const faqs = siteContent.aboutFaqs.filter((item) => item.question.trim().length > 0)
 
@@ -94,10 +95,73 @@ export default async function AboutPage() {
             </h3>
             <ul className="mt-2 space-y-1 text-base leading-relaxed text-muted-foreground">
               {aboutContent.valuesItems.map((item, index) => (
-                <li key={`value-${index}`}>• {normalizePublicText(item)}</li>
+                <li key={`value-${index}`}>- {normalizePublicText(item)}</li>
               ))}
             </ul>
           </article>
+        </div>
+      </SectionShell>
+
+      <SectionShell eyebrow="Affiliation" title="International Membership" tone="tinted">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <article className="card-shell flex items-center gap-5 p-6">
+            <a href="https://www.scout.org" target="_blank" rel="noreferrer" className="shrink-0">
+              <Image
+                src="/images/branding/wosm-badge.png"
+                alt="World Organization of the Scout Movement"
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-full object-contain shadow-md"
+              />
+            </a>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">World Organization of the Scout Movement</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {"Kibaha Scouts is a proud member of WOSM \u2014 the global body representing over 57 million Scouts across 172 countries."}
+              </p>
+              <a
+                href="https://www.scout.org"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep hover:underline"
+              >
+                scout.org
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </article>
+
+          <article className="card-shell flex items-center gap-5 p-6">
+            <a href="https://tanzaniascouts.or.tz" target="_blank" rel="noreferrer" className="shrink-0">
+              <Image
+                src="/images/branding/tanzania-scouts-logo.png"
+                alt="Tanzania Scouts Association"
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-full object-contain shadow-md"
+              />
+            </a>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Tanzania Scouts Association</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Kibaha District is an official local association under the Tanzania Scouts Association, operating under the national body since its founding.
+              </p>
+              <a
+                href="https://tanzaniascouts.or.tz"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep hover:underline"
+              >
+                tanzaniascouts.or.tz
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </article>
+        </div>
+
+        <div className="mt-5 rounded-xl border border-tsa-gold/30 bg-tsa-gold/5 px-6 py-4 text-center">
+          <p className="text-sm font-semibold text-foreground">Patron: The President of The United Republic of Tanzania</p>
+          <p className="mt-0.5 text-sm italic text-muted-foreground">Mlezi: Rais wa Jamhuri ya Muungano wa Tanzania</p>
         </div>
       </SectionShell>
 
@@ -151,26 +215,54 @@ export default async function AboutPage() {
         </SectionShell>
       ) : null}
 
-      {partners.length > 0 ? (
-        <SectionShell
-          id="partners"
-          eyebrow="Partnerships"
-          title="Partners and Stakeholders"
-          subtitle={normalizePublicText(aboutContent.partnersIntro)}
-          tone="background"
-        >
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {partners.map((partner, index) => (
-              <article key={`${partner}-${index}`} className="card-shell flex items-center gap-3 p-4">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
-                  <Handshake className="h-5 w-5" />
-                </span>
-                <p className="text-base font-medium text-foreground">{normalizePublicText(partner)}</p>
-              </article>
-            ))}
-          </div>
-        </SectionShell>
-      ) : null}
+      <SectionShell
+        id="partners"
+        eyebrow="Partnerships"
+        title="Our Partners and Collaborators"
+        subtitle="Kibaha Scouts works in partnership with national and international organisations to advance Scouting and youth development across the district."
+        tone="white"
+      >
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {siteConfig.partners.map((partner) => (
+            <a
+              key={partner.name}
+              href={partner.href}
+              target="_blank"
+              rel="noreferrer"
+              title={partner.name}
+              className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-white p-5 shadow-sm transition-all duration-200 hover:border-tsa-gold hover:shadow-md"
+            >
+              <div className="flex h-20 w-20 items-center justify-center">
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  width={80}
+                  height={80}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <p className="text-center text-xs font-semibold leading-tight text-foreground group-hover:text-tsa-green-deep">
+                {partner.name}
+              </p>
+            </a>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Kibaha Scouts is an official local association of the Tanzania Scouts Association.
+          </p>
+          <a
+            href="https://tanzaniascouts.or.tz"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-secondary mt-3 inline-flex"
+          >
+            Visit Tanzania Scouts Association
+            <ArrowRight className="ml-1.5 h-4 w-4" />
+          </a>
+        </div>
+      </SectionShell>
 
       {faqs.length > 0 ? (
         <SectionShell
@@ -188,3 +280,5 @@ export default async function AboutPage() {
     </>
   )
 }
+
+

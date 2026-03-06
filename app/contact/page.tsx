@@ -16,7 +16,6 @@ export default async function ContactPage() {
   const { contact } = siteConfig
   const siteContent = await getSiteContentSettingsFromCms()
   const pageContent = siteContent.contactPage
-  const hasPhoneLink = Boolean(contact.phoneHref)
   const hasEmailLink = Boolean(contact.emailHref)
 
   return (
@@ -38,16 +37,20 @@ export default async function ContactPage() {
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-tsa-green-deep" />
                 {contact.address}
               </p>
-              <p className="inline-flex items-center gap-2">
-                <Phone className="h-4 w-4 text-tsa-green-deep" />
-                {hasPhoneLink ? (
-                  <a href={contact.phoneHref} className="hover:text-tsa-green-mid">
-                    {contact.phoneDisplay}
+              <div className="inline-flex items-start gap-2">
+                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-tsa-green-deep" />
+                <div className="space-y-0.5">
+                  <a href="tel:+255715669288" className="block text-base hover:text-tsa-green-mid">
+                    +255 715 669 288
                   </a>
-                ) : (
-                  contact.phoneDisplay
-                )}
-              </p>
+                  <a href="tel:+255753712302" className="block text-base hover:text-tsa-green-mid">
+                    +255 753 712 302
+                  </a>
+                  <a href="tel:+255787303401" className="block text-base hover:text-tsa-green-mid">
+                    +255 787 303 401
+                  </a>
+                </div>
+              </div>
               <p className="inline-flex items-center gap-2">
                 <Mail className="h-4 w-4 text-tsa-green-deep" />
                 {hasEmailLink ? (
@@ -59,6 +62,20 @@ export default async function ContactPage() {
                 )}
               </p>
               <p>Office hours: {contact.officeHours}</p>
+              <p className="inline-flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-tsa-green-deep" />
+                {"P. O. Box 30011, Kibaha \u2013 Pwani, Tanzania"}
+              </p>
+
+              <div className="mt-4 rounded-lg border border-tsa-gold/30 bg-tsa-gold/5 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-tsa-gold">Patron</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">
+                  The President of The United Republic of Tanzania
+                </p>
+                <p className="text-xs italic text-muted-foreground">
+                  Mlezi: Rais wa Jamhuri ya Muungano wa Tanzania
+                </p>
+              </div>
             </div>
 
             <h3 className="mt-6 text-lg font-semibold text-foreground">
@@ -129,3 +146,4 @@ export default async function ContactPage() {
     </>
   )
 }
+

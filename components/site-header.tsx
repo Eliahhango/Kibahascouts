@@ -218,12 +218,12 @@ export function SiteHeader() {
         role="banner"
       >
         <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="relative z-10 flex shrink-0 items-center gap-3 rounded pr-4 focus-visible:ring-2 focus-visible:ring-ring 2xl:min-w-[17.5rem]"
-            aria-label={`${name} - Home`}
-          >
-            <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg" aria-hidden="true">
+          <div className="relative z-10 flex shrink-0 items-center gap-3 pr-4 2xl:min-w-[17.5rem]">
+            <Link
+              href="/"
+              className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`${name} - Home`}
+            >
               <Image
                 src={branding.primaryLogo}
                 alt=""
@@ -232,13 +232,34 @@ export function SiteHeader() {
                 className="object-cover"
                 priority
               />
-            </div>
-            <div className="flex flex-col">
+            </Link>
+
+            <a
+              href={branding.wosmUrl}
+              target="_blank"
+              rel="noreferrer"
+              title="Member of the World Organization of the Scout Movement"
+              className="hidden sm:block"
+            >
+              <Image
+                src={branding.wosmBadge}
+                alt={branding.wosmBadgeAlt}
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-contain"
+              />
+            </a>
+
+            <Link
+              href="/"
+              className="flex flex-col rounded focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`${name} - Home`}
+            >
               <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
               <span className="hidden text-xs leading-tight text-muted-foreground md:block lg:hidden">TSA</span>
               <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground lg:block">{organization}</span>
-            </div>
-          </Link>
+            </Link>
+          </div>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 lg:flex xl:pl-6" aria-label="Main navigation">
             {navItems.map((item) => {

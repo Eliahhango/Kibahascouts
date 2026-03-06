@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Facebook, Instagram, Youtube, type LucideIcon } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -14,7 +15,7 @@ const socialIconMap: Record<FooterSocialIcon, LucideIcon> = {
 
 export function SiteFooter() {
   const pathname = usePathname()
-  const { footer, name } = siteConfig
+  const { footer, name, branding } = siteConfig
   const isAdminRoute = pathname.startsWith("/admin")
 
   if (isAdminRoute) {
@@ -168,6 +169,23 @@ export function SiteFooter() {
               )
             })}
           </div>
+
+          <a
+            href={branding.wosmUrl}
+            target="_blank"
+            rel="noreferrer"
+            title="Member of the World Organization of the Scout Movement"
+            className="inline-flex items-center gap-2 rounded-lg border border-tsa-green-light/40 px-3 py-1.5 text-xs font-medium text-primary-foreground/80 hover:border-tsa-gold hover:text-primary-foreground"
+          >
+            <Image
+              src={branding.wosmBadge}
+              alt="WOSM"
+              width={24}
+              height={24}
+              className="h-6 w-6 rounded-full"
+            />
+            WOSM Member
+          </a>
 
           <p className="text-sm font-semibold text-primary-foreground">&copy; {getCurrentYear()} {name}</p>
         </div>

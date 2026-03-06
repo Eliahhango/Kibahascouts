@@ -25,18 +25,22 @@ type FooterSocialLink = {
 
 export const siteConfig = {
   name: "KIBAHA SCOUTS",
-  shortName: "Kibaha Scouts",
-  organization: "Tanzania Scouts Association",
+  shortName: "Kibaha District",
+  organization: "Tanzania Scouts Association \u2013 Kibaha District Local Association",
   siteUrl: publicEnv.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
   description:
     "Official website of Kibaha Scouts with district updates, events, resources, and safeguarding information.",
   contact: {
-    address: "Office location details will be shared soon.",
-    phoneDisplay: "Phone contact will be shared soon.",
-    phoneHref: "",
-    email: "Email contact will be shared soon.",
-    emailHref: "",
-    officeHours: "Office hours will be shared soon.",
+    address: "P. O. Box 30011, Kibaha \u2013 Pwani, Tanzania",
+    phoneDisplay: "+255 715 669 288 / +255 753 712 302 / +255 787 303 401",
+    phoneHref: "tel:+255715669288",
+    email: "kbhscouts@gmail.com",
+    emailHref: "mailto:kbhscouts@gmail.com",
+    officeHours: "Monday \u2013 Friday, 8:00 AM \u2013 5:00 PM",
+    patron: "The President of The United Republic of Tanzania",
+    patronSwahili: "Mlezi: Rais wa Jamhuri ya Muungano wa Tanzania",
+    poBox: "P. O. Box 30011",
+    region: "Kibaha \u2013 Pwani, Tanzania",
   },
   branding: {
     primaryLogo: "/images/branding/kibaha-scouts-logo.jpg",
@@ -45,7 +49,55 @@ export const siteConfig = {
     footerCenterLogo: "/images/branding/tanzania-scouts-logo.png",
     footerCenterLogoAlt: "Tanzania Scouts logo",
     footerTagline: "Creating a Better World",
+    wosmBadge: "/images/branding/wosm-badge.png",
+    wosmBadgeAlt: "Member of the World Organization of the Scout Movement (WOSM)",
+    wosmUrl: "https://www.scout.org",
+    tanzaniaScoutsUrl: "https://tanzaniascouts.or.tz",
   },
+  partners: [
+    {
+      name: "Tanzania Scouts Association",
+      logo: "/images/branding/tanzania-scouts-logo.png",
+      href: "https://tanzaniascouts.or.tz",
+      description: "National governing body for Scouting in Tanzania",
+    },
+    {
+      name: "World Organization of the Scout Movement (WOSM)",
+      logo: "/images/branding/wosm-badge.png",
+      href: "https://www.scout.org",
+      description: "Global Scout membership body - 172 countries",
+    },
+    {
+      name: "Jeshi la Zimamoto na Uokoaji Tanzania",
+      logo: "/images/partners/jeshi-zimamoto.png",
+      href: "https://tanzaniascouts.or.tz",
+      description: "Tanzania Fire and Rescue Force",
+    },
+    {
+      name: "PCCB - Takukuru",
+      logo: "/images/partners/pccb.png",
+      href: "https://www.pccb.go.tz",
+      description: "Prevention and Combating of Corruption Bureau",
+    },
+    {
+      name: "ZAECA",
+      logo: "/images/partners/zaeca.png",
+      href: "https://zaeca.go.tz",
+      description: "Zanzibar Anti-Corruption and Economic Crimes Authority",
+    },
+    {
+      name: "Safe From Harm",
+      logo: "/images/partners/safe-from-harm.png",
+      href: "https://tanzaniascouts.or.tz",
+      description: "Child protection and safeguarding programme",
+    },
+    {
+      name: "Tanzania Government Policies",
+      logo: "/images/partners/tanzania-policies.png",
+      href: "https://tanzaniascouts.or.tz",
+      description: "Official Tanzania national policies and frameworks",
+    },
+  ],
   footer: {
     sections: [
       {
@@ -114,3 +166,4 @@ export const siteConfig = {
 } as const
 
 export const getCurrentYear = () => new Date().getFullYear()
+
