@@ -1,4 +1,7 @@
+"use client"
+
 import type { ReactNode } from "react"
+import { usePathname } from "next/navigation"
 import { AdminFooter } from "@/components/admin/admin-footer"
 import { AdminNav } from "@/components/admin/admin-nav"
 import { AdminSessionMonitor } from "@/components/admin/admin-session-monitor"
@@ -7,7 +10,23 @@ type AdminLayoutProps = {
   children: ReactNode
 }
 
+const AUTH_ROUTES = ["/admin/login", "/admin/register"]
+
 export default function AdminLayout({ children }: AdminLayoutProps) {
+  const pathname = usePathname()
+  const isAuthRoute = AUTH_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}?`),
+  )
+
+  if (isAuthRoute) {
+    return (
+      <div className="notranslate">
+        <AdminSessionMonitor />
+        {children}
+      </div>
+    )
+  }
+
   return (
     <div className="notranslate min-h-screen bg-[#f3f5f7]">
       <AdminSessionMonitor />
