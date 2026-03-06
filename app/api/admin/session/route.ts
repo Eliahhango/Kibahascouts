@@ -278,7 +278,22 @@ export async function POST(request: Request) {
     }
 
     const expiresIn = getAdminSessionExpiresInMs()
-    const sessionCookie = await adminAuth.createSessionCookie(parsedBody.data.idToken, { expiresIn })
+    let sessionCookie: string
+    try {
+      sessionCookie = await adminAuth.createSessionCookie(parsedBody.data.idToken, { expiresIn })
+    } catch (cookieError) {
+      const errMsg = cookieError instanceof Error ? cookieError.message : ""
+      if (errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("Quota exceeded")) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Sign-in is temporarily unavailable due to high usage. Please try again after midnight Pacific time.",
+          },
+          { status: 503 },
+        )
+      }
+      throw cookieError
+    }
     const expiresAt = new Date(Date.now() + expiresIn).toISOString()
 
     await createTrackedAdminSession({

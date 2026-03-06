@@ -238,8 +238,8 @@ export function AdminRegisterForm({
     : `/admin/login?next=${encodeURIComponent(nextPath)}`
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0d1f17] px-4">
-      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-8 shadow-2xl">
+    <main className="flex min-h-screen items-start justify-center overflow-y-auto bg-[#0d1f17] px-4 py-8 sm:items-center">
+      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-6 shadow-2xl sm:p-8">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-[#c9910a]">
             <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="48px" className="object-cover" priority />

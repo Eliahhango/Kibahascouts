@@ -52,6 +52,15 @@ function mapSignInError(error: unknown) {
   const code = typeof error === "object" && error && "code" in error ? String(error.code) : ""
   const message = error instanceof Error ? error.message : "Unable to sign in."
 
+  if (
+    message.includes("RESOURCE_EXHAUSTED") ||
+    message.includes("Quota exceeded") ||
+    message.includes("quota") ||
+    code === "8"
+  ) {
+    return "Sign-in is temporarily unavailable due to high usage. This resets automatically at midnight (Pacific time). Please try again later or contact the website administrator."
+  }
+
   if (message.includes("Email not found in admin allowlist.")) {
     return "Email not found in admin allowlist."
   }
@@ -251,11 +260,17 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
       window.location.assign(nextPath)
     } catch (submitError) {
       const uiError = mapSignInError(submitError)
-      const reasonCode = uiError.toLowerCase().includes("allowlist") ? "email_not_allowlisted" : "incorrect_password"
-      const lockMessage = uiError.toLowerCase().includes("too many")
-        ? null
-        : await recordFailedAttempt(normalizedEmail, reasonCode)
-      setError(lockMessage || uiError)
+      const isQuotaError =
+        uiError.includes("temporarily unavailable") || uiError.includes("Quota")
+      if (!isQuotaError && !uiError.toLowerCase().includes("too many")) {
+        const reasonCode = uiError.toLowerCase().includes("allowlist")
+          ? "email_not_allowlisted"
+          : "incorrect_password"
+        const lockMessage = await recordFailedAttempt(normalizedEmail, reasonCode)
+        setError(lockMessage || uiError)
+      } else {
+        setError(uiError)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -296,8 +311,8 @@ export function AdminLoginForm({ nextPath, defaultEmail = "" }: AdminLoginFormPr
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0d1f17] px-4">
-      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-8 shadow-2xl">
+    <main className="flex min-h-screen items-start justify-center overflow-y-auto bg-[#0d1f17] px-4 py-8 sm:items-center">
+      <section className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1923] p-6 shadow-2xl sm:p-8">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-[#c9910a]">
             <Image src="/images/branding/kibaha-scouts-logo.jpg" alt="Kibaha Scouts logo" fill sizes="48px" className="object-cover" priority />
