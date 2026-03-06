@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, CalendarDays, Clock3, Download, MapPin } from "lucide-react"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { CalendarDays, Clock3, Download, MapPin } from "lucide-react"
 import { EventLocationMap } from "@/components/events/event-location-map"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getEventsFromCms } from "@/lib/cms"
 import { hasValidCoordinates } from "@/lib/maps"
 import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
@@ -22,9 +23,7 @@ export async function generateMetadata({
   const scoutEvents = (await getEventsFromCms()).filter((item) => item.published !== false)
   const event = scoutEvents.find((item) => item.slug === slug)
 
-  if (!event) {
-    return { title: "Event Not Found" }
-  }
+  if (!event) return { title: "Event Not Found" }
 
   return {
     title: event.title,
@@ -62,137 +61,107 @@ export default async function EventDetailPage({
 
   return (
     <>
-      <Breadcrumbs
-        items={[
-          { label: "Events", href: "/events" },
-          { label: event.title },
-        ]}
+      <PageHero
+        title={event.title}
+        subtitle={event.description}
+        breadcrumbs={[{ label: "Events", href: "/events" }, { label: event.title }]}
       />
 
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-1 rounded text-sm text-tsa-green-deep transition-colors hover:text-tsa-green-mid focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Events
-          </Link>
-
-          <div className="mt-4 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <article>
-              <h1 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{event.title}</h1>
-              {hasRichDescription ? (
-                <div
-                  className="prose prose-sm mt-4 max-w-3xl text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: sanitizedDescriptionHtml }}
-                />
-              ) : (
-                <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">{event.description}</p>
-              )}
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-lg border border-border bg-card p-4">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Date</p>
-                  <p className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-card-foreground">
-                    <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
-                    {dateLabel}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-border bg-card p-4">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Time</p>
-                  <p className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-card-foreground">
-                    <Clock3 className="h-4 w-4 text-tsa-green-deep" />
-                    {event.time}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-border bg-card p-4 sm:col-span-2">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Location</p>
-                  <p className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-card-foreground">
-                    <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                    {event.location}
-                  </p>
-                </div>
-              </div>
-            </article>
-
-            <aside className="rounded-lg border border-border bg-card p-5">
-              <h2 className="text-xl font-bold text-card-foreground">Registration</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {event.registrationOpen
-                  ? "Registration is open. Secure your place and complete parent/guardian permissions in advance."
-                  : "Online registration is currently closed for this event."}
-              </p>
-              {event.registrationOpen && hasRegistrationUrl ? (
-                <Link
-                  href={event.registrationUrl!}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 inline-flex w-full justify-center rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-tsa-green-mid"
-                >
-                  Register Now
-                </Link>
-              ) : (
-                <p className="mt-4 rounded-md bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
-                  {event.registrationOpen ? "Registration link will be available soon" : "Registration Closed"}
-                </p>
-              )}
-              <Link
-                href="/resources?category=Forms"
-                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep hover:text-tsa-green-mid"
-              >
-                <Download className="h-4 w-4" />
-                Download Permission Slip
-              </Link>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground">Event Location Map</h2>
-          <div className="mt-4">
-            {hasMapCoordinates ? (
-              <EventLocationMap
-                latitude={event.latitude as number}
-                longitude={event.longitude as number}
-                mapZoom={event.mapZoom}
-                title={event.title}
-                location={event.location}
+      <SectionShell eyebrow="Event Details" title="Overview" tone="background">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <article>
+            {hasRichDescription ? (
+              <div
+                className="prose prose-sm max-w-3xl text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: sanitizedDescriptionHtml }}
               />
             ) : (
-              <div className="overflow-hidden rounded-lg border border-border">
-                <iframe
-                  src={fallbackMapUrl}
-                  title={`${event.title} map`}
-                  className="h-[320px] w-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
+              <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">{event.description}</p>
             )}
-          </div>
-        </div>
-      </section>
 
-      <section className="bg-background py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground">Related Events</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="card-shell p-4">
+                <p className="eyebrow">Date</p>
+                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                  <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
+                  {dateLabel}
+                </p>
+              </div>
+              <div className="card-shell p-4">
+                <p className="eyebrow">Time</p>
+                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                  <Clock3 className="h-4 w-4 text-tsa-green-deep" />
+                  {event.time}
+                </p>
+              </div>
+              <div className="card-shell p-4 sm:col-span-2">
+                <p className="eyebrow">Location</p>
+                <p className="mt-1 inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                  <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                  {event.location}
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <aside className="card-shell p-5">
+            <h3 className="text-lg font-semibold text-foreground">Registration</h3>
+            <p className="mt-2 text-base text-muted-foreground">
+              {event.registrationOpen
+                ? "Registration is open. Complete participant information and parent/guardian permissions."
+                : "Online registration is currently closed for this event."}
+            </p>
+            {event.registrationOpen && hasRegistrationUrl ? (
+              <Link href={event.registrationUrl!} target="_blank" rel="noreferrer" className="btn-primary mt-4 w-full">
+                Register Now
+              </Link>
+            ) : (
+              <p className="mt-4 rounded-lg bg-secondary px-4 py-2 text-center text-sm font-semibold text-muted-foreground">
+                {event.registrationOpen ? "Registration link will be available soon" : "Registration Closed"}
+              </p>
+            )}
+            <Link href="/resources?category=Forms" className="btn-ghost mt-4 inline-flex items-center gap-1">
+              <Download className="h-4 w-4" />
+              Download Permission Slip
+            </Link>
+          </aside>
+        </div>
+      </SectionShell>
+
+      <SectionShell eyebrow="Location" title="Event Location Map" tone="white">
+        {hasMapCoordinates ? (
+          <EventLocationMap
+            latitude={event.latitude as number}
+            longitude={event.longitude as number}
+            mapZoom={event.mapZoom}
+            title={event.title}
+            location={event.location}
+          />
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-border">
+            <iframe
+              src={fallbackMapUrl}
+              title={`${event.title} map`}
+              className="h-[320px] w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        )}
+      </SectionShell>
+
+      {related.length > 0 ? (
+        <SectionShell eyebrow="More Events" title="Related Events" tone="background">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
-              <Link
-                key={item.id}
-                href={`/events/${item.slug}`}
-                className="rounded-lg border border-border bg-card p-5 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <h3 className="text-base font-semibold text-card-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
+              <Link key={item.id} href={`/events/${item.slug}`} className="card-shell p-5">
+                <h3 className="text-lg font-semibold text-foreground">{item.title}</h3>
+                <p className="mt-2 text-base text-muted-foreground">{item.description}</p>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
     </>
   )
 }

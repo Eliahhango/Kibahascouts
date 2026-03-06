@@ -69,7 +69,7 @@ export function ContactForm() {
           maxLength={120}
           value={form.name}
           onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-          className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-input px-3 py-2 text-sm"
         />
       </div>
 
@@ -85,7 +85,7 @@ export function ContactForm() {
           maxLength={160}
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-          className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-input px-3 py-2 text-sm"
         />
       </div>
 
@@ -102,7 +102,7 @@ export function ContactForm() {
           maxLength={140}
           value={form.subject}
           onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))}
-          className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-input px-3 py-2 text-sm"
         />
       </div>
 
@@ -132,14 +132,14 @@ export function ContactForm() {
           maxLength={3000}
           value={form.message}
           onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
-          className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-input px-3 py-2 text-sm"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid disabled:cursor-not-allowed disabled:opacity-70"
+        className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-70"
       >
         {submitting ? "Sending..." : "Send Message"}
       </button>

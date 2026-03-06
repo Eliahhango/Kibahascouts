@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { Award, CheckCircle2, Shirt, TrendingUp } from "lucide-react"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getSiteContentSettingsFromCms } from "@/lib/cms"
-import { CheckCircle2, Award, TrendingUp, Shirt } from "lucide-react"
 import { normalizePublicText } from "@/lib/public-text"
 
 export async function generateStaticParams() {
@@ -26,109 +27,81 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
   return (
     <>
-      <Breadcrumbs
-        items={[
-          { label: "Programmes", href: "/programmes" },
-          { label: prog.title },
-        ]}
+      <PageHero
+        title={prog.title}
+        subtitle={normalizePublicText(prog.description)}
+        breadcrumbs={[{ label: "Programmes", href: "/programmes" }, { label: prog.title }]}
       />
 
-      {/* Header */}
-      <section className="bg-tsa-green-deep py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <span className="inline-block rounded-full bg-tsa-gold px-3 py-1 text-xs font-semibold text-tsa-green-deep">
-            Ages {prog.ageRange}
-          </span>
-          <h1 className="mt-3 text-3xl font-bold text-primary-foreground md:text-4xl">
-            {prog.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/90">
-            {normalizePublicText(prog.description)}
-          </p>
-        </div>
-      </section>
-
-      {/* Objectives */}
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground">Objectives</h2>
-          <ul className="mt-6 grid gap-3 md:grid-cols-2">
-            {prog.objectives.map((obj, i) => (
-              <li key={i} className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+      {prog.objectives.length > 0 ? (
+        <SectionShell eyebrow="Objectives" title="Learning Objectives" tone="background">
+          <div className="grid gap-4 md:grid-cols-2">
+            {prog.objectives.map((obj, index) => (
+              <article key={`objective-${index}`} className="card-shell flex items-start gap-3 p-4">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-tsa-green-deep" />
-                <span className="text-sm leading-relaxed text-card-foreground">{obj}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Activities */}
-      <section className="bg-secondary py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground">Activities</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {prog.activities.map((act, i) => (
-              <div key={i} className="rounded-lg border border-border bg-card p-4">
-                <p className="text-sm font-medium text-card-foreground">{act}</p>
-              </div>
+                <p className="text-base leading-relaxed text-foreground">{normalizePublicText(obj)}</p>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      {/* Badges */}
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
-            <Award className="h-6 w-6 text-tsa-gold" />
-            Badges
-          </h2>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {prog.badges.map((badge, i) => (
+      {prog.activities.length > 0 ? (
+        <SectionShell eyebrow="Activities" title="Programme Activities" tone="white">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {prog.activities.map((act, index) => (
+              <article key={`activity-${index}`} className="card-shell p-4">
+                <p className="text-base font-medium text-foreground">{normalizePublicText(act)}</p>
+              </article>
+            ))}
+          </div>
+        </SectionShell>
+      ) : null}
+
+      {prog.badges.length > 0 ? (
+        <SectionShell eyebrow="Badges" title="Badge Pathways" tone="background">
+          <div className="flex flex-wrap gap-3">
+            {prog.badges.map((badge, index) => (
               <span
-                key={i}
-                className="rounded-full border border-tsa-green-deep/20 bg-tsa-green-deep/5 px-4 py-2 text-sm font-medium text-tsa-green-deep"
+                key={`badge-${index}`}
+                className="inline-flex items-center gap-1 rounded-full border border-tsa-green-deep/20 bg-tsa-green-deep/5 px-4 py-2 text-sm font-medium text-tsa-green-deep"
               >
-                {normalizePublicText(badge, "Badge details coming soon")}
+                <Award className="h-4 w-4" />
+                {normalizePublicText(badge)}
               </span>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      {/* Progression */}
-      <section className="bg-secondary py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
-            <TrendingUp className="h-6 w-6 text-tsa-green-deep" />
-            Progression Path
-          </h2>
-          <div className="relative mt-8 ml-2 border-l-2 border-tsa-gold/30 pl-6 sm:ml-4 sm:pl-8">
-            {prog.progression.map((step, i) => (
-              <div key={i} className="relative pb-8 last:pb-0">
-                <div className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-tsa-green-deep font-bold text-xs sm:-left-[41px]">
-                  {i + 1}
-                </div>
-                <p className="text-sm leading-relaxed text-foreground">{normalizePublicText(step)}</p>
-              </div>
+      {prog.progression.length > 0 ? (
+        <SectionShell eyebrow="Progression" title="Progression Path" tone="white">
+          <div className="relative ml-2 border-l-2 border-tsa-gold/35 pl-6 md:ml-4 md:pl-8">
+            {prog.progression.map((step, index) => (
+              <article key={`progress-${index}`} className="relative pb-8 last:pb-0">
+                <span className="absolute -left-[33px] inline-flex h-6 w-6 items-center justify-center rounded-full bg-tsa-gold text-xs font-bold text-white md:-left-[41px]">
+                  {index + 1}
+                </span>
+                <p className="inline-flex items-center gap-2 text-base font-medium text-foreground">
+                  <TrendingUp className="h-4 w-4 text-tsa-green-deep" />
+                  {normalizePublicText(step)}
+                </p>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      {/* Uniform */}
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
-            <Shirt className="h-6 w-6 text-tsa-green-mid" />
-            Uniform Guidance
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            {normalizePublicText(prog.uniformGuidance)}
-          </p>
-        </div>
-      </section>
+      {prog.uniformGuidance.trim().length > 0 ? (
+        <SectionShell eyebrow="Uniform" title="Uniform Guidance" tone="background">
+          <article className="card-shell max-w-3xl p-5">
+            <p className="inline-flex items-center gap-2 text-base leading-relaxed text-muted-foreground">
+              <Shirt className="h-5 w-5 text-tsa-green-mid" />
+              {normalizePublicText(prog.uniformGuidance)}
+            </p>
+          </article>
+        </SectionShell>
+      ) : null}
     </>
   )
 }

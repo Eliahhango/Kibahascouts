@@ -68,14 +68,14 @@ function buildShell(params: {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${heading}</title>
   </head>
-  <body style="margin:0;padding:0;background:#f4f4f8;font-family:Arial,Helvetica,sans-serif;color:#1f1b2d;">
+  <body style="margin:0;padding:0;background:#f5f6f2;font-family:Arial,Helvetica,sans-serif;color:#1b2822;">
     <span style="display:none !important;visibility:hidden;opacity:0;height:0;width:0;overflow:hidden;">${preview}</span>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px;background:#f4f4f8;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px;background:#f5f6f2;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #ddd8ef;border-radius:14px;overflow:hidden;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #d3ddd5;border-radius:14px;overflow:hidden;">
             <tr>
-              <td style="padding:20px 24px;background:linear-gradient(90deg,#352163,#4e3294,#6e4bd9);">
+              <td style="padding:20px 24px;background:linear-gradient(90deg,#1e3a2f,#2d5a3d,#1e3a2f);">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td align="left" style="vertical-align:middle;">
@@ -90,22 +90,22 @@ function buildShell(params: {
             </tr>
             <tr>
               <td style="padding:28px 24px 18px;">
-                <h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#1f1b2d;">${heading}</h1>
+                <h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#1b2822;">${heading}</h1>
                 ${params.bodyHtml}
                 <div style="margin-top:24px;">
-                  <a href="${safeActionUrl}" style="display:inline-block;padding:12px 18px;background:#352163;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;">
+                  <a href="${safeActionUrl}" style="display:inline-block;padding:12px 18px;background:#1e3a2f;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;">
                     ${actionLabel}
                   </a>
                 </div>
-                <p style="margin:16px 0 0;font-size:12px;line-height:1.55;color:#5f5a74;">
+                <p style="margin:16px 0 0;font-size:12px;line-height:1.55;color:#58685f;">
                   If the button does not open, copy and paste this link in your browser:<br />
-                  <a href="${safeActionUrl}" style="color:#4e3294;word-break:break-all;">${safeActionUrl}</a>
+                  <a href="${safeActionUrl}" style="color:#1e3a2f;word-break:break-all;">${safeActionUrl}</a>
                 </p>
               </td>
             </tr>
             <tr>
-              <td style="padding:18px 24px;background:#f3f0fd;border-top:1px solid #ddd8ef;">
-                <p style="margin:0;font-size:12px;line-height:1.6;color:#5f5a74;">
+              <td style="padding:18px 24px;background:#f5f6f2;border-top:1px solid #d3ddd5;">
+                <p style="margin:0;font-size:12px;line-height:1.6;color:#58685f;">
                   ${footerNote}
                 </p>
               </td>
@@ -127,20 +127,20 @@ export function buildAdminInvitationEmail(params: AdminInvitationEmailParams): E
   const safeLoginUrl = escapeHtml(params.loginUrl)
   const preview = `Admin invitation for ${safeRecipientEmail}`
   const bodyHtml = `
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   Hello,
 </p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   You have been invited to manage content for <strong>${escapeHtml(siteConfig.name)}</strong> under the role <strong>${safeRoleLabel}</strong>.
 </p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   Invitation sent by: <strong>${safeInvitedByEmail}</strong>
 </p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   If this is your first time, set your password first. After setup, your account stays pending until a super admin approves access.
 </p>
-<p style="margin:0;font-size:14px;line-height:1.7;color:#2f2a42;">
-  Direct sign-in link: <a href="${safeLoginUrl}" style="color:#4e3294;">${safeLoginUrl}</a>
+<p style="margin:0;font-size:14px;line-height:1.7;color:#1b2822;">
+  Direct sign-in link: <a href="${safeLoginUrl}" style="color:#1e3a2f;">${safeLoginUrl}</a>
 </p>
 `.trim()
 
@@ -173,13 +173,13 @@ export function buildAdminPasswordResetEmail(params: PasswordResetEmailParams): 
   const safeRecipientEmail = escapeHtml(params.recipientEmail)
   const preview = `Password reset for ${safeRecipientEmail}`
   const bodyHtml = `
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   Hello,
 </p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   We received a request to reset your <strong>${escapeHtml(siteConfig.name)}</strong> admin password.
 </p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#2f2a42;">
+<p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#1b2822;">
   For security, this link may expire shortly. If you did not request this change, you can ignore this email.
 </p>
 `.trim()

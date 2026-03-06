@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ArrowRight, Clock3, Tag, User } from "lucide-react"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { ArrowRight, Clock3, Tag, User } from "lucide-react"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getNewsFromCms } from "@/lib/cms"
 import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
 
@@ -21,9 +22,7 @@ export async function generateMetadata({
   const newsArticles = (await getNewsFromCms()).filter((item) => item.published !== false)
   const article = newsArticles.find((item) => item.slug === slug)
 
-  if (!article) {
-    return { title: "Article Not Found" }
-  }
+  if (!article) return { title: "Article Not Found" }
 
   return {
     title: article.title,
@@ -59,49 +58,32 @@ export default async function NewsArticlePage({
 
   return (
     <>
-      <Breadcrumbs
-        items={[
-          { label: "Newsroom", href: "/newsroom" },
-          { label: article.title },
-        ]}
+      <PageHero
+        title={article.title}
+        subtitle={article.summary}
+        breadcrumbs={[{ label: "Newsroom", href: "/newsroom" }, { label: article.title }]}
       />
 
-      <article className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-4xl px-4">
-          <Link
-            href="/newsroom"
-            className="inline-flex items-center gap-1 rounded text-sm text-tsa-green-deep transition-colors hover:text-tsa-green-mid focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Newsroom
-          </Link>
-
-          <header className="mt-4">
-            <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
-              {article.category}
+      <SectionShell eyebrow={article.category} title="Article" tone="background">
+        <article className="mx-auto max-w-4xl">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <User className="h-4 w-4 text-tsa-green-deep" />
+              {article.author}
             </span>
-            <h1 className="mt-4 text-balance text-3xl font-bold text-foreground md:text-4xl">{article.title}</h1>
-            <p className="mt-3 text-base leading-relaxed text-muted-foreground">{article.summary}</p>
-
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <User className="h-4 w-4" />
-                {article.author}
+            <span>{new Date(article.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+            <span className="inline-flex items-center gap-1">
+              <Clock3 className="h-4 w-4 text-tsa-green-deep" />
+              {article.readingTime}
+            </span>
+            {lastUpdated ? (
+              <span>
+                Last updated {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
               </span>
-              <span>{new Date(article.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
-              <span className="inline-flex items-center gap-1">
-                <Clock3 className="h-4 w-4" />
-                {article.readingTime}
-              </span>
-              {lastUpdated ? (
-                <span>
-                  Last updated {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                </span>
-              ) : null}
-            </div>
-          </header>
+            ) : null}
+          </div>
 
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-lg border border-border">
+          <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
             <Image
               src={article.image || "/placeholder.jpg"}
               alt={article.title}
@@ -111,7 +93,7 @@ export default async function NewsArticlePage({
             />
           </div>
 
-          <div className="prose prose-slate mt-8 max-w-none">
+          <div className="prose prose-sm mt-8 max-w-none text-foreground">
             {shouldRenderRichText ? (
               <div dangerouslySetInnerHTML={{ __html: sanitizedContentHtml }} />
             ) : (
@@ -123,41 +105,37 @@ export default async function NewsArticlePage({
             )}
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <Tag className="h-3.5 w-3.5" />
-              Tags
-            </span>
-            {article.tags.map((tag) => (
-              <span key={tag} className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground">
-                {tag}
+          {article.tags.length > 0 ? (
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <Tag className="h-3.5 w-3.5" />
+                Tags
               </span>
-            ))}
-          </div>
-        </div>
-      </article>
+              {article.tags.map((tag) => (
+                <span key={tag} className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </article>
+      </SectionShell>
 
-      <section className="bg-secondary py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground">Related Posts</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {related.length > 0 ? (
+        <SectionShell eyebrow="Related" title="Related Posts" tone="white">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
-              <Link
-                key={item.id}
-                href={`/newsroom/${item.slug}`}
-                className="rounded-lg border border-border bg-card p-5 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <h3 className="text-base font-semibold text-card-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.summary}</p>
+              <Link key={item.id} href={`/newsroom/${item.slug}`} className="card-shell p-5">
+                <h3 className="text-lg font-semibold text-foreground">{item.title}</h3>
+                <p className="mt-2 text-base text-muted-foreground">{item.summary}</p>
                 <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
-                  Read more
-                  <ArrowRight className="h-4 w-4" />
+                  Read more <ArrowRight className="h-4 w-4" />
                 </span>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
     </>
   )
 }

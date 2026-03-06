@@ -57,9 +57,9 @@ export function EventLocationMap({ latitude, longitude, mapZoom, title, location
         className: "",
         html: `
           <span style="position:relative;display:inline-flex;height:30px;width:22px;align-items:flex-start;justify-content:center;">
-            <span style="position:absolute;left:50%;top:0;height:22px;width:22px;transform:translateX(-50%);border-radius:9999px;background:#352163;box-shadow:0 2px 6px rgba(0,0,0,0.28);"></span>
+            <span style="position:absolute;left:50%;top:0;height:22px;width:22px;transform:translateX(-50%);border-radius:9999px;background:#1e3a2f;box-shadow:0 2px 6px rgba(0,0,0,0.28);"></span>
             <span style="position:absolute;left:50%;top:6px;height:10px;width:10px;transform:translateX(-50%);border-radius:9999px;background:#ffffff;"></span>
-            <span style="position:absolute;left:50%;top:18px;height:12px;width:12px;transform:translateX(-50%) rotate(45deg);background:#352163;"></span>
+            <span style="position:absolute;left:50%;top:18px;height:12px;width:12px;transform:translateX(-50%) rotate(45deg);background:#1e3a2f;"></span>
           </span>
         `,
         iconSize: [22, 30],

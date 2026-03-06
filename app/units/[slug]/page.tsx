@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Mail, MapPin, Users } from "lucide-react"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getSiteContentSettingsFromCms, getUnitsFromCms } from "@/lib/cms"
 import { normalizePublicText } from "@/lib/public-text"
 
@@ -42,119 +43,97 @@ export default async function UnitProfilePage({
 
   return (
     <>
-      <Breadcrumbs
-        items={[
-          { label: "Scout Units", href: "/units" },
-          { label: unit.name },
-        ]}
+      <PageHero
+        title={unit.name}
+        subtitle={`${unit.section} • ${unit.type} • Established ${unit.established}`}
+        breadcrumbs={[{ label: "Scout Units", href: "/units" }, { label: unit.name }]}
       />
 
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{unit.name}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {unit.section} - {unit.type} - Established {unit.established}
-          </p>
-
-          <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <article className="space-y-4">
-              <div className="rounded-lg border border-border bg-card p-5">
-                <h2 className="text-xl font-bold text-card-foreground">Unit Information</h2>
-                <div className="mt-3 space-y-2 text-sm text-muted-foreground">
-                  <p className="inline-flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-tsa-green-deep" />
-                    {unit.meetingLocation}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Ward:</span> {unit.ward}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Meeting Schedule:</span> {unit.meetingDay}, {unit.meetingTime}
-                  </p>
-                  <p className="inline-flex items-center gap-2">
-                    <Users className="h-4 w-4 text-tsa-green-deep" />
-                    {unit.memberCount} active members
-                  </p>
-                  <p className="inline-flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-tsa-green-deep" />
-                    {unit.contactEmail}
-                  </p>
-                </div>
+      <SectionShell eyebrow="Profile" title="Unit Information" tone="background">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <article className="space-y-4">
+            <div className="card-shell p-5">
+              <div className="space-y-2 text-base text-muted-foreground">
+                <p className="inline-flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                  {unit.meetingLocation}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Ward:</span> {unit.ward}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Meeting Schedule:</span> {unit.meetingDay}, {unit.meetingTime}
+                </p>
+                <p className="inline-flex items-center gap-2">
+                  <Users className="h-4 w-4 text-tsa-green-deep" />
+                  {unit.memberCount} active members
+                </p>
+                <p className="inline-flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-tsa-green-deep" />
+                  {unit.contactEmail}
+                </p>
               </div>
+            </div>
 
-              <div className="rounded-lg border border-border bg-card p-5">
-                <h2 className="text-xl font-bold text-card-foreground">Unit Leadership</h2>
+            {unit.leaders.length > 0 ? (
+              <div className="card-shell p-5">
+                <h2 className="text-lg font-semibold text-foreground">Unit Leadership</h2>
                 <ul className="mt-3 space-y-2">
                   {unit.leaders.map((leader) => (
-                    <li key={leader.name} className="rounded-md bg-secondary px-3 py-2 text-sm text-secondary-foreground">
-                      <span className="font-semibold">{leader.name}</span> - {leader.role}
+                    <li key={leader.name} className="rounded-lg bg-secondary px-3 py-2 text-sm text-secondary-foreground">
+                      <span className="font-semibold">{leader.name}</span> • {leader.role}
                     </li>
                   ))}
                 </ul>
               </div>
-            </article>
+            ) : null}
+          </article>
 
-            <aside className="space-y-4">
-              <div className="overflow-hidden rounded-lg border border-border">
-                <iframe
-                  src={mapEmbedUrl(unit.meetingLocation)}
-                  title={`${unit.name} map`}
-                  className="h-[260px] w-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+          <aside className="space-y-4">
+            <div className="overflow-hidden rounded-2xl border border-border">
+              <iframe
+                src={mapEmbedUrl(unit.meetingLocation)}
+                title={`${unit.name} map`}
+                className="h-[260px] w-full"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+
+            <div className="card-shell p-5">
+              <h2 className="text-lg font-semibold text-foreground">
+                {normalizePublicText(pageContent.unitContactTitle, "Contact This Unit")}
+              </h2>
+              <p className="mt-2 text-base text-muted-foreground">
+                {normalizePublicText(pageContent.unitContactDescription)}
+              </p>
+              <form className="mt-4 space-y-3">
+                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-name">
+                  Full Name
+                </label>
+                <input id="unit-name" name="name" type="text" required className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-email">
+                  Email
+                </label>
+                <input id="unit-email" name="email" type="email" required className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-message">
+                  Message
+                </label>
+                <textarea
+                  id="unit-message"
+                  name="message"
+                  rows={4}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  placeholder={normalizePublicText(pageContent.unitContactMessagePlaceholder, "I would like to join this unit...")}
                 />
-              </div>
-
-              <div className="rounded-lg border border-border bg-card p-5">
-                <h2 className="text-lg font-bold text-card-foreground">
-                  {normalizePublicText(pageContent.unitContactTitle, "Contact This Unit")}
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {normalizePublicText(pageContent.unitContactDescription)}
-                </p>
-                <form className="mt-4 space-y-3">
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-name">
-                    Full Name
-                  </label>
-                  <input
-                    id="unit-name"
-                    name="name"
-                    type="text"
-                    required
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  />
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-email">
-                    Email
-                  </label>
-                  <input
-                    id="unit-email"
-                    name="email"
-                    type="email"
-                    required
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  />
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground" htmlFor="unit-message">
-                    Message
-                  </label>
-                  <textarea
-                    id="unit-message"
-                    name="message"
-                    rows={4}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder={normalizePublicText(pageContent.unitContactMessagePlaceholder, "I would like to join this unit...")}
-                  />
-                  <button
-                    type="submit"
-                    className="w-full rounded-md bg-tsa-green-deep px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                  >
-                    {normalizePublicText(pageContent.unitContactButtonLabel, "Send Inquiry")}
-                  </button>
-                </form>
-              </div>
-            </aside>
-          </div>
+                <button type="submit" className="btn-primary w-full">
+                  {normalizePublicText(pageContent.unitContactButtonLabel, "Send Inquiry")}
+                </button>
+              </form>
+            </div>
+          </aside>
         </div>
-      </section>
+      </SectionShell>
     </>
   )
 }

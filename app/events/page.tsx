@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { CalendarDays, Clock3, List, MapPin } from "lucide-react"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getEventsFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
 import { normalizePublicText } from "@/lib/public-text"
 
@@ -54,189 +55,146 @@ export default async function EventsPage({
       const existing = eventLookup.get(day) || []
       eventLookup.set(day, [...existing, event])
     })
-  const lastUpdated =
-    orderedEvents
-      .map((event) => event.updatedAt || event.date)
-      .filter(Boolean)
-      .sort((a, b) => +new Date(b) - +new Date(a))[0] ?? null
+
+  const subtitle = shouldAutoIncludePast
+    ? `${normalizePublicText(pageContent.description)} Showing past published events because no upcoming events are scheduled.`
+    : normalizePublicText(pageContent.description)
 
   return (
     <>
-      <Breadcrumbs items={[{ label: "Events" }]} />
+      <PageHero
+        title={normalizePublicText(pageContent.title, "Events")}
+        subtitle={subtitle}
+        breadcrumbs={[{ label: "Events" }]}
+      />
 
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
-            {normalizePublicText(pageContent.title, "Events")}
-          </h1>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            {normalizePublicText(
-              pageContent.description,
-              "Browse all district activities, training weekends, and ceremonies. Switch between calendar and list views.",
-            )}
-          </p>
-          {lastUpdated ? (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Last updated: {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-            </p>
-          ) : null}
-
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            <Link
-              href={`/events${showPast ? "?past=true" : ""}`}
-              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                selectedView === "list"
-                  ? "bg-tsa-green-deep text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-border"
-              }`}
-            >
-              <List className="h-4 w-4" />
-              List
-            </Link>
-            <Link
-              href={`/events?view=calendar${showPast ? "&past=true" : ""}`}
-              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                selectedView === "calendar"
-                  ? "bg-tsa-green-deep text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-border"
-              }`}
-            >
-              <CalendarDays className="h-4 w-4" />
-              Calendar
-            </Link>
-            <Link
-              href={`/events${selectedView === "calendar" ? "?view=calendar" : ""}`}
-              className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                !showPast ? "bg-tsa-gold text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-border"
-              }`}
-            >
-              Upcoming
-            </Link>
-            <Link
-              href={`/events?past=true${selectedView === "calendar" ? "&view=calendar" : ""}`}
-              className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                showPast ? "bg-tsa-gold text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-border"
-              }`}
-            >
-              Include Past
-            </Link>
-          </div>
-
-          {shouldAutoIncludePast ? (
-            <p className="mt-3 rounded-md border border-tsa-gold/40 bg-tsa-gold/10 px-3 py-2 text-xs text-tsa-green-deep">
-              No upcoming events are currently scheduled. Showing published past events instead.
-            </p>
-          ) : null}
+      <SectionShell eyebrow="Filter" title="Browse Events" tone="background">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/events${showPast ? "?past=true" : ""}`}
+            className={`inline-flex min-h-11 items-center gap-1 rounded-full px-4 py-1.5 text-sm font-semibold ${
+              selectedView === "list"
+                ? "bg-tsa-green-deep text-white"
+                : "bg-secondary text-foreground hover:bg-border"
+            }`}
+          >
+            <List className="h-4 w-4" />
+            List
+          </Link>
+          <Link
+            href={`/events?view=calendar${showPast ? "&past=true" : ""}`}
+            className={`inline-flex min-h-11 items-center gap-1 rounded-full px-4 py-1.5 text-sm font-semibold ${
+              selectedView === "calendar"
+                ? "bg-tsa-green-deep text-white"
+                : "bg-secondary text-foreground hover:bg-border"
+            }`}
+          >
+            <CalendarDays className="h-4 w-4" />
+            Calendar
+          </Link>
+          <Link
+            href={`/events${selectedView === "calendar" ? "?view=calendar" : ""}`}
+            className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-semibold ${
+              !showPast ? "bg-tsa-gold text-white" : "bg-secondary text-foreground hover:bg-border"
+            }`}
+          >
+            Upcoming
+          </Link>
+          <Link
+            href={`/events?past=true${selectedView === "calendar" ? "&view=calendar" : ""}`}
+            className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-semibold ${
+              showPast ? "bg-tsa-gold text-white" : "bg-secondary text-foreground hover:bg-border"
+            }`}
+          >
+            Include Past
+          </Link>
         </div>
-      </section>
+      </SectionShell>
 
-      {selectedView === "calendar" ? (
-        <section className="bg-secondary py-12" aria-labelledby="calendar-view">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 id="calendar-view" className="text-2xl font-bold text-foreground">
-              Calendar View: {monthYearLabel}
-            </h2>
-            {effectiveEvents.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">
-                No published events are available yet. Upcoming events will appear here automatically.
-              </p>
-            ) : null}
-            <p className="mt-2 text-xs text-muted-foreground sm:hidden">Swipe horizontally to view all days.</p>
-            <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
-              <div className="min-w-[700px]">
-                <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                    <div key={day} className="px-2 py-2">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-7">
-                  {Array.from({ length: firstWeekday }).map((_, index) => (
-                    <div key={`offset-${index}`} className="min-h-24 border-b border-r border-border bg-background" />
-                  ))}
-                  {Array.from({ length: daysInMonth }).map((_, index) => {
-                    const day = index + 1
-                    const dayEvents = eventLookup.get(day) || []
-
-                    return (
-                      <div key={`day-${day}`} className="min-h-24 border-b border-r border-border p-2">
-                        <p className="text-xs font-semibold text-foreground">{day}</p>
-                        <div className="mt-1 space-y-1">
-                          {dayEvents.slice(0, 2).map((event) => (
-                            <Link
-                              key={event.id}
-                              href={`/events/${event.slug}`}
-                              className="block rounded bg-tsa-green-deep/10 px-1.5 py-1 text-[11px] leading-tight text-tsa-green-deep"
-                            >
-                              {event.title}
-                            </Link>
-                          ))}
-                          {dayEvents.length > 2 && (
-                            <p className="text-[11px] text-muted-foreground">+{dayEvents.length - 2} more</p>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+      {effectiveEvents.length > 0 && selectedView === "calendar" ? (
+        <SectionShell eyebrow="Calendar" title={`Calendar View: ${monthYearLabel}`} tone="white">
+          <div className="overflow-x-auto rounded-2xl border border-border bg-white">
+            <div className="min-w-[700px]">
+              <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                  <div key={day} className="px-2 py-2">
+                    {day}
+                  </div>
+                ))}
               </div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="bg-secondary py-12" aria-labelledby="list-view">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 id="list-view" className="sr-only">
-              Event list
-            </h2>
-            {effectiveEvents.length > 0 ? (
-              <div className="space-y-4">
-                {effectiveEvents.map((event) => {
-                  const eventDate = toDate(event.date)
+              <div className="grid grid-cols-7">
+                {Array.from({ length: firstWeekday }).map((_, index) => (
+                  <div key={`offset-${index}`} className="min-h-24 border-b border-r border-border bg-background" />
+                ))}
+                {Array.from({ length: daysInMonth }).map((_, index) => {
+                  const day = index + 1
+                  const dayEvents = eventLookup.get(day) || []
+
                   return (
-                    <article key={event.id} className="rounded-lg border border-border bg-card p-5">
-                      <Link href={`/events/${event.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
-                        <div className="flex flex-wrap items-start gap-4">
-                          <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-md border-b-2 border-tsa-gold bg-tsa-green-deep text-primary-foreground">
-                            <span className="text-lg font-bold leading-none">{eventDate.getDate()}</span>
-                            <span className="text-xs uppercase">
-                              {eventDate.toLocaleDateString("en-GB", { month: "short" })}
-                            </span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
-                              {event.title}
-                            </h3>
-                            <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
-                            <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                              <span className="inline-flex items-center gap-1">
-                                <Clock3 className="h-3.5 w-3.5" />
-                                {event.time}
-                              </span>
-                              <span className="inline-flex items-center gap-1">
-                                <MapPin className="h-3.5 w-3.5" />
-                                {event.location}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </article>
+                    <div key={`day-${day}`} className="min-h-24 border-b border-r border-border p-2">
+                      <p className="text-xs font-semibold text-foreground">{day}</p>
+                      <div className="mt-1 space-y-1">
+                        {dayEvents.slice(0, 2).map((event) => (
+                          <Link
+                            key={event.id}
+                            href={`/events/${event.slug}`}
+                            className="block rounded bg-tsa-green-deep/10 px-1.5 py-1 text-[11px] leading-tight text-tsa-green-deep"
+                          >
+                            {event.title}
+                          </Link>
+                        ))}
+                        {dayEvents.length > 2 ? (
+                          <p className="text-[11px] text-muted-foreground">+{dayEvents.length - 2} more</p>
+                        ) : null}
+                      </div>
+                    </div>
                   )
                 })}
               </div>
-            ) : (
-              <div className="rounded-lg border border-border bg-card p-5">
-                <h3 className="text-base font-semibold text-card-foreground">Events are coming soon</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Published events will appear here automatically after they are posted from the admin dashboard.
-                </p>
-              </div>
-            )}
+            </div>
           </div>
-        </section>
-      )}
+        </SectionShell>
+      ) : null}
+
+      {effectiveEvents.length > 0 && selectedView === "list" ? (
+        <SectionShell eyebrow="Schedule" title="Event List" tone="background">
+          <div className="space-y-4">
+            {effectiveEvents.map((event) => {
+              const eventDate = toDate(event.date)
+              return (
+                <article key={event.id} className="card-shell p-5">
+                  <Link href={`/events/${event.slug}`} className="group block">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-[auto_1fr]">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-tsa-green-deep text-center text-white">
+                        <div>
+                          <p className="text-2xl font-bold leading-none">{eventDate.getDate()}</p>
+                          <p className="text-xs uppercase">
+                            {eventDate.toLocaleDateString("en-GB", { month: "short" })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground">{event.title}</h3>
+                        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{event.description}</p>
+                        <div className="mt-2 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <Clock3 className="h-4 w-4 text-tsa-green-deep" />
+                            {event.time}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                            {event.location}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+              )
+            })}
+          </div>
+        </SectionShell>
+      ) : null}
     </>
   )
 }

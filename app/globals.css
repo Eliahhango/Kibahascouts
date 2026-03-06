@@ -112,6 +112,15 @@
     font-family: var(--font-source-serif), Georgia, serif;
     letter-spacing: -0.015em;
   }
+  h1 {
+    @apply text-4xl font-bold md:text-5xl;
+  }
+  h2 {
+    @apply text-2xl font-bold md:text-3xl;
+  }
+  h3 {
+    @apply text-lg font-semibold;
+  }
   a, button, input, select, textarea {
     @apply transition-colors duration-200;
   }
@@ -153,17 +162,29 @@
 }
 
 @layer utilities {
-  .section-shell {
-    @apply rounded-2xl border border-border bg-card shadow-sm;
+  .card-shell {
+    @apply rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md;
   }
   .eyebrow {
-    @apply inline-flex items-center rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-tsa-green-deep;
+    @apply text-xs font-semibold uppercase tracking-widest text-tsa-green-deep;
   }
   .section-title {
     @apply text-2xl font-bold text-foreground md:text-3xl;
   }
+  .section-shell {
+    @apply rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md;
+  }
   .card-lift {
     @apply transition-shadow duration-200 hover:shadow-md;
+  }
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-lg bg-tsa-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-tsa-gold-light;
+  }
+  .btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-lg border-2 border-tsa-green-deep px-5 py-2.5 text-sm font-semibold text-tsa-green-deep hover:bg-tsa-green-deep hover:text-white;
+  }
+  .btn-ghost {
+    @apply text-sm font-medium text-tsa-green-deep hover:underline;
   }
 }
 

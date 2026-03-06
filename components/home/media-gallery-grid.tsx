@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { PlayCircle } from "lucide-react"
+import { Play } from "lucide-react"
 import type { MediaItem } from "@/lib/types"
 
 type MediaGalleryItem = MediaItem & {
@@ -72,16 +72,7 @@ export function MediaGalleryGrid({ items }: MediaGalleryGridProps) {
   const visibleItems = items.slice(0, visibleCount)
   const hasMore = visibleCount < items.length
 
-  if (items.length === 0) {
-    return (
-      <article className="section-shell rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
-        <h3 className="text-base font-semibold text-card-foreground">Media updates are coming soon</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Published videos and gallery items will appear here automatically from the admin dashboard.
-        </p>
-      </article>
-    )
-  }
+  if (items.length === 0) return null
 
   return (
     <div>
@@ -90,7 +81,7 @@ export function MediaGalleryGrid({ items }: MediaGalleryGridProps) {
           const imageSrc = item.thumbnail || "/images/about-hero.jpg"
 
           return (
-            <article key={item.id} className="section-shell card-lift overflow-hidden">
+            <article key={item.id} className="card-shell group overflow-hidden rounded-2xl">
               {item.kind === "video" && item.resolvedEmbedUrl ? (
                 <div className="relative aspect-video bg-black">
                   <iframe
@@ -107,16 +98,22 @@ export function MediaGalleryGrid({ items }: MediaGalleryGridProps) {
                 <Link href={item.href} className="group block">
                   <div className="relative aspect-video">
                     <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                    <div className="absolute inset-0 flex items-center justify-center bg-foreground/25 transition-colors group-hover:bg-foreground/35">
-                      <PlayCircle className="h-12 w-12 text-primary-foreground" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-tsa-green-deep/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-tsa-gold text-white shadow-lg">
+                        <Play className="h-5 w-5 fill-current" />
+                      </span>
                     </div>
                   </div>
                 </Link>
               ) : (
                 <div className="group relative aspect-video">
                   <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                  <div className="absolute inset-0 flex items-center justify-center bg-foreground/25">
-                    <PlayCircle className="h-12 w-12 text-primary-foreground" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-tsa-green-deep/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-tsa-gold text-white shadow-lg">
+                      <Play className="h-5 w-5 fill-current" />
+                    </span>
                   </div>
                 </div>
               )}

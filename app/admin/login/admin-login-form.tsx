@@ -42,7 +42,7 @@ function getPasswordStrength(password: string) {
   }
 
   if (score === 3) {
-    return { label: "Good", percent: 75, tone: "bg-blue-500" }
+    return { label: "Good", percent: 75, tone: "bg-tsa-green-mid" }
   }
 
   return { label: "Strong", percent: 100, tone: "bg-emerald-500" }

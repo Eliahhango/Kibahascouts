@@ -30,7 +30,7 @@ function getStatusBadgeClass(status: MessageStatus) {
   }
 
   if (status === "read") {
-    return "bg-blue-100 text-blue-700"
+    return "bg-tsa-green-deep/10 text-tsa-green-deep"
   }
 
   return "bg-amber-100 text-amber-800"

@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, CalendarDays, User } from "lucide-react"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { ArrowRight, CalendarDays, Download, User } from "lucide-react"
+import { PageHero } from "@/components/public/page-hero"
+import { SectionShell } from "@/components/public/section-shell"
 import { getNewsFromCms, getResourcesFromCms, getSiteContentSettingsFromCms } from "@/lib/cms"
 import { normalizePublicText } from "@/lib/public-text"
 
@@ -34,194 +35,116 @@ export default async function NewsroomPage({
     category && category !== "All"
       ? sortedArticles.filter((article) => article.category === category)
       : sortedArticles
-  const hasCategoryFilter = Boolean(category && category !== "All")
-  const categoryFilterEmpty = hasCategoryFilter && sortedArticles.length > 0 && filteredArticles.length === 0
 
   const pressDownloads = publishedResources.filter((resource) =>
     ["TSA Brand Guidelines for Units", "District Census Report 2025", "Kibaha District Annual Plan 2026"].includes(
       resource.title,
     ),
   )
-  const pressFilterEmpty = publishedResources.length > 0 && pressDownloads.length === 0
-  const lastUpdated =
-    sortedArticles
-      .map((article) => article.updatedAt || article.date)
-      .filter(Boolean)
-      .sort((a, b) => +new Date(b) - +new Date(a))[0] ?? null
 
   return (
     <>
-      <Breadcrumbs items={[{ label: "Newsroom" }]} />
+      <PageHero
+        title={normalizePublicText(pageContent.title, "Newsroom")}
+        subtitle={normalizePublicText(
+          pageContent.description,
+          "Official updates from Kibaha Scouts including announcements, training highlights, community service impact, and awards.",
+        )}
+        breadcrumbs={[{ label: "Newsroom" }]}
+      />
 
-      <section className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">
-            {normalizePublicText(pageContent.title, "Newsroom")}
-          </h1>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
-            {normalizePublicText(
-              pageContent.description,
-              "Official updates from Kibaha Scouts, including announcements, training highlights, community service impact, and scout achievements.",
-            )}
-          </p>
-          {lastUpdated ? (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Last updated: {new Date(lastUpdated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-            </p>
-          ) : null}
+      <SectionShell eyebrow="Filter" title="News Categories" tone="background">
+        <div className="flex flex-wrap gap-2">
+          {categories.map((item) => {
+            const isActive = (item === "All" && !category) || category === item
+            const href = item === "All" ? "/newsroom" : `/newsroom?category=${encodeURIComponent(item)}`
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            {categories.map((item) => {
-              const isActive = (item === "All" && !category) || category === item
-              const href = item === "All" ? "/newsroom" : `/newsroom?category=${encodeURIComponent(item)}`
-
-              return (
-                <Link
-                  key={item}
-                  href={href}
-                  className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-tsa-green-deep text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-border"
-                  }`}
-                >
-                  {item}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary py-12" aria-labelledby="news-list">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 id="news-list" className="sr-only">
-            News list
-          </h2>
-          {filteredArticles.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredArticles.map((article) => (
-                <article key={article.id} className="overflow-hidden rounded-lg border border-border bg-card">
-                  <Link href={`/newsroom/${article.slug}`} className="group block focus-visible:ring-2 focus-visible:ring-ring">
-                    <div className="relative aspect-[16/10]">
-                      <Image
-                        src={article.image || "/placeholder.jpg"}
-                        alt={article.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-5">
-                      <span className="rounded bg-tsa-green-deep/10 px-2 py-0.5 text-xs font-semibold text-tsa-green-deep">
-                        {article.category}
-                      </span>
-                      <h3 className="mt-3 text-lg font-bold text-card-foreground group-hover:text-tsa-green-deep">
-                        {article.title}
-                      </h3>
-                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.summary}</p>
-                      <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                          <CalendarDays className="h-3.5 w-3.5" />
-                          {new Date(article.date).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <User className="h-3.5 w-3.5" />
-                          {article.author}
-                        </span>
-                      </div>
-                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
-                        Read article
-                        <ArrowRight className="h-4 w-4" />
-                      </span>
-                    </div>
-                  </Link>
-                </article>
-              ))}
-            </div>
-          ) : categoryFilterEmpty ? (
-            <div className="rounded-lg border border-border bg-card p-5">
-              <h3 className="text-base font-semibold text-card-foreground">No articles match this category yet</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                There are published newsroom articles, but none in <span className="font-medium">{category}</span>.
-              </p>
+            return (
               <Link
-                href="/newsroom"
-                className="mt-3 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
+                key={item}
+                href={href}
+                className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-semibold ${
+                  isActive ? "bg-tsa-green-deep text-white" : "bg-secondary text-foreground hover:bg-border"
+                }`}
               >
-                View all categories
+                {item}
               </Link>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-border bg-card p-5">
-              <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Articles will appear here automatically after they are published from the admin dashboard.
-              </p>
-            </div>
-          )}
+            )
+          })}
         </div>
-      </section>
+      </SectionShell>
 
-      <section id="press" className="bg-background py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-            {normalizePublicText(pageContent.pressTitle, "Press & Downloads")}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {normalizePublicText(pageContent.pressDescription, "Media-ready files for official district communication.")}
-          </p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {pressDownloads.length > 0 ? (
-              pressDownloads.map((resource) => (
-                <div key={resource.id} className="rounded-lg border border-border bg-card p-5">
-                  <h3 className="text-base font-semibold text-card-foreground">{resource.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{resource.summary}</p>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    {resource.fileType} - {resource.fileSize}
-                  </p>
-                  {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                    <Link
-                      href={resource.downloadUrl}
-                      className="mt-4 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                    >
-                      Download
-                    </Link>
-                  ) : (
-                    <span className="mt-4 inline-flex rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                      Download will be available soon
+      {filteredArticles.length > 0 ? (
+        <SectionShell eyebrow="Latest" title="Published Articles" tone="white">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredArticles.map((article) => (
+              <article key={article.id} className="card-shell overflow-hidden">
+                <Link href={`/newsroom/${article.slug}`} className="group block">
+                  <div className="relative aspect-[16/10]">
+                    <Image
+                      src={article.image || "/placeholder.jpg"}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <span className="eyebrow">{article.category}</span>
+                    <h3 className="mt-3 text-lg font-semibold text-foreground">{article.title}</h3>
+                    <p className="mt-2 line-clamp-3 text-base leading-relaxed text-muted-foreground">{article.summary}</p>
+                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
+                        {new Date(article.date).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <User className="h-4 w-4 text-tsa-green-deep" />
+                        {article.author}
+                      </span>
+                    </div>
+                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
+                      Read article <ArrowRight className="h-4 w-4" />
                     </span>
-                  )}
-                </div>
-              ))
-            ) : pressFilterEmpty ? (
-              <div className="rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
-                <h3 className="text-base font-semibold text-card-foreground">No featured press downloads yet</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Published resources exist, but none are marked as featured press files right now.
-                </p>
-                <Link
-                  href="/resources"
-                  className="mt-3 inline-flex min-h-[44px] items-center rounded-md bg-tsa-green-deep px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-tsa-green-mid"
-                >
-                  Browse all resources
+                  </div>
                 </Link>
-              </div>
-            ) : (
-              <div className="rounded-lg border border-border bg-card p-5 sm:col-span-2 lg:col-span-3">
-                <h3 className="text-base font-semibold text-card-foreground">Press resources are coming soon</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Media files will be listed here once they are published from the admin dashboard.
-                </p>
-              </div>
-            )}
+              </article>
+            ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
+
+      {pressDownloads.length > 0 ? (
+        <SectionShell
+          id="press"
+          eyebrow="Press"
+          title={normalizePublicText(pageContent.pressTitle, "Press and Downloads")}
+          subtitle={normalizePublicText(pageContent.pressDescription, "Media-ready files for official district communication.")}
+          tone="background"
+        >
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {pressDownloads.map((resource) => (
+              <article key={resource.id} className="card-shell p-5">
+                <h3 className="text-lg font-semibold text-foreground">{resource.title}</h3>
+                <p className="mt-2 text-base text-muted-foreground">{resource.summary}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {resource.fileType} • {resource.fileSize}
+                </p>
+                {resource.downloadUrl && resource.downloadUrl !== "#" ? (
+                  <Link href={resource.downloadUrl} className="btn-secondary mt-4 w-full">
+                    <Download className="mr-1 h-4 w-4" />
+                    Download
+                  </Link>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </SectionShell>
+      ) : null}
     </>
   )
 }

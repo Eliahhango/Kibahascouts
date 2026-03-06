@@ -1,422 +1,439 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ChevronDown, ChevronRight, Clock3, Download, Flag, MapPin, ShieldCheck, Users } from "lucide-react"
-import { MediaGalleryGrid } from "@/components/home/media-gallery-grid"
-import { getEventsFromCms, getHomepageSettingsFromCms, getMediaItemsFromCms, getNewsFromCms, getResourcesFromCms } from "@/lib/cms"
-import { contentGovernance } from "@/lib/content-governance"
+import {
+  ArrowRight,
+  CalendarDays,
+  Download,
+  FileText,
+  Flag,
+  GraduationCap,
+  Handshake,
+  MapPin,
+  Play,
+  Target,
+  TreePine,
+  UserCircle2,
+  Users,
+} from "lucide-react"
+import { SectionShell } from "@/components/public/section-shell"
+import {
+  getEventsFromCms,
+  getHomepageSettingsFromCms,
+  getMediaItemsFromCms,
+  getNewsFromCms,
+  getResourcesFromCms,
+  getUnitsFromCms,
+  getLeadersFromCms,
+} from "@/lib/cms"
 import { deriveMediaEmbedFromUrl, isSupportedMediaEmbedUrl } from "@/lib/media-embed"
 import { siteConfig } from "@/lib/site-config"
 
 const defaultStory = {
   id: "fallback",
   slug: "newsroom",
-  title: "Kibaha Scouts Official Updates",
-  summary: "Follow verified district updates, programme notices, and upcoming opportunities across scout sections.",
+  title: "Kibaha District Scouts Official Updates",
+  summary:
+    "Follow verified district updates, programme notices, and upcoming opportunities across all scout sections in Kibaha.",
   image: "/images/hero-scouts.jpg",
 }
 
+function toSafeCount(value: number, fallback: string) {
+  if (!Number.isFinite(value) || value <= 0) return fallback
+  return `${value}+`
+}
+
 function getMediaEmbedUrl(item: { kind: "video" | "gallery"; embedUrl?: string; href: string }) {
-  if (item.kind !== "video") {
-    return ""
-  }
-
+  if (item.kind !== "video") return ""
   const directEmbedUrl = item.embedUrl?.trim() || ""
-  if (directEmbedUrl && isSupportedMediaEmbedUrl(directEmbedUrl)) {
-    return directEmbedUrl
-  }
-
-  if (!item.href) {
-    return ""
-  }
-
+  if (directEmbedUrl && isSupportedMediaEmbedUrl(directEmbedUrl)) return directEmbedUrl
+  if (!item.href) return ""
   const derivedEmbed = deriveMediaEmbedFromUrl(item.href)
-  if (!derivedEmbed?.embedUrl || !isSupportedMediaEmbedUrl(derivedEmbed.embedUrl)) {
-    return ""
-  }
-
+  if (!derivedEmbed?.embedUrl || !isSupportedMediaEmbedUrl(derivedEmbed.embedUrl)) return ""
   return derivedEmbed.embedUrl
 }
 
-function getSnapshotVisual(label: string) {
-  const normalized = label.toLowerCase()
-
-  if (normalized.includes("youth")) {
-    return { icon: Users, iconTone: "bg-indigo-100 text-indigo-700" }
-  }
-
-  if (normalized.includes("service")) {
-    return { icon: Clock3, iconTone: "bg-amber-100 text-amber-700" }
-  }
-
-  if (normalized.includes("adult") || normalized.includes("volunteer")) {
-    return { icon: ShieldCheck, iconTone: "bg-emerald-100 text-emerald-700" }
-  }
-
-  return { icon: Flag, iconTone: "bg-fuchsia-100 text-fuchsia-700" }
+function resourceIcon(fileType: string) {
+  const normalized = fileType.toUpperCase()
+  if (normalized.includes("PDF")) return FileText
+  return Download
 }
 
 export default async function HomePage() {
   const { name } = siteConfig
-  const [newsArticles, scoutEvents, resources, mediaItems, homepageSettings] = await Promise.all([
+  const [newsArticles, scoutEvents, resources, mediaItems, homepageSettings, units, leaders] = await Promise.all([
     getNewsFromCms(),
     getEventsFromCms(),
     getResourcesFromCms(),
     getMediaItemsFromCms(),
     getHomepageSettingsFromCms(),
+    getUnitsFromCms(),
+    getLeadersFromCms(),
   ])
 
   const publishedNews = newsArticles.filter((article) => article.published !== false)
   const publishedEvents = scoutEvents.filter((event) => event.published !== false)
   const publishedResources = resources.filter((resource) => resource.published !== false)
+  const publishedUnits = units.filter((unit) => unit.published !== false)
+  const publishedLeaders = leaders.filter((leader) => leader.id)
+  const publishedMedia = mediaItems.filter((item) => item.published !== false)
 
-  const featuredNews = publishedNews.find((article) => article.featured) ?? defaultStory
-  const latestNews = publishedNews.filter((article) => !article.featured).slice(0, 4)
-  const upcomingEvents = publishedEvents.slice(0, 5)
+  const featuredNews = publishedNews.find((article) => article.featured) ?? publishedNews[0] ?? defaultStory
+  const latestNews = publishedNews.filter((article) => article.id !== featuredNews.id).slice(0, 3)
+  const upcomingEvents = [...publishedEvents]
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+    .slice(0, 5)
   const topResources = publishedResources.slice(0, 6)
-  const featuredMedia = mediaItems
-    .filter((item) => item.published !== false)
-    .slice(0, 18)
-    .map((item) => ({
-      ...item,
-      resolvedEmbedUrl: getMediaEmbedUrl(item),
-    }))
-  const featuredStoryImage = featuredNews.image || "/images/hero-scouts.jpg"
+  const featuredMedia = publishedMedia.slice(0, 6).map((item) => ({
+    ...item,
+    resolvedEmbedUrl: getMediaEmbedUrl(item),
+  }))
+
+  const snapshotByLabel = new Map(
+    homepageSettings.districtSnapshot.map((item) => [item.label.toLowerCase(), item.value]),
+  )
+
+  const statTiles = [
+    {
+      label: "Active Units",
+      value:
+        snapshotByLabel.get("active units") ||
+        toSafeCount(publishedUnits.length, "10+"),
+      icon: Target,
+    },
+    {
+      label: "Youth Members",
+      value:
+        snapshotByLabel.get("youth members") ||
+        snapshotByLabel.get("youth reached") ||
+        "100+",
+      icon: Users,
+    },
+    {
+      label: "Scout Leaders",
+      value:
+        snapshotByLabel.get("adult volunteers") ||
+        snapshotByLabel.get("leaders") ||
+        toSafeCount(publishedLeaders.length, "20+"),
+      icon: UserCircle2,
+    },
+    {
+      label: "District Campaigns",
+      value: toSafeCount(homepageSettings.campaigns.length, "3+"),
+      icon: Flag,
+    },
+  ]
+
+  const highlightIcons = [Target, GraduationCap, TreePine, Handshake]
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border bg-tsa-green-deep" aria-label="Featured story">
+      <section className="relative overflow-hidden bg-tsa-green-deep text-white" aria-label="Homepage hero">
         <div className="absolute inset-0">
-          <Image src={featuredStoryImage} alt="" fill className="scale-105 object-cover blur-[1.5px] opacity-45" priority sizes="100vw" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,31,24,0.92)_8%,rgba(30,58,47,0.74)_48%,rgba(15,31,24,0.5)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(74,140,92,0.28),rgba(17,37,29,0.78))]" />
+          <Image
+            src={featuredNews.image || "/images/hero-scouts.jpg"}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_24%,rgba(201,145,10,0.22),rgba(30,58,47,0.94)_58%)]" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-          <div>
-            {contentGovernance.homepageMode === "sample" ? (
-              <div className="mb-4 max-w-2xl rounded-md border border-tsa-gold/50 bg-tsa-gold/20 px-3 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary-foreground">
-                  {contentGovernance.homepageBadge}
-                </p>
-                <p className="mt-1 text-sm text-primary-foreground">{contentGovernance.homepageMessage}</p>
-              </div>
-            ) : null}
-            <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Featured Story</span>
-            <h1 className="mt-4 max-w-2xl text-balance text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">
-              {featuredNews.title}
+        <div className="relative mx-auto grid min-h-[520px] max-w-7xl grid-cols-1 gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[3fr_2fr] lg:px-8 lg:py-20">
+          <div className="flex flex-col justify-center">
+            <p className="eyebrow text-tsa-gold">Official District Branch</p>
+            <h1 className="mt-3 text-balance text-4xl font-bold text-white md:text-5xl">
+              Tanzania Scouts Association - Kibaha District
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/85 md:text-lg">
-              {featuredNews.summary}
-            </p>
-            <Link
-              href={featuredNews.slug === "newsroom" ? "/newsroom" : `/newsroom/${featuredNews.slug}`}
-              className="mt-7 inline-flex items-center gap-2 rounded-md bg-tsa-gold px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-tsa-gold-light"
-            >
-              Read Full Story
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <p className="mt-3 text-lg font-semibold text-tsa-gold">{featuredNews.title}</p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80">{featuredNews.summary}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/join#youth" className="btn-primary">
+                Join as Youth
+              </Link>
+              <Link href="/about" className="btn-secondary border-white text-white hover:bg-white hover:text-tsa-green-deep">
+                Learn More
+              </Link>
+            </div>
           </div>
 
-          <div className="section-shell bg-primary-foreground p-5 pb-8 md:pb-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-tsa-green-deep">District Snapshot</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {homepageSettings.districtSnapshot.map((item, index) => {
-                const visual = getSnapshotVisual(item.label)
-
-                return (
-                  <div key={`snapshot-${index}-${item.label}`} className="rounded-lg border border-border/70 bg-secondary p-3">
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${visual.iconTone}`}>
-                        <visual.icon className="h-4 w-4" />
-                      </span>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">{item.label}</p>
-                    </div>
-                    <p className="mt-3 border-b border-tsa-gold/80 pb-2 text-2xl font-extrabold text-tsa-green-deep md:text-3xl">
-                      {item.value}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
+          <div className="grid content-center grid-cols-2 gap-4">
+            {statTiles.map((tile) => (
+              <article key={tile.label} className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-tsa-gold/25 text-tsa-gold">
+                  <tile.icon className="h-5 w-5" />
+                </span>
+                <p className="mt-3 text-2xl font-bold text-white">{tile.value}</p>
+                <p className="mt-1 text-sm text-white/85">{tile.label}</p>
+              </article>
+            ))}
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center">
-          <ChevronDown className="h-6 w-6 animate-bounce text-primary-foreground/80" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 text-background">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="h-[80px] w-full fill-current md:h-[100px]">
+            <path d="M0,32L80,48C160,64,320,96,480,101.3C640,107,800,85,960,69.3C1120,53,1280,43,1360,37.3L1440,32L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" />
+          </svg>
         </div>
       </section>
 
-      <section className="py-12 md:py-16" aria-labelledby="latest-news-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <span className="eyebrow">Newsroom</span>
-              <h2 id="latest-news-heading" className="section-title mt-3">
-                Latest News
-              </h2>
-            </div>
-            <Link href="/newsroom" className="hidden items-center gap-1 text-sm font-semibold text-tsa-green-deep md:inline-flex">
-              All news
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+      {latestNews.length > 0 ? (
+        <SectionShell
+          eyebrow="Newsroom"
+          title="Latest News"
+          viewAllHref="/newsroom"
+          viewAllLabel="All news"
+          tone="background"
+        >
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {latestNews.map((article) => (
+              <Link key={article.id} href={`/newsroom/${article.slug}`} className="card-shell group overflow-hidden">
+                <div className="h-1 w-full bg-tsa-gold" />
+                <div className="relative aspect-[16/10]">
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-5">
+                  <p className="eyebrow">{article.category}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-foreground">{article.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {new Date(article.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                  <p className="mt-3 line-clamp-3 text-base text-muted-foreground">{article.summary}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-gold">
+                    Read more <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
+        </SectionShell>
+      ) : null}
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {latestNews.length > 0 ? (
-              latestNews.map((article) => (
-                <Link key={article.id} href={`/newsroom/${article.slug}`} className="section-shell card-lift group overflow-hidden">
-                  <div className="relative aspect-[16/9]">
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute left-3 top-3 rounded bg-tsa-green-deep px-2 py-0.5 text-xs font-medium text-primary-foreground transition-colors group-hover:bg-tsa-gold">
-                      {article.category}
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <time className="text-xs text-muted-foreground" dateTime={article.date}>
-                      {new Date(article.date).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </time>
-                    <h3 className="mt-2 line-clamp-2 text-base font-semibold text-card-foreground group-hover:text-tsa-green-deep">
-                      {article.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{article.summary}</p>
-                  </div>
-                </Link>
-              ))
-            ) : publishedNews.length > 0 ? (
-              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-4">
-                <h3 className="text-base font-semibold text-card-foreground">No additional news items yet</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  The featured story is live. More published news items will appear here automatically.
-                </p>
-              </article>
-            ) : (
-              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-4">
-                <h3 className="text-base font-semibold text-card-foreground">News updates are coming soon</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Published district stories will appear here automatically once they are posted from the admin dashboard.
-                </p>
-              </article>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary py-12 md:py-16" aria-labelledby="highlights-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <span className="eyebrow">Highlights</span>
-          <h2 id="highlights-heading" className="section-title mt-3">
-            Priority Initiatives
-          </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {homepageSettings.priorityInitiatives.length > 0 ? (
+        <SectionShell eyebrow="Highlights" title="Priority Initiatives" tone="white">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {homepageSettings.priorityInitiatives.map((item, index) => {
+              const Icon = highlightIcons[index % highlightIcons.length]
+              const accentBorder = index % 2 === 0 ? "border-l-tsa-green-deep" : "border-l-tsa-gold"
+              const iconBg = index % 2 === 0 ? "bg-tsa-green-deep/10 text-tsa-green-deep" : "bg-tsa-gold/15 text-tsa-gold"
               const isExternalLink = /^https?:\/\//i.test(item.href)
 
               return (
                 <Link
-                  key={`initiative-${index}-${item.title}`}
+                  key={`${item.title}-${index}`}
                   href={item.href}
                   target={isExternalLink ? "_blank" : undefined}
                   rel={isExternalLink ? "noreferrer" : undefined}
-                  className={`section-shell card-lift p-5 ${index % 2 ? "bg-card" : "bg-background"}`}
+                  className={`card-shell border-l-4 ${accentBorder} p-5 hover:border-tsa-green-deep`}
                 >
-                  <h3 className="text-lg font-bold text-card-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
-                    Learn more
-                    <ArrowRight className="h-4 w-4" />
+                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${iconBg}`}>
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-3 text-lg font-semibold text-foreground">{item.title}</h3>
+                  <p className="mt-2 text-base leading-relaxed text-muted-foreground">{item.description}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-tsa-green-deep">
+                    Learn more <ArrowRight className="h-4 w-4" />
                   </span>
                 </Link>
               )
             })}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      <section className="py-12 md:py-16" aria-labelledby="events-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <span className="eyebrow">Events</span>
-              <h2 id="events-heading" className="section-title mt-3">
-                Upcoming Events
-              </h2>
-            </div>
-            <Link href="/events" className="hidden items-center gap-1 text-sm font-semibold text-tsa-green-deep md:inline-flex">
-              All events
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="section-shell overflow-hidden">
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event) => {
-                const date = new Date(event.date)
-                return (
-                  <Link
-                    key={event.id}
-                    href={`/events/${event.slug}`}
-                    className="group flex flex-wrap items-start gap-3 border-b border-border px-4 py-4 last:border-b-0 hover:bg-secondary lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center"
-                  >
-                    <div className="flex h-16 w-16 flex-col items-center justify-center rounded-md border-b-2 border-tsa-gold bg-tsa-green-deep text-primary-foreground">
-                      <span className="text-lg font-bold leading-none">{date.getDate()}</span>
-                      <span className="text-xs uppercase">{date.toLocaleDateString("en-GB", { month: "short" })}</span>
-                    </div>
-                    <div>
-                      <h3 className="text-base font-semibold text-card-foreground">{event.title}</h3>
-                      <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock3 className="h-3.5 w-3.5" />
-                          {event.time}
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" />
-                          {event.location}
+      {upcomingEvents.length > 0 ? (
+        <SectionShell
+          eyebrow="Events"
+          title="Upcoming Events"
+          viewAllHref="/events"
+          viewAllLabel="All events"
+          tone="background"
+        >
+          <div className="space-y-4">
+            {upcomingEvents.map((event) => {
+              const eventDate = new Date(event.date)
+              return (
+                <article key={event.id} className="card-shell p-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+                    <div className="flex w-full items-center justify-start md:w-auto">
+                      <div className="flex h-16 w-16 flex-col items-center justify-center rounded-lg bg-tsa-green-deep text-white">
+                        <span className="text-2xl font-bold leading-none">{eventDate.getDate()}</span>
+                        <span className="text-xs uppercase">
+                          {eventDate.toLocaleDateString("en-GB", { month: "short" })}
                         </span>
                       </div>
                     </div>
-                    <div className="ml-auto flex items-center gap-2 lg:ml-0 lg:justify-end">
-                      {event.registrationOpen && (
-                        <span className="inline-flex min-h-[44px] items-center rounded-full bg-tsa-gold/20 px-3 py-1 text-xs font-semibold text-tsa-green-deep">
-                          Registration Open
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">{event.title}</h3>
+                      <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-4 w-4 text-tsa-green-deep" />
+                          {event.location}
                         </span>
-                      )}
-                      <ChevronRight className="h-4 w-4 text-tsa-green-deep opacity-0 transition-opacity group-hover:opacity-100" />
-                    </div>
-                  </Link>
-                )
-              })
-            ) : (
-              <div className="px-4 py-5 text-sm text-muted-foreground">
-                Upcoming events will appear here soon after publication from the admin dashboard.
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary py-12 md:py-16" aria-labelledby="resources-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <span className="eyebrow">Resources</span>
-              <h2 id="resources-heading" className="section-title mt-3">
-                Downloads and Forms
-              </h2>
-            </div>
-            <Link href="/resources" className="hidden items-center gap-1 text-sm font-semibold text-tsa-green-deep md:inline-flex">
-              All resources
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {topResources.length > 0 ? (
-              topResources.map((resource) => (
-                <article key={resource.id} className="section-shell card-lift p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-tsa-green-deep/10">
-                      <Download className="h-5 w-5 text-tsa-green-deep" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-semibold text-card-foreground">{resource.title}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {resource.fileType} - {resource.fileSize}
-                      </p>
-                      {resource.downloadUrl && resource.downloadUrl !== "#" ? (
-                        <Link href={resource.downloadUrl} className="mt-2 inline-flex min-h-[44px] items-center text-xs font-semibold text-tsa-green-deep">
-                          Download
-                        </Link>
-                      ) : (
-                        <span className="mt-2 inline-flex text-xs font-semibold text-muted-foreground">
-                          Download will be available soon
+                        <span className="inline-flex items-center gap-1">
+                          <CalendarDays className="h-4 w-4 text-tsa-green-deep" />
+                          {event.time}
                         </span>
-                      )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-tsa-green-deep/10 px-2.5 py-1 text-xs font-semibold text-tsa-green-deep">
+                        {event.category}
+                      </span>
+                      <Link href={`/events/${event.slug}`} className="btn-secondary !px-4 !py-2 text-xs">
+                        {event.registrationOpen ? "Register" : "Learn More"}
+                      </Link>
                     </div>
                   </div>
                 </article>
-              ))
-            ) : (
-              <article className="section-shell rounded-lg border border-border bg-card p-5 md:col-span-2 lg:col-span-3">
-                <h3 className="text-base font-semibold text-card-foreground">Resource downloads are coming soon</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  As soon as files are published from the admin dashboard, they will appear here automatically.
-                </p>
-              </article>
-            )}
+              )
+            })}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      <section className="py-12 md:py-16" aria-labelledby="media-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <span className="eyebrow">Media</span>
-          <h2 id="media-heading" className="section-title mt-3">
-            Videos and Gallery
-          </h2>
-          <div className="mt-6">
-            <MediaGalleryGrid items={featuredMedia} />
+      {topResources.length > 0 ? (
+        <SectionShell
+          eyebrow="Resources"
+          title="Downloads and Forms"
+          viewAllHref="/resources"
+          viewAllLabel="All resources"
+          tone="tinted"
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {topResources.map((resource) => {
+              const ResourceIcon = resourceIcon(resource.fileType)
+              const hasDownload = Boolean(resource.downloadUrl && resource.downloadUrl !== "#")
+
+              return (
+                <article key={resource.id} className="card-shell p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-tsa-green-deep/10 text-tsa-green-deep">
+                      <ResourceIcon className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <h3 className="line-clamp-2 text-lg font-semibold text-foreground">{resource.title}</h3>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {resource.fileType} • {resource.fileSize}
+                      </p>
+                      <span className="mt-2 inline-flex rounded-full bg-tsa-green-deep/10 px-2.5 py-0.5 text-xs font-semibold text-tsa-green-deep">
+                        {resource.category}
+                      </span>
+                    </div>
+                  </div>
+                  {hasDownload ? (
+                    <Link href={resource.downloadUrl} className="btn-secondary mt-4 w-full">
+                      Download
+                    </Link>
+                  ) : null}
+                </article>
+              )
+            })}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      <section className="bg-tsa-green-deep py-12 md:py-16" aria-labelledby="campaigns-heading">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <span className="eyebrow bg-tsa-green-mid text-primary-foreground">Campaigns</span>
-          <h2 id="campaigns-heading" className="mt-3 text-3xl font-bold text-primary-foreground">
-            Ongoing District Campaigns
-          </h2>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {featuredMedia.length > 0 ? (
+        <SectionShell
+          eyebrow="Media"
+          title="Videos and Gallery"
+          viewAllHref="/newsroom"
+          viewAllLabel="View all media"
+          viewAllClassName="text-tsa-gold hover:text-tsa-gold-light no-underline hover:no-underline"
+          tone="white"
+        >
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {featuredMedia.map((item) => {
+              const previewLink = item.href || "/newsroom"
+              const imageSrc = item.thumbnail || "/images/about-hero.jpg"
+
+              return (
+                <Link key={item.id} href={previewLink} className="group card-shell overflow-hidden">
+                  {item.kind === "video" && item.resolvedEmbedUrl ? (
+                    <div className="relative aspect-video bg-black">
+                      <iframe
+                        title={item.title}
+                        src={item.resolvedEmbedUrl}
+                        className="absolute inset-0 h-full w-full"
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative aspect-video overflow-hidden">
+                      <Image src={imageSrc} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-tsa-green-deep/85 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-tsa-gold text-white shadow-lg">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <p className="eyebrow">{item.kind === "video" ? "Video" : "Gallery"}</p>
+                    <h3 className="mt-2 text-lg font-semibold text-foreground">{item.title}</h3>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </SectionShell>
+      ) : null}
+
+      {homepageSettings.campaigns.length > 0 ? (
+        <SectionShell eyebrow="Campaigns" title="Ongoing District Campaigns" tone="background">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {homepageSettings.campaigns.map((campaign) => (
-              <Link key={campaign.id} href={campaign.link} className="overflow-hidden rounded-xl border border-tsa-green-mid bg-[#422a76] card-lift">
-                <div className="relative aspect-[16/10]">
+              <Link key={campaign.id} href={campaign.link} className="group card-shell aspect-[4/3] overflow-hidden p-0">
+                <div className="relative h-full w-full">
                   <Image src={campaign.image} alt={campaign.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                </div>
-                <div className="p-5">
-                  <span className="rounded-full bg-tsa-gold/20 px-2.5 py-0.5 text-xs font-medium text-tsa-gold">
-                    {campaign.status}
-                  </span>
-                  <h3 className="mt-2 text-lg font-semibold text-primary-foreground">{campaign.title}</h3>
-                  <p className="mt-2 text-sm text-primary-foreground">{campaign.description}</p>
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-tsa-green-deep/85 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-4">
+                    <span className="inline-flex rounded-full bg-tsa-gold px-2.5 py-0.5 text-xs font-semibold text-white">
+                      {campaign.status}
+                    </span>
+                    <h3 className="mt-2 text-lg font-semibold text-white">{campaign.title}</h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-white/80">{campaign.description}</p>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionShell>
+      ) : null}
 
-      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center,#2d5a3d_0%,#1e3a2f_100%)] py-12 md:py-16" aria-label="Call to action">
+      <section className="relative overflow-hidden bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-green-deep py-14 md:py-16" aria-label="Call to action">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-5"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath fill='%23ffffff' d='M60 16l10 20h20l-16 14 6 22-20-12-20 12 6-22-16-14h20z'/%3E%3C/svg%3E\")",
+            backgroundSize: "120px 120px",
+          }}
+        />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mx-auto max-w-3xl text-balance text-3xl font-bold text-primary-foreground md:text-4xl">
-            Start Your Scouting Journey with {name}
+          <h2 className="text-balance text-3xl font-bold text-white md:text-4xl">
+            Start Your Scouting Journey with <span className="text-tsa-gold">KIBAHA SCOUTS</span>
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-primary-foreground md:text-base">
-            Join as a youth member, support as a volunteer leader, or partner with the district to support verified
-            scouting priorities.
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-white/85">
+            Join as a youth member, support as a volunteer leader, or partner with {name} to build character and service in our district.
           </p>
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/join#youth"
-              className="inline-flex items-center gap-2 rounded-md bg-tsa-gold px-8 py-3 text-sm font-semibold text-white hover:bg-tsa-gold-light"
-            >
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/join#youth" className="btn-primary">
               Join as Youth
-              <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              href="/join#volunteer"
-              className="inline-flex items-center gap-2 rounded-md border-2 border-white/70 px-8 py-3 text-sm font-semibold text-white hover:bg-white hover:text-tsa-green-deep"
-            >
+            <Link href="/join#volunteer" className="btn-secondary border-white text-white hover:bg-white hover:text-tsa-green-deep">
               Volunteer as Leader
-              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
