@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { CheckCircle2, Gift, HandHeart, Users } from "lucide-react"
+import { MembershipForm } from "@/components/public/membership-form"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
 import { getSiteContentSettingsFromCms } from "@/lib/cms"
@@ -47,6 +48,13 @@ export default async function JoinPage() {
               </article>
             ))}
           </div>
+          <div className="mt-8">
+            <h3 className="mb-2 text-xl font-bold text-foreground">Ready to Join? Apply Online</h3>
+            <p className="mb-4 text-base text-muted-foreground">
+              Fill in the form below and the district team will contact you to complete your registration.
+            </p>
+            <MembershipForm defaultRole="youth" showRoleSelector={false} />
+          </div>
           {pageContent.youthNote.trim().length > 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">{normalizePublicText(pageContent.youthNote)}</p>
           ) : null}
@@ -89,6 +97,13 @@ export default async function JoinPage() {
                 </div>
               </article>
             ))}
+          </div>
+          <div className="mt-8">
+            <h3 className="mb-2 text-xl font-bold text-foreground">Ready to Volunteer? Apply Online</h3>
+            <p className="mb-4 text-base text-muted-foreground">
+              Fill in the form below and the district team will contact you to complete your registration.
+            </p>
+            <MembershipForm defaultRole="volunteer" showRoleSelector={false} />
           </div>
           <div className="rounded-xl border border-tsa-gold/40 bg-tsa-gold/5 p-4">
             <p className="text-sm text-muted-foreground">

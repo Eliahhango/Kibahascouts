@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { EVENT_MAP_DEFAULT_ZOOM, buildOpenStreetMapPlaceUrl } from "@/lib/maps"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { ImageUploadField } from "@/components/admin/image-upload-field"
 import { RichTextEditor } from "@/components/admin/rich-text-editor"
 import { Spinner } from "@/components/ui/spinner"
 
@@ -419,15 +420,15 @@ export function EventsManager() {
             />
           </label>
 
-          <label className="text-sm md:col-span-2">
-            <span className="font-medium text-card-foreground">Image URL or local path (optional)</span>
-            <input
+          <div className="text-sm md:col-span-2">
+            <ImageUploadField
+              label="Event Image"
               value={form.image}
-              onChange={(event) => setForm((current) => ({ ...current, image: event.target.value }))}
-              placeholder="/images/events/example.jpg"
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
+              onChange={(url) => setForm((current) => ({ ...current, image: url }))}
+              folder="general"
+              placeholder="https://..."
             />
-          </label>
+          </div>
 
           <label className="inline-flex items-center gap-2 text-sm text-card-foreground">
             <input
@@ -438,14 +439,37 @@ export function EventsManager() {
             Registration Open
           </label>
 
-          <label className="inline-flex items-center gap-2 text-sm text-card-foreground">
-            <input
-              type="checkbox"
-              checked={form.published}
-              onChange={(event) => setForm((current) => ({ ...current, published: event.target.checked }))}
-            />
-            Published
-          </label>
+          <div className="md:col-span-2">
+            <p className="text-sm font-semibold text-card-foreground">Visibility</p>
+            <div className="mt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setForm((current) => ({ ...current, published: false }))}
+                className={`flex-1 rounded-xl border-2 p-3 text-center text-sm font-semibold transition ${
+                  !form.published
+                    ? "border-amber-400 bg-amber-50 text-amber-700"
+                    : "border-border text-muted-foreground hover:bg-secondary"
+                }`}
+              >
+                Save as Draft
+                <br />
+                <span className="text-xs font-normal">Not visible to public</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((current) => ({ ...current, published: true }))}
+                className={`flex-1 rounded-xl border-2 p-3 text-center text-sm font-semibold transition ${
+                  form.published
+                    ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                    : "border-border text-muted-foreground hover:bg-secondary"
+                }`}
+              >
+                Publish to Website
+                <br />
+                <span className="text-xs font-normal">Visible to all visitors</span>
+              </button>
+            </div>
+          </div>
 
           <label className="text-sm md:col-span-2">
             <span className="font-medium text-card-foreground">Registration URL (optional)</span>
@@ -495,7 +519,8 @@ export function EventsManager() {
             type="button"
             onClick={() => void loadEvents()}
             disabled={isLoading}
-            className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
+            title="Reloads the list of items - does not publish or change anything"
+            className="inline-flex items-center rounded-md px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-70"
           >
             {isLoading ? (
               <span className="inline-flex items-center">
@@ -503,7 +528,7 @@ export function EventsManager() {
                 Refreshing events...
               </span>
             ) : (
-              "Refresh"
+              "↻ Reload list"
             )}
           </button>
         </div>
@@ -552,7 +577,7 @@ export function EventsManager() {
                   <th className="py-2 pr-3 font-medium">Title</th>
                   <th className="py-2 pr-3 font-medium">Date</th>
                   <th className="py-2 pr-3 font-medium">Location</th>
-                  <th className="py-2 pr-3 font-medium">Published</th>
+                  <th className="py-2 pr-3 font-medium">Visibility</th>
                   <th className="py-2 font-medium">Actions</th>
                 </tr>
               </thead>
@@ -568,7 +593,41 @@ export function EventsManager() {
                       <p>{item.location}</p>
                       <p className="text-xs text-muted-foreground">{formatCoordinates(item.latitude, item.longitude)}</p>
                     </td>
-                    <td className="py-2 pr-3 text-card-foreground">{item.published ? "Yes" : "No"}</td>
+                    <td className="py-2 pr-3">
+                      <div className="flex flex-col gap-1.5">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+                            item.published
+                              ? "border-emerald-200 bg-emerald-100 text-emerald-700"
+                              : "border-amber-200 bg-amber-50 text-amber-700"
+                          }`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full ${item.published ? "bg-emerald-500" : "bg-amber-400"}`} />
+                          {item.published ? "Live on website" : "Draft - not visible"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePublished(item)}
+                          disabled={actionState?.id === item.id}
+                          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                            item.published
+                              ? "border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                              : "border border-emerald-400 bg-emerald-600 text-white hover:bg-emerald-700"
+                          }`}
+                        >
+                          {actionState?.id === item.id && actionState.type === "publish" ? (
+                            <>
+                              <Spinner size="sm" />
+                              {item.published ? "Taking offline..." : "Publishing..."}
+                            </>
+                          ) : item.published ? (
+                            "Take Offline"
+                          ) : (
+                            "Publish to Website"
+                          )}
+                        </button>
+                      </div>
+                    </td>
                     <td className="py-2">
                       <div className="flex flex-wrap gap-2">
                         <button
@@ -578,21 +637,6 @@ export function EventsManager() {
                           className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
                         >
                           Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublished(item)}
-                          disabled={actionState?.id === item.id}
-                          className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
-                        >
-                          {actionState?.id === item.id && actionState.type === "publish" ? (
-                            <span className="inline-flex items-center">
-                              <Spinner size="sm" className="mr-1.5" />
-                              {item.published ? "Unpublishing..." : "Publishing..."}
-                            </span>
-                          ) : (
-                            (item.published ? "Unpublish" : "Publish")
-                          )}
                         </button>
                         <button
                           type="button"

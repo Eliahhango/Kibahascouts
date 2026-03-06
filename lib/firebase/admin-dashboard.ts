@@ -60,6 +60,7 @@ export type DashboardNavSummary = {
   unreadMessages: number
   securityAlerts: number
   pendingInvites: number
+  pendingMembershipApplications: number
 }
 
 type CountQueryConfig = {
@@ -331,7 +332,17 @@ function getBreakdownPercentage(value: number, total: number) {
 }
 
 export async function getAdminDashboardSummary() {
-  const [publishedNews, publishedEvents, publishedResources, publishedMedia, unreadMessages, pageVisitsThisMonth, securityAlerts, userState] = await Promise.all([
+  const [
+    publishedNews,
+    publishedEvents,
+    publishedResources,
+    publishedMedia,
+    unreadMessages,
+    pageVisitsThisMonth,
+    securityAlerts,
+    pendingMembershipApplications,
+    userState,
+  ] = await Promise.all([
     resolveCount(() => getFieldMatchCount("news", "published", true)),
     resolveCount(() => getFieldMatchCount("events", "published", true)),
     resolveCount(() => getFieldMatchCount("resources", "published", true)),
@@ -339,6 +350,7 @@ export async function getAdminDashboardSummary() {
     resolveCount(() => getFieldMatchCount("contactMessages", "status", "unread")),
     resolveCount(() => getVisitsThisMonthCount()),
     resolveCount(() => getFieldMatchCount("adminSecurityAlerts", "acknowledged", false)),
+    resolveCount(() => getFieldMatchCount("membershipApplications", "status", "pending")),
     getUserStateCounts().catch(() => ({ activeAdmins: 0, pendingInvites: 0 })),
   ])
 
@@ -359,6 +371,7 @@ export async function getAdminDashboardSummary() {
       unreadMessages: unreadMessages.value,
       securityAlerts: securityAlerts.value,
       pendingInvites: userState.pendingInvites,
+      pendingMembershipApplications: pendingMembershipApplications.value,
     } satisfies DashboardNavSummary,
   }
 }

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react"
 import { adminFetch } from "@/lib/auth/admin-fetch"
+import { ImageUploadField } from "@/components/admin/image-upload-field"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
@@ -353,16 +354,15 @@ export function HomepageSettingsManager() {
                     className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
                   />
                 </label>
-                <label className="mt-3 block text-sm">
-                  <span className="font-medium text-card-foreground">Image URL or local path</span>
-                  <input
-                    required
-                    maxLength={500}
+                <div className="mt-3">
+                  <ImageUploadField
+                    label="Campaign Image"
                     value={item.image}
-                    onChange={(event) => updateCampaignItem(index, "image", event.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm admin-input"
+                    onChange={(url) => updateCampaignItem(index, "image", url)}
+                    folder="campaigns"
+                    placeholder="https://..."
                   />
-                </label>
+                </div>
                 <label className="mt-3 block text-sm">
                   <span className="font-medium text-card-foreground">Status</span>
                   <select

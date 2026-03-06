@@ -287,7 +287,8 @@ export function MessagesManager() {
                 type="button"
                 onClick={() => void loadMessages()}
                 disabled={isLoading}
-                className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-70"
+                title="Reloads the list of items - does not publish or change anything"
+                className="inline-flex items-center rounded-md px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-70"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center">
@@ -295,7 +296,7 @@ export function MessagesManager() {
                     Refreshing inbox...
                   </span>
                 ) : (
-                  "Refresh"
+                  "↻ Reload list"
                 )}
               </button>
               <button

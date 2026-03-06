@@ -26,6 +26,7 @@ import {
   Settings2,
   ShieldAlert,
   ShieldCheck,
+  UserPlus,
   UserRound,
 } from "lucide-react"
 import { signOut } from "firebase/auth"
@@ -57,6 +58,7 @@ type DashboardSummaryResponse = {
     unreadMessages?: number
     securityAlerts?: number
     pendingInvites?: number
+    pendingMembershipApplications?: number
   }
 }
 
@@ -128,6 +130,14 @@ const adminNavItems: AdminNavItem[] = [
     match: (pathname) => pathname.startsWith("/admin/messages"),
   },
   {
+    href: "/admin/memberships",
+    label: "Memberships",
+    shortLabel: "Members",
+    icon: UserPlus,
+    section: "communication",
+    match: (pathname) => pathname.startsWith("/admin/memberships"),
+  },
+  {
     href: "/admin/navigation",
     label: "Navigation",
     icon: Compass,
@@ -157,6 +167,7 @@ const topLevelLabelBySegment: Record<string, string> = {
   events: "Events",
   homepage: "Homepage",
   media: "Media",
+  memberships: "Memberships",
   messages: "Inbox",
   navigation: "Navigation",
   news: "News",
@@ -209,14 +220,20 @@ function SidebarNavItem({
   pathname,
   collapsed,
   unreadMessages,
+  pendingMembershipApplications,
 }: {
   item: AdminNavItem
   pathname: string
   collapsed: boolean
   unreadMessages: number
+  pendingMembershipApplications: number
 }) {
   const active = item.match(pathname)
-  const showInboxBadge = item.href === "/admin/messages" && unreadMessages > 0
+  const badgeCount = item.href === "/admin/messages"
+    ? unreadMessages
+    : item.href === "/admin/memberships"
+      ? pendingMembershipApplications
+      : 0
 
   return (
     <Link
@@ -233,14 +250,14 @@ function SidebarNavItem({
     >
       <item.icon className="h-4 w-4 shrink-0" />
       {!collapsed ? <span className="truncate">{item.label}</span> : null}
-      {showInboxBadge ? (
+      {badgeCount > 0 ? (
         <span
           className={cn(
             "inline-flex items-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold leading-none text-white",
             collapsed ? "absolute -right-1 -top-1 min-w-[1.1rem] justify-center px-1.5" : "ml-auto",
           )}
         >
-          {unreadMessages > 99 ? "99+" : unreadMessages}
+          {badgeCount > 99 ? "99+" : badgeCount}
         </span>
       ) : null}
     </Link>
@@ -254,7 +271,12 @@ export function AdminNav() {
   const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [isSigningOut, setIsSigningOut] = useState(false)
-  const [summary, setSummary] = useState({ unreadMessages: 0, securityAlerts: 0, pendingInvites: 0 })
+  const [summary, setSummary] = useState({
+    unreadMessages: 0,
+    securityAlerts: 0,
+    pendingInvites: 0,
+    pendingMembershipApplications: 0,
+  })
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   const contentItems = useMemo(() => adminNavItems.filter((item) => item.section === "content"), [])
@@ -334,6 +356,7 @@ export function AdminNav() {
             unreadMessages: Number(payload.data.unreadMessages || 0),
             securityAlerts: Number(payload.data.securityAlerts || 0),
             pendingInvites: Number(payload.data.pendingInvites || 0),
+            pendingMembershipApplications: Number(payload.data.pendingMembershipApplications || 0),
           })
         }
       } catch {
@@ -402,7 +425,10 @@ export function AdminNav() {
   const displayName = formatNameFromEmail(session?.email)
   const roleLabel = formatRoleLabel(session?.role)
   const breadcrumbLabel = getBreadcrumb(pathname)
-  const hasAlerts = summary.unreadMessages > 0 || summary.securityAlerts > 0 || summary.pendingInvites > 0
+  const hasAlerts = summary.unreadMessages > 0 ||
+    summary.securityAlerts > 0 ||
+    summary.pendingInvites > 0 ||
+    summary.pendingMembershipApplications > 0
   const compactTabItems = compactMobileTabs
     .map((href) => adminNavItems.find((item) => item.href === href))
     .filter((item): item is AdminNavItem => Boolean(item))
@@ -452,6 +478,7 @@ export function AdminNav() {
                     pathname={pathname}
                     collapsed={collapsed}
                     unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
                   />
                 ))}
               </div>
@@ -467,6 +494,7 @@ export function AdminNav() {
                     pathname={pathname}
                     collapsed={collapsed}
                     unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
                   />
                 ))}
               </div>
@@ -482,6 +510,7 @@ export function AdminNav() {
                     pathname={pathname}
                     collapsed={collapsed}
                     unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
                   />
                 ))}
               </div>
@@ -628,7 +657,14 @@ export function AdminNav() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Content</p>
               <div className="mt-2 space-y-1">
                 {contentItems.map((item) => (
-                  <SidebarNavItem key={item.href} item={item} pathname={pathname} collapsed={false} unreadMessages={summary.unreadMessages} />
+                  <SidebarNavItem
+                    key={item.href}
+                    item={item}
+                    pathname={pathname}
+                    collapsed={false}
+                    unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
+                  />
                 ))}
               </div>
             </section>
@@ -637,7 +673,14 @@ export function AdminNav() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Communication</p>
               <div className="mt-2 space-y-1">
                 {communicationItems.map((item) => (
-                  <SidebarNavItem key={item.href} item={item} pathname={pathname} collapsed={false} unreadMessages={summary.unreadMessages} />
+                  <SidebarNavItem
+                    key={item.href}
+                    item={item}
+                    pathname={pathname}
+                    collapsed={false}
+                    unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
+                  />
                 ))}
               </div>
             </section>
@@ -646,7 +689,14 @@ export function AdminNav() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Access &amp; Security</p>
               <div className="mt-2 space-y-1">
                 {securityItems.map((item) => (
-                  <SidebarNavItem key={item.href} item={item} pathname={pathname} collapsed={false} unreadMessages={summary.unreadMessages} />
+                  <SidebarNavItem
+                    key={item.href}
+                    item={item}
+                    pathname={pathname}
+                    collapsed={false}
+                    unreadMessages={summary.unreadMessages}
+                    pendingMembershipApplications={summary.pendingMembershipApplications}
+                  />
                 ))}
               </div>
             </section>
