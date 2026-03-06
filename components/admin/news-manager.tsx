@@ -50,7 +50,7 @@ function createSlug(value: string) {
     .replace(/^-+|-+$/g, "")
 }
 
-export function NewsManager() {
+export function NewsManager({ isReadOnly = false }: { isReadOnly?: boolean }) {
   const [items, setItems] = useState<NewsAdminRecord[]>([])
   const [form, setForm] = useState<NewsFormState>(initialFormState)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -222,6 +222,13 @@ export function NewsManager() {
 
   return (
     <section className="space-y-6">
+      {isReadOnly ? (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Read-only mode - you can browse but cannot make changes.
+        </p>
+      ) : null}
+
+      {!isReadOnly ? (
       <div id="news-editor" className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-card-foreground">{editingId ? "Edit News Item" : "Create News Item"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -391,6 +398,7 @@ export function NewsManager() {
           </div>
         </form>
       </div>
+      ) : null}
 
       {error ? <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
@@ -485,55 +493,59 @@ export function NewsManager() {
                           <span className={`h-1.5 w-1.5 rounded-full ${item.published ? "bg-emerald-500" : "bg-amber-400"}`} />
                           {item.published ? "Live on website" : "Draft - not visible"}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublished(item)}
-                          disabled={actionState?.id === item.id}
-                          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-                            item.published
-                              ? "border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                              : "border border-emerald-400 bg-emerald-600 text-white hover:bg-emerald-700"
-                          }`}
-                        >
-                          {actionState?.id === item.id && actionState.type === "publish" ? (
-                            <>
-                              <Spinner size="sm" />
-                              {item.published ? "Taking offline..." : "Publishing..."}
-                            </>
-                          ) : item.published ? (
-                            "Take Offline"
-                          ) : (
-                            "Publish to Website"
-                          )}
-                        </button>
+                        {!isReadOnly ? (
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePublished(item)}
+                            disabled={actionState?.id === item.id}
+                            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                              item.published
+                                ? "border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                : "border border-emerald-400 bg-emerald-600 text-white hover:bg-emerald-700"
+                            }`}
+                          >
+                            {actionState?.id === item.id && actionState.type === "publish" ? (
+                              <>
+                                <Spinner size="sm" />
+                                {item.published ? "Taking offline..." : "Publishing..."}
+                              </>
+                            ) : item.published ? (
+                              "Take Offline"
+                            ) : (
+                              "Publish to Website"
+                            )}
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                     <td className="py-2">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => startEdit(item)}
-                          disabled={Boolean(actionState)}
-                          className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(item)}
-                          disabled={actionState?.id === item.id}
-                          className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
-                        >
-                          {actionState?.id === item.id && actionState.type === "delete" ? (
-                            <span className="inline-flex items-center">
-                              <Spinner size="sm" className="mr-1.5" />
-                              Deleting article...
-                            </span>
-                          ) : (
-                            "Delete"
-                          )}
-                        </button>
-                      </div>
+                      {!isReadOnly ? (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(item)}
+                            disabled={Boolean(actionState)}
+                            className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-foreground"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(item)}
+                            disabled={actionState?.id === item.id}
+                            className="rounded-md border border-destructive/40 px-3 py-1 text-xs font-semibold text-destructive"
+                          >
+                            {actionState?.id === item.id && actionState.type === "delete" ? (
+                              <span className="inline-flex items-center">
+                                <Spinner size="sm" className="mr-1.5" />
+                                Deleting article...
+                              </span>
+                            ) : (
+                              "Delete"
+                            )}
+                          </button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -545,3 +557,4 @@ export function NewsManager() {
     </section>
   )
 }
+

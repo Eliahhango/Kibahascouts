@@ -6,7 +6,8 @@ import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 
 export default async function AdminMessagesPage() {
   try {
-    await requireAdmin("messages:write")
+    const admin = await requireAdmin("messages:read")
+    const isReadOnly = admin.role === "viewer"
 
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -20,11 +21,13 @@ export default async function AdminMessagesPage() {
               </p>
             </div>
           </div>
-          <Link href="/admin/messages#inbox-list" className="btn-primary">
-            Review Inbox
-          </Link>
+          {!isReadOnly ? (
+            <Link href="/admin/messages#inbox-list" className="btn-primary">
+              Review Inbox
+            </Link>
+          ) : null}
         </header>
-        <MessagesManager />
+        <MessagesManager isReadOnly={isReadOnly} />
       </main>
     )
   } catch (error) {

@@ -37,7 +37,7 @@ function getStatusBadgeClass(status: MessageStatus) {
   return "bg-amber-100 text-amber-800"
 }
 
-export function MessagesManager() {
+export function MessagesManager({ isReadOnly = false }: { isReadOnly?: boolean }) {
   const [messages, setMessages] = useState<ContactMessage[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -275,6 +275,11 @@ export function MessagesManager() {
 
   return (
     <section className="space-y-6">
+      {isReadOnly ? (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Read-only mode - you can browse but cannot make changes.
+        </p>
+      ) : null}
       {error ? <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
 
@@ -299,21 +304,23 @@ export function MessagesManager() {
                   "↻ Reload list"
                 )}
               </button>
-              <button
-                type="button"
-                onClick={() => void deleteSelectedMessages()}
-                disabled={isUpdating || selectedIds.length === 0}
-                className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
-              >
-                {isUpdating ? (
-                  <span className="inline-flex items-center">
-                    <Spinner size="sm" className="mr-1.5" />
-                    {updatingMessage}
-                  </span>
-                ) : (
-                  `Delete Selected (${selectedIds.length})`
-                )}
-              </button>
+              {!isReadOnly ? (
+                <button
+                  type="button"
+                  onClick={() => void deleteSelectedMessages()}
+                  disabled={isUpdating || selectedIds.length === 0}
+                  className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
+                >
+                  {isUpdating ? (
+                    <span className="inline-flex items-center">
+                      <Spinner size="sm" className="mr-1.5" />
+                      {updatingMessage}
+                    </span>
+                  ) : (
+                    `Delete Selected (${selectedIds.length})`
+                  )}
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -353,7 +360,7 @@ export function MessagesManager() {
               Showing {filteredMessages.length} of {messages.length} message(s).
             </p>
           ) : null}
-          {!isLoading && filteredMessages.length > 0 ? (
+          {!isReadOnly && !isLoading && filteredMessages.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -406,13 +413,15 @@ export function MessagesManager() {
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(event) => toggleMessageSelection(message.id, event.target.checked)}
-                          className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                          aria-label={`Select message ${message.subject || message.id}`}
-                        />
+                        {!isReadOnly ? (
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(event) => toggleMessageSelection(message.id, event.target.checked)}
+                            className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                            aria-label={`Select message ${message.subject || message.id}`}
+                          />
+                        ) : null}
                         <button type="button" onClick={() => setSelectedId(message.id)} className="min-w-0 flex-1 text-left">
                           <p className="text-sm font-semibold text-foreground">{message.subject || "No subject provided"}</p>
                           <p className="mt-1 text-xs text-muted-foreground">{message.name} - {message.email}</p>
@@ -501,72 +510,78 @@ export function MessagesManager() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={isUpdating || selectedMessage.status === "unread"}
-                  onClick={() => updateStatus("unread")}
-                  className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
-                >
-                  {isUpdating ? (
-                    <span className="inline-flex items-center">
-                      <Spinner size="sm" className="mr-1.5" />
-                      {updatingMessage}
-                    </span>
-                  ) : (
-                    "Mark Unread"
-                  )}
-                </button>
-                <button
-                  type="button"
-                  disabled={isUpdating || selectedMessage.status === "read"}
-                  onClick={() => updateStatus("read")}
-                  className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
-                >
-                  {isUpdating ? (
-                    <span className="inline-flex items-center">
-                      <Spinner size="sm" className="mr-1.5" />
-                      {updatingMessage}
-                    </span>
-                  ) : (
-                    "Mark Read"
-                  )}
-                </button>
-                <button
-                  type="button"
-                  disabled={isUpdating || selectedMessage.status === "replied"}
-                  onClick={() => updateStatus("replied")}
-                  className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-70"
-                >
-                  {isUpdating ? (
-                    <span className="inline-flex items-center">
-                      <Spinner size="sm" className="mr-1.5" />
-                      {updatingMessage}
-                    </span>
-                  ) : (
-                    "Mark Replied"
-                  )}
-                </button>
+                {!isReadOnly ? (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isUpdating || selectedMessage.status === "unread"}
+                      onClick={() => updateStatus("unread")}
+                      className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
+                    >
+                      {isUpdating ? (
+                        <span className="inline-flex items-center">
+                          <Spinner size="sm" className="mr-1.5" />
+                          {updatingMessage}
+                        </span>
+                      ) : (
+                        "Mark Unread"
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isUpdating || selectedMessage.status === "read"}
+                      onClick={() => updateStatus("read")}
+                      className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground disabled:opacity-60"
+                    >
+                      {isUpdating ? (
+                        <span className="inline-flex items-center">
+                          <Spinner size="sm" className="mr-1.5" />
+                          {updatingMessage}
+                        </span>
+                      ) : (
+                        "Mark Read"
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isUpdating || selectedMessage.status === "replied"}
+                      onClick={() => updateStatus("replied")}
+                      className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-70"
+                    >
+                      {isUpdating ? (
+                        <span className="inline-flex items-center">
+                          <Spinner size="sm" className="mr-1.5" />
+                          {updatingMessage}
+                        </span>
+                      ) : (
+                        "Mark Replied"
+                      )}
+                    </button>
+                  </>
+                ) : null}
                 <a
                   href={`mailto:${selectedMessage.email}?subject=${encodeURIComponent(`Re: ${selectedMessage.subject || "Contact message"}`)}`}
                   className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
                 >
                   Reply by Email
                 </a>
-                <button
-                  type="button"
-                  disabled={isUpdating}
-                  onClick={() => void deleteSelectedMessage()}
-                  className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
-                >
-                  {isUpdating ? (
-                    <span className="inline-flex items-center">
-                      <Spinner size="sm" className="mr-1.5" />
-                      {updatingMessage}
-                    </span>
-                  ) : (
-                    "Delete Message"
-                  )}
-                </button>
+                {!isReadOnly ? (
+                  <button
+                    type="button"
+                    disabled={isUpdating}
+                    onClick={() => void deleteSelectedMessage()}
+                    className="rounded-md bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground disabled:opacity-70"
+                  >
+                    {isUpdating ? (
+                      <span className="inline-flex items-center">
+                        <Spinner size="sm" className="mr-1.5" />
+                        {updatingMessage}
+                      </span>
+                    ) : (
+                      "Delete Message"
+                    )}
+                  </button>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -575,3 +590,10 @@ export function MessagesManager() {
     </section>
   )
 }
+
+
+
+
+
+
+

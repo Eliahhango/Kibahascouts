@@ -6,7 +6,8 @@ import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 
 export default async function AdminMediaPage() {
   try {
-    await requireAdmin("content:write")
+    const admin = await requireAdmin("content:read")
+    const isReadOnly = admin.role === "viewer"
 
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -20,11 +21,13 @@ export default async function AdminMediaPage() {
               </p>
             </div>
           </div>
-          <Link href="/admin/media#media-editor" className="btn-primary">
-            Add Media Item
-          </Link>
+          {!isReadOnly ? (
+            <Link href="/admin/media#media-editor" className="btn-primary">
+              Add Media Item
+            </Link>
+          ) : null}
         </header>
-        <MediaManager />
+        <MediaManager isReadOnly={isReadOnly} />
       </main>
     )
   } catch (error) {

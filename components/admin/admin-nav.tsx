@@ -52,6 +52,8 @@ type SessionResponse = {
   }
 }
 
+type AdminRole = "super_admin" | "content_admin" | "viewer"
+
 type DashboardSummaryResponse = {
   ok?: boolean
   data?: {
@@ -67,6 +69,7 @@ type AdminNavItem = {
   label: string
   icon: ComponentType<{ className?: string }>
   section: "content" | "communication" | "security"
+  roles: AdminRole[]
   shortLabel?: string
   match: (pathname: string) => boolean
 }
@@ -78,6 +81,7 @@ const adminNavItems: AdminNavItem[] = [
     shortLabel: "Home",
     icon: LayoutDashboard,
     section: "content",
+    roles: ["super_admin", "content_admin", "viewer"],
     match: (pathname) => pathname === "/admin",
   },
   {
@@ -85,6 +89,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "News",
     icon: Newspaper,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/news"),
   },
   {
@@ -92,6 +97,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Events",
     icon: CalendarDays,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/events"),
   },
   {
@@ -99,6 +105,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Resources",
     icon: FileText,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/resources"),
   },
   {
@@ -106,6 +113,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Media",
     icon: Clapperboard,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/media"),
   },
   {
@@ -113,6 +121,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Site Content",
     icon: Settings2,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/site-content"),
   },
   {
@@ -120,6 +129,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Homepage",
     icon: Home,
     section: "content",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/homepage"),
   },
   {
@@ -127,6 +137,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Inbox",
     icon: Inbox,
     section: "communication",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/messages"),
   },
   {
@@ -135,6 +146,7 @@ const adminNavItems: AdminNavItem[] = [
     shortLabel: "Members",
     icon: UserPlus,
     section: "communication",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/memberships"),
   },
   {
@@ -142,6 +154,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Navigation",
     icon: Compass,
     section: "communication",
+    roles: ["super_admin", "content_admin"],
     match: (pathname) => pathname.startsWith("/admin/navigation"),
   },
   {
@@ -149,6 +162,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Admins",
     icon: ShieldCheck,
     section: "security",
+    roles: ["super_admin"],
     match: (pathname) => pathname.startsWith("/admin/admins"),
   },
   {
@@ -156,6 +170,7 @@ const adminNavItems: AdminNavItem[] = [
     label: "Security Center",
     icon: ShieldAlert,
     section: "security",
+    roles: ["super_admin"],
     match: (pathname) => pathname.startsWith("/admin/security"),
   },
 ]
@@ -185,6 +200,14 @@ function formatRoleLabel(role: string | undefined) {
   if (role === "content_admin") return "Editor"
   if (role === "viewer") return "Viewer"
   return "Admin"
+}
+
+function toAdminRole(role: string | undefined): AdminRole {
+  if (role === "super_admin" || role === "content_admin" || role === "viewer") {
+    return role
+  }
+
+  return "viewer"
 }
 
 function formatNameFromEmail(email: string | undefined) {
@@ -279,9 +302,11 @@ export function AdminNav() {
   })
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const contentItems = useMemo(() => adminNavItems.filter((item) => item.section === "content"), [])
-  const communicationItems = useMemo(() => adminNavItems.filter((item) => item.section === "communication"), [])
-  const securityItems = useMemo(() => adminNavItems.filter((item) => item.section === "security"), [])
+  const role = toAdminRole(session?.role)
+  const visibleItems = useMemo(() => adminNavItems.filter((item) => item.roles.includes(role)), [role])
+  const contentItems = useMemo(() => visibleItems.filter((item) => item.section === "content"), [visibleItems])
+  const communicationItems = useMemo(() => visibleItems.filter((item) => item.section === "communication"), [visibleItems])
+  const securityItems = useMemo(() => visibleItems.filter((item) => item.section === "security"), [visibleItems])
 
   useEffect(() => {
     const width = collapsed ? "64px" : "240px"
@@ -430,7 +455,7 @@ export function AdminNav() {
     summary.pendingInvites > 0 ||
     summary.pendingMembershipApplications > 0
   const compactTabItems = compactMobileTabs
-    .map((href) => adminNavItems.find((item) => item.href === href))
+    .map((href) => visibleItems.find((item) => item.href === href))
     .filter((item): item is AdminNavItem => Boolean(item))
 
   return (

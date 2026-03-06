@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react"
 
+type AdminRole = "super_admin" | "content_admin" | "viewer"
+
 type AdminDashboardGreetingProps = {
   email: string
+  role: AdminRole
 }
 
 function getGreetingByHour(hour: number) {
@@ -18,7 +21,19 @@ function getGreetingByHour(hour: number) {
   return "Good evening"
 }
 
-export function AdminDashboardGreeting({ email }: AdminDashboardGreetingProps) {
+function getRoleDescription(role: AdminRole) {
+  if (role === "super_admin") {
+    return "Full system access"
+  }
+
+  if (role === "content_admin") {
+    return "Content management access"
+  }
+
+  return "Read-only access"
+}
+
+export function AdminDashboardGreeting({ email, role }: AdminDashboardGreetingProps) {
   const [hour, setHour] = useState<number | null>(null)
 
   useEffect(() => {
@@ -35,13 +50,16 @@ export function AdminDashboardGreeting({ email }: AdminDashboardGreetingProps) {
     return left || "admin"
   }, [email])
 
-  if (hour === null) {
-    return <p className="mt-2 text-sm text-muted-foreground">Welcome back, {firstPart}.</p>
-  }
-
   return (
-    <p className="mt-2 text-sm text-muted-foreground">
-      {getGreetingByHour(hour)}, <span className="font-semibold text-foreground">{firstPart}</span>.
-    </p>
+    <div className="mt-2">
+      {hour === null ? (
+        <p className="text-sm text-muted-foreground">Welcome back, {firstPart}.</p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {getGreetingByHour(hour)}, <span className="font-semibold text-foreground">{firstPart}</span>.
+        </p>
+      )}
+      <p className="mt-0.5 text-xs text-muted-foreground">{getRoleDescription(role)}</p>
+    </div>
   )
 }

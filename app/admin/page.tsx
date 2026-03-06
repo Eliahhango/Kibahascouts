@@ -5,26 +5,33 @@ import {
   CalendarDays,
   Clapperboard,
   Compass,
+  Crown,
+  Eye,
   FileText,
   Home,
   Inbox,
   Newspaper,
+  Settings2,
   ShieldAlert,
   ShieldCheck,
-  Upload,
+  UserPlus,
 } from "lucide-react"
 import { AdminDashboardGreeting } from "@/components/admin/admin-dashboard-greeting"
 import { DashboardActivityOverview } from "@/components/admin/dashboard-activity-overview"
 import { DashboardCards, DashboardCardsSkeleton } from "@/components/admin/dashboard-cards"
+import { getPrimarySuperAdminEmail } from "@/lib/auth/admin-users"
 import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 import { getAdminDashboardOverview } from "@/lib/firebase/admin-dashboard"
 import { redirect } from "next/navigation"
+
+type AdminRole = "super_admin" | "content_admin" | "viewer"
 
 function getRoleBadge(role: string) {
   if (role === "super_admin") {
     return {
       label: "Super Admin",
       className: "border-[#c9910a]/35 bg-[#c9910a]/15 text-[#9b6c04]",
+      showCrown: true,
     }
   }
 
@@ -32,12 +39,14 @@ function getRoleBadge(role: string) {
     return {
       label: "Editor",
       className: "border-[#1e3a2f]/35 bg-[#1e3a2f]/10 text-[#1e3a2f]",
+      showCrown: false,
     }
   }
 
   return {
     label: "Viewer",
     className: "border-slate-300 bg-slate-100 text-slate-700",
+    showCrown: false,
   }
 }
 
@@ -58,7 +67,7 @@ function toProgress(value: number, maxValue: number) {
   return Math.round((value / maxValue) * 100)
 }
 
-async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) {
+async function DashboardOverviewSection({ adminEmail, role }: { adminEmail: string; role: AdminRole }) {
   const overview = await getAdminDashboardOverview(adminEmail)
   const summary = overview.summary
 
@@ -143,44 +152,54 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
 
   const hasErrors = Object.values(summary).some((item) => Boolean(item.error))
 
-  const toolCards = [
+  const allQuickActions = [
     {
       href: "/admin/news",
-      label: "News Manager",
+      label: "News",
       description: "Create and publish official district stories.",
       icon: Newspaper,
     },
     {
       href: "/admin/events",
-      label: "Events Calendar",
+      label: "Events",
       description: "Manage district trainings and event registrations.",
       icon: CalendarDays,
     },
     {
       href: "/admin/resources",
-      label: "Resources Library",
+      label: "Resources",
       description: "Upload forms, policies, and downloadable files.",
       icon: FileText,
     },
     {
       href: "/admin/media",
-      label: "Media Center",
+      label: "Media",
       description: "Manage videos and gallery assets.",
       icon: Clapperboard,
     },
     {
-      href: "/admin/messages",
-      label: "Inbox",
-      description: "Review contact messages from public visitors.",
-      icon: Inbox,
-      pendingLabel: overview.pendingActions.inbox > 0 ? `${overview.pendingActions.inbox} pending` : undefined,
-      pendingTone: "orange" as const,
+      href: "/admin/site-content",
+      label: "Site Content",
+      description: "Edit page content blocks and CMS sections.",
+      icon: Settings2,
     },
     {
       href: "/admin/homepage",
       label: "Homepage",
       description: "Edit featured modules and homepage highlights.",
       icon: Home,
+    },
+    {
+      href: "/admin/messages",
+      label: "Inbox",
+      description: "Review contact messages from public visitors.",
+      icon: Inbox,
+    },
+    {
+      href: "/admin/memberships",
+      label: "Memberships",
+      description: "Review and manage membership applications.",
+      icon: UserPlus,
     },
     {
       href: "/admin/navigation",
@@ -190,28 +209,25 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
     },
     {
       href: "/admin/admins",
-      label: "Admin Access",
+      label: "Admins",
       description: "Manage roles, invitations, and status.",
       icon: ShieldCheck,
-      pendingLabel: summary.securityAlerts.value > 0 ? `${summary.securityAlerts.value} alerts` : undefined,
-      pendingTone: "red" as const,
     },
     {
       href: "/admin/security",
-      label: "Security Center",
+      label: "Security",
       description: "Inspect logs, blocks, and active alerts.",
       icon: ShieldAlert,
-      pendingLabel: summary.securityAlerts.value > 0 ? `${summary.securityAlerts.value} alerts` : undefined,
-      pendingTone: "red" as const,
     },
   ]
 
-  const quickActions = [
-    { href: "/admin/news", label: "Add News", icon: Newspaper },
-    { href: "/admin/events", label: "Add Event", icon: CalendarDays },
-    { href: "/admin/media", label: "Upload Media", icon: Upload },
-    { href: "/admin/messages", label: "View Inbox", icon: Inbox },
-  ] as const
+  const quickActions = role === "super_admin"
+    ? allQuickActions
+    : role === "content_admin"
+      ? allQuickActions.filter((action) => action.href !== "/admin/admins" && action.href !== "/admin/security")
+      : []
+
+  const compactActions = quickActions.slice(0, 4)
 
   const activityStyleByType = {
     news: { icon: Newspaper, dot: "bg-[#1e3a2f]/15 text-[#1e3a2f]" },
@@ -230,59 +246,60 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
           </p>
         ) : null}
 
-        <div className="flex gap-2 overflow-x-auto pb-1 xl:hidden">
-          {quickActions.map((action) => (
-            <Link
-              key={action.href}
-              href={action.href}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#1e3a2f]/30 bg-white px-3 py-1.5 text-xs font-medium text-[#1e3a2f]"
-            >
-              <action.icon className="h-3.5 w-3.5" />
-              {action.label}
-            </Link>
-          ))}
-        </div>
+        {compactActions.length > 0 ? (
+          <div className="flex gap-2 overflow-x-auto pb-1 xl:hidden">
+            {compactActions.map((action) => (
+              <Link
+                key={action.href}
+                href={action.href}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#1e3a2f]/30 bg-white px-3 py-1.5 text-xs font-medium text-[#1e3a2f]"
+              >
+                <action.icon className="h-3.5 w-3.5" />
+                {action.label}
+              </Link>
+            ))}
+          </div>
+        ) : null}
 
         <DashboardCards items={cards} />
 
         <DashboardActivityOverview visitsSeries={overview.visitsSeries} contentBreakdown={overview.contentBreakdown} />
 
         <section className="mt-8 rounded-xl border border-border bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-foreground">Management Tools</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Access content, communication, and security modules from one panel.</p>
+          <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Access content, communication, and security modules by role.</p>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {toolCards.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                className="group cursor-pointer rounded-xl border border-border border-l-4 border-l-transparent bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-l-[#1e3a2f] hover:shadow-md sm:p-4"
-              >
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#1e3a2f] text-white sm:h-10 sm:w-10">
-                  <tool.icon className="h-5 w-5" />
-                </span>
-                <h3 className="mt-3 text-base font-semibold text-foreground">{tool.label}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{tool.description}</p>
-
-                <div className="mt-4 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center text-sm font-semibold text-[#1e3a2f]">
-                    <span className="transition-transform group-hover:translate-x-0.5">Open {"->"}</span>
+          {role === "viewer" ? (
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <p className="inline-flex items-center gap-2 font-semibold">
+                <Eye className="h-4 w-4" />
+                You have read-only access.
+              </p>
+              <p className="mt-1 text-amber-800">Contact a Super Admin to request edit permissions.</p>
+            </div>
+          ) : (
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {quickActions.map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="group cursor-pointer rounded-xl border border-border border-l-4 border-l-transparent bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-l-[#1e3a2f] hover:shadow-md sm:p-4"
+                >
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#1e3a2f] text-white sm:h-10 sm:w-10">
+                    <action.icon className="h-5 w-5" />
                   </span>
-                  {tool.pendingLabel ? (
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                        tool.pendingTone === "red"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-orange-100 text-orange-700"
-                      }`}
-                    >
-                      {tool.pendingLabel}
+                  <h3 className="mt-3 text-base font-semibold text-foreground">{action.label}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{action.description}</p>
+
+                  <div className="mt-4 flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center text-sm font-semibold text-[#1e3a2f]">
+                      <span className="transition-transform group-hover:translate-x-0.5">Open {"->"}</span>
                     </span>
-                  ) : null}
-                </div>
-              </Link>
-            ))}
-          </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
@@ -308,21 +325,23 @@ async function DashboardOverviewSection({ adminEmail }: { adminEmail: string }) 
             </div>
           </section>
 
-          <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-foreground">Quick Actions</h3>
-            <div className="mt-3 space-y-2.5">
-              {quickActions.map((action) => (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5"
-                >
-                  <action.icon className="h-4 w-4" />
-                  {action.label}
-                </Link>
-              ))}
-            </div>
-          </section>
+          {compactActions.length > 0 ? (
+            <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
+              <h3 className="text-sm font-semibold text-foreground">Quick Actions</h3>
+              <div className="mt-3 space-y-2.5">
+                {compactActions.map((action) => (
+                  <Link
+                    key={action.href}
+                    href={action.href}
+                    className="inline-flex w-full items-center gap-2 rounded-md border border-[#1e3a2f]/40 px-3 py-2 text-sm font-medium text-[#1e3a2f] hover:bg-[#1e3a2f]/5"
+                  >
+                    <action.icon className="h-4 w-4" />
+                    {action.label}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="rounded-xl border border-border bg-white p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-foreground">System Status</h3>
@@ -360,14 +379,29 @@ export default async function AdminHomePage() {
   try {
     const admin = await requireAdmin("dashboard:view")
     const roleBadge = getRoleBadge(admin.role)
+    const primaryEmail = await getPrimarySuperAdminEmail()
+    const isPrimarySuperAdmin =
+      admin.role === "super_admin" &&
+      Boolean(primaryEmail) &&
+      admin.email.toLowerCase() === String(primaryEmail).toLowerCase()
 
     return (
       <main className="mx-auto w-full max-w-[120rem] px-4 py-6 sm:px-6 lg:px-8">
+        {isPrimarySuperAdmin ? (
+          <section className="mb-4 rounded-xl bg-gradient-to-r from-[#1e3a2f] to-[#2d5a42] p-4 text-white shadow-sm">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-[#f2cf7d]">
+              <Crown className="h-6 w-6 text-[#c9910a]" />
+              Primary Administrator
+            </p>
+            <p className="mt-1 text-sm text-white/90">You have full system access and developer privileges.</p>
+          </section>
+        ) : null}
+
         <header className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6">
           <div className="space-y-3">
             <div>
               <h1 className="text-xl font-bold text-foreground sm:text-2xl">Admin Dashboard</h1>
-              <AdminDashboardGreeting email={admin.email} />
+              <AdminDashboardGreeting email={admin.email} role={admin.role} />
             </div>
 
             <p className="text-sm text-muted-foreground">
@@ -375,7 +409,8 @@ export default async function AdminHomePage() {
             </p>
 
             <div>
-              <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${roleBadge.className}`}>
+              <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${roleBadge.className}`}>
+                {roleBadge.showCrown ? <Crown className="h-3.5 w-3.5" /> : null}
                 {roleBadge.label}
               </span>
             </div>
@@ -385,7 +420,7 @@ export default async function AdminHomePage() {
         </header>
 
         <Suspense fallback={<section className="mt-6"><DashboardCardsSkeleton /></section>}>
-          <DashboardOverviewSection adminEmail={admin.email} />
+          <DashboardOverviewSection adminEmail={admin.email} role={admin.role} />
         </Suspense>
       </main>
     )

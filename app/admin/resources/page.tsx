@@ -6,7 +6,8 @@ import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 
 export default async function AdminResourcesPage() {
   try {
-    await requireAdmin("content:write")
+    const admin = await requireAdmin("content:read")
+    const isReadOnly = admin.role === "viewer"
 
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -20,11 +21,13 @@ export default async function AdminResourcesPage() {
               </p>
             </div>
           </div>
-          <Link href="/admin/resources#resource-editor" className="btn-primary">
-            Upload File
-          </Link>
+          {!isReadOnly ? (
+            <Link href="/admin/resources#resource-editor" className="btn-primary">
+              Upload File
+            </Link>
+          ) : null}
         </header>
-        <ResourcesManager />
+        <ResourcesManager isReadOnly={isReadOnly} />
       </main>
     )
   } catch (error) {

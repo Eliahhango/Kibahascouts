@@ -6,7 +6,11 @@ import { AdminAuthError, requireAdmin } from "@/lib/auth/require-admin"
 
 export default async function AdminSecurityPage() {
   try {
-    await requireAdmin("admins:manage")
+    const admin = await requireAdmin("dashboard:view")
+
+    if (admin.role !== "super_admin") {
+      redirect("/admin")
+    }
 
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">

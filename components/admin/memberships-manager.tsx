@@ -56,7 +56,7 @@ function formatSubmittedDate(value: string) {
   })
 }
 
-export function MembershipsManager() {
+export function MembershipsManager({ isReadOnly = false }: { isReadOnly?: boolean }) {
   const [items, setItems] = useState<MembershipApplication[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<"all" | MembershipStatus>("all")
@@ -146,6 +146,11 @@ export function MembershipsManager() {
 
   return (
     <section className="space-y-5">
+      {isReadOnly ? (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Read-only mode - you can browse but cannot make changes.
+        </p>
+      ) : null}
       {error ? <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
       {success ? <p className="rounded-md border border-emerald-300/40 bg-emerald-100/30 px-3 py-2 text-sm text-emerald-700">{success}</p> : null}
 
@@ -244,36 +249,40 @@ export function MembershipsManager() {
                       </td>
                       <td className="py-2">
                         <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => void handleUpdateStatus(item, "approved")}
-                            disabled={isUpdating || item.status === "approved"}
-                            className="rounded-md border border-emerald-400 bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
-                          >
-                            {isUpdating && actionState?.status === "approved" ? (
-                              <span className="inline-flex items-center">
-                                <Spinner size="sm" className="mr-1.5" />
-                                Approving...
-                              </span>
-                            ) : (
-                              "Approve"
-                            )}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void handleUpdateStatus(item, "rejected")}
-                            disabled={isUpdating || item.status === "rejected"}
-                            className="rounded-md border border-red-300 bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
-                          >
-                            {isUpdating && actionState?.status === "rejected" ? (
-                              <span className="inline-flex items-center">
-                                <Spinner size="sm" className="mr-1.5" />
-                                Rejecting...
-                              </span>
-                            ) : (
-                              "Reject"
-                            )}
-                          </button>
+                          {!isReadOnly ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => void handleUpdateStatus(item, "approved")}
+                                disabled={isUpdating || item.status === "approved"}
+                                className="rounded-md border border-emerald-400 bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+                              >
+                                {isUpdating && actionState?.status === "approved" ? (
+                                  <span className="inline-flex items-center">
+                                    <Spinner size="sm" className="mr-1.5" />
+                                    Approving...
+                                  </span>
+                                ) : (
+                                  "Approve"
+                                )}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => void handleUpdateStatus(item, "rejected")}
+                                disabled={isUpdating || item.status === "rejected"}
+                                className="rounded-md border border-red-300 bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                              >
+                                {isUpdating && actionState?.status === "rejected" ? (
+                                  <span className="inline-flex items-center">
+                                    <Spinner size="sm" className="mr-1.5" />
+                                    Rejecting...
+                                  </span>
+                                ) : (
+                                  "Reject"
+                                )}
+                              </button>
+                            </>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => toggleExpanded(item.id)}
@@ -314,4 +323,5 @@ export function MembershipsManager() {
     </section>
   )
 }
+
 
