@@ -63,7 +63,7 @@ export function SiteFooter() {
   }
 
   return (
-    <footer className="mt-0 bg-tsa-green-deep text-primary-foreground" role="contentinfo">
+    <footer className="mt-0 overflow-hidden bg-tsa-green-deep text-primary-foreground" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="hidden gap-8 xl:grid xl:grid-cols-[repeat(4,minmax(0,1fr))_240px]">
           {footer.sections.map((section) => (
@@ -143,8 +143,8 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-tsa-green-light/40 bg-tsa-green-mid">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+      <div className="mb-0 border-t border-tsa-green-light/40 bg-tsa-green-mid">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 pt-4 pb-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <Link
             href={footer.privacyLink.href}
             className="text-sm font-semibold text-primary-foreground transition-colors hover:text-tsa-cream focus-visible:ring-2 focus-visible:ring-tsa-gold"
@@ -175,7 +175,7 @@ export function SiteFooter() {
             target="_blank"
             rel="noreferrer"
             title="Member of the World Organization of the Scout Movement"
-            className="inline-flex items-center gap-2 rounded-lg border border-tsa-green-light/40 px-3 py-1.5 text-xs font-medium text-primary-foreground/80 hover:border-tsa-gold hover:text-primary-foreground"
+            className="inline-flex self-start items-center gap-2 rounded-lg border border-tsa-green-light/40 px-3 py-1.5 text-xs font-medium text-primary-foreground/80 hover:border-tsa-gold hover:text-primary-foreground sm:self-auto"
           >
             <Image
               src={branding.wosmBadge}
@@ -193,3 +193,4 @@ export function SiteFooter() {
     </footer>
   )
 }
+

@@ -65,19 +65,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${sourceSerif.variable}`}>
-      <body className="font-sans antialiased overflow-x-hidden">
+      <body className="flex min-h-screen flex-col overflow-x-hidden font-sans antialiased">
         <Suspense fallback={null}>
           <SiteVisitTracker />
         </Suspense>
         <ConditionalShell>
           <SiteHeader />
         </ConditionalShell>
-        <main id="main-content">
-          {children}
-        </main>
-        <ConditionalShell>
-          <SiteFooter />
-        </ConditionalShell>
+        <div className="flex flex-1 flex-col">
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          <ConditionalShell>
+            <SiteFooter />
+          </ConditionalShell>
+        </div>
         <Analytics />
       </body>
     </html>

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, MapPin, Menu, Search, X } from "lucide-react"
+import { ChevronDown, ChevronRight, MapPin, Menu, Search, X } from "lucide-react"
 import { mainNavItems } from "@/lib/data"
 import { GlobalSearch } from "@/components/global-search"
 import { GoogleTranslator } from "@/components/google-translator"
@@ -45,12 +45,13 @@ function normalizeNavItems(items: NavigationItem[] | undefined): NavigationItem[
     label: (item.label || "").trim() || "Menu",
     href: (item.href || "").trim() || "/",
     description: (item.description || "").trim(),
-    children: item.children && item.children.length > 0
-      ? item.children.map((child) => ({
-          label: (child.label || "").trim() || "Item",
-          href: (child.href || "").trim() || "/",
-        }))
-      : undefined,
+    children:
+      item.children && item.children.length > 0
+        ? item.children.map((child) => ({
+            label: (child.label || "").trim() || "Item",
+            href: (child.href || "").trim() || "/",
+          }))
+        : undefined,
   }))
 }
 
@@ -165,8 +166,7 @@ export function SiteHeader() {
   }
 
   const utilityLabel = useMemo(
-    () =>
-      "Kibaha district identity, language translation, and global search.",
+    () => "Kibaha district identity, language translation, and global search.",
     [],
   )
 
@@ -182,7 +182,7 @@ export function SiteHeader() {
 
       <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
         <div
-          className="mx-auto flex max-w-[92rem] flex-wrap items-center gap-2 px-4 py-2.5 sm:px-6 lg:flex-nowrap lg:gap-4 lg:px-8"
+          className="mx-auto flex max-w-[92rem] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none px-4 py-2.5 sm:px-6 lg:gap-4 lg:px-8"
           aria-label={utilityLabel}
         >
           <div className="inline-flex items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2.5 py-1 text-xs font-medium text-tsa-green-deep shadow-sm">
@@ -214,9 +214,11 @@ export function SiteHeader() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <SafeClientBoundary>
-              <GoogleTranslator />
-            </SafeClientBoundary>
+            <div className="min-w-0 shrink">
+              <SafeClientBoundary>
+                <GoogleTranslator />
+              </SafeClientBoundary>
+            </div>
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -234,7 +236,7 @@ export function SiteHeader() {
         className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
         role="banner"
       >
-        <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-2 sm:px-6 md:py-3 lg:px-8">
           <div className="relative z-10 flex shrink-0 items-center gap-3 pr-4 2xl:min-w-[17.5rem]">
             <Link
               href="/"
@@ -264,15 +266,14 @@ export function SiteHeader() {
 
           <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 lg:flex xl:pl-6" aria-label="Main navigation">
             {navItems.map((item) => {
-              const isActive =
-                pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
+              const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
               const childColumns = item.children ? splitIntoColumns(item.children) : [[], []]
               const isExpanded = item.children ? activeMenu === item.label : false
 
               return (
                 <div
                   key={item.label}
-                  className="relative shrink-0"
+                  className="relative isolate shrink-0"
                   onMouseEnter={() => item.children && handleMenuEnter(item.label)}
                   onMouseLeave={handleMenuLeave}
                 >
@@ -297,14 +298,15 @@ export function SiteHeader() {
 
                   {item.children && isExpanded && (
                     <div
-                      className="absolute left-1/2 top-full z-50 mt-2 w-[44rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl border border-border bg-card p-5 shadow-lg"
+                      className="absolute left-0 top-full z-50 mt-2 min-w-[22rem] w-max max-w-[min(44rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-6 shadow-xl ring-1 ring-black/5"
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}
                     >
-                      <div className="mb-4 border-b border-border pb-3">
-                        <p className="text-sm font-semibold text-card-foreground">{item.label}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                      <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl bg-gradient-to-r from-tsa-green-deep via-tsa-gold to-tsa-green-deep" />
+                      <div className="mb-4 border-b border-border/60 pb-4">
+                        <p className="text-base font-bold text-tsa-green-deep">{item.label}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {item.description || defaultMenuDescriptions[item.label] || "Explore links in this section."}
                         </p>
                       </div>
@@ -315,11 +317,12 @@ export function SiteHeader() {
                               <Link
                                 key={child.href}
                                 href={child.href}
-                                className="block rounded-md px-3 py-2 text-sm text-card-foreground transition-colors hover:bg-secondary hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
+                                className="group flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-all hover:bg-tsa-green-deep/8 hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
                                 role="menuitem"
                                 onClick={() => setActiveMenu(null)}
                               >
                                 {child.label}
+                                <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-60" />
                               </Link>
                             ))}
                           </div>
@@ -352,7 +355,6 @@ export function SiteHeader() {
             </button>
           </div>
         </div>
-
       </header>
 
       <MobileNav pathname={pathname} navItems={navItems} open={mobileOpen} onClose={() => setMobileOpen(false)} />
@@ -379,11 +381,23 @@ function MobileNav({
 
   return (
     <div
-      className={`fixed inset-x-0 top-[4.5rem] z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out lg:hidden ${
-        open ? "max-h-[calc(100dvh-4.5rem)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+      className={`fixed inset-x-0 top-[calc(var(--header-height,4.5rem))] z-40 border-t border-border bg-background/95 shadow-2xl backdrop-blur transition-all duration-300 ease-in-out lg:hidden ${
+        open ? "max-h-[calc(100dvh-var(--header-height,4.5rem))] opacity-100" : "pointer-events-none max-h-0 opacity-0"
       }`}
     >
-      <nav className="mx-auto max-h-[calc(100dvh-4.5rem)] max-w-[92rem] overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
+      <nav className="mx-auto max-h-[calc(100dvh-var(--header-height,4.5rem))] max-w-[92rem] overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
+        <div className="mb-1 flex items-center justify-between border-b border-border pb-3">
+          <p className="text-sm font-semibold text-foreground">Navigation</p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-foreground transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Close navigation"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
           return (
@@ -399,20 +413,16 @@ function MobileNav({
                     aria-expanded={expanded === item.label}
                   >
                     {item.label}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${
-                        expanded === item.label ? "rotate-180" : ""
-                      }`}
-                    />
+                    <ChevronDown className={`h-4 w-4 transition-transform ${expanded === item.label ? "rotate-180" : ""}`} />
                   </button>
                   {expanded === item.label && (
-                    <div className="pb-3 pl-4">
+                    <div className="border-l-2 border-tsa-gold/40 pb-3 pl-3">
                       {item.description ? <p className="mb-2 text-xs text-muted-foreground">{item.description}</p> : null}
                       {item.children.map((child) => (
                         <Link
                           key={`${child.label}-${child.href}`}
                           href={child.href}
-                          className="block rounded-md py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
+                          className="block rounded-md py-2.5 text-[0.9375rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={onClose}
                         >
                           {child.label}
