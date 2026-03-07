@@ -1,6 +1,21 @@
-import "server-only"
+﻿import "server-only"
 
 import { z } from "zod"
+/**
+ * Required environment variables - all must be set in .env.local and Vercel/production:
+ *
+ * NEXT_PUBLIC_FIREBASE_API_KEY
+ * NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ * NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ * NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET     (e.g. your-project.appspot.com)
+ * NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+ * NEXT_PUBLIC_FIREBASE_APP_ID
+ * FIREBASE_ADMIN_PROJECT_ID
+ * FIREBASE_ADMIN_CLIENT_EMAIL
+ * FIREBASE_ADMIN_PRIVATE_KEY              (paste with \n newlines escaped)
+ * ADMIN_EMAILS                            (comma-separated bootstrap super admin emails)
+ * NEXT_PUBLIC_SITE_URL                    (e.g. https://kibahascoutes.org)
+ */
 
 function stripWrappingQuotes(value: string) {
   const trimmed = value.trim()
@@ -86,3 +101,5 @@ export const serverEnv = {
   SAMPLE_MODE: parsed.data.SAMPLE_MODE === "true",
   FIREBASE_ADMIN_PRIVATE_KEY: normalizePrivateKey(parsed.data.FIREBASE_ADMIN_PRIVATE_KEY),
 }
+
+

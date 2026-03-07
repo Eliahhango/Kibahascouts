@@ -1,4 +1,4 @@
-import { validateEnv } from "./scripts/validate-env.mjs"
+﻿import { validateEnv } from "./scripts/validate-env.mjs"
 
 validateEnv()
 
@@ -43,11 +43,23 @@ const nextConfig = {
     "@opentelemetry/api",
   ],
   images: {
-    remotePatterns: trustedImageHostnames.map((hostname) => ({
-      protocol: "https",
-      hostname,
-      pathname: "/**",
-    })),
+    remotePatterns: [
+      ...trustedImageHostnames.map((hostname) => ({
+        protocol: "https",
+        hostname,
+        pathname: "/**",
+      })),
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        pathname: "/v0/b/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+        pathname: "/**",
+      },
+    ],
   },
   async headers() {
     return [
@@ -66,3 +78,4 @@ const nextConfig = {
 }
 
 export default nextConfig
+

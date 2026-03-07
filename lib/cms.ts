@@ -1,4 +1,4 @@
-import { unstable_noStore as noStore } from "next/cache"
+﻿import { unstable_noStore as noStore } from "next/cache"
 import { leadershipProfiles, mediaItems, newsArticles, resources, scoutEvents, scoutUnits } from "@/lib/data"
 import type {
   HomepageSettings,
@@ -26,7 +26,10 @@ async function withSampleFallback<T>(readFirestore: () => Promise<T[]>, fallback
 
   try {
     return await readFirestore()
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[CMS] Firestore read failed, using fallback:", error)
+    }
     return []
   }
 }
@@ -40,7 +43,10 @@ async function withSampleFallbackItem<T>(readFirestore: () => Promise<T>, fallba
 
   try {
     return await readFirestore()
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[CMS] Firestore read failed, using fallback:", error)
+    }
     return fallback
   }
 }
@@ -107,3 +113,5 @@ export async function getSiteContentSettingsFromCms(): Promise<SiteContentSettin
     return getSiteContentFromFirestore()
   }, getDefaultSiteContentSettings())
 }
+
+

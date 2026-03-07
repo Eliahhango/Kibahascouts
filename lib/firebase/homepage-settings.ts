@@ -1,4 +1,4 @@
-import "server-only"
+﻿import "server-only"
 
 import { z } from "zod"
 import { getAdminDb } from "@/lib/firebase/admin"
@@ -143,40 +143,45 @@ async function getHomepageSettingsDocRef() {
 }
 
 export async function getHomepageSettingsFromFirestore(): Promise<HomepageSettings> {
-  const docRef = await getHomepageSettingsDocRef()
-  const doc = await docRef.get()
+  try {
+    const docRef = await getHomepageSettingsDocRef()
+    const doc = await docRef.get()
 
-  if (!doc.exists) {
+    if (!doc.exists) {
+      return cloneDefaults()
+    }
+
+    const parsed = homepageSettingsDocSchema.safeParse(doc.data() || {})
+    if (!parsed.success) {
+      console.warn("Invalid homepage settings document. Falling back to defaults.")
+      return cloneDefaults()
+    }
+
+    const districtSnapshot =
+      parsed.data.districtSnapshot && parsed.data.districtSnapshot.length === DEFAULT_DISTRICT_SNAPSHOT.length
+        ? parsed.data.districtSnapshot.map((item) => ({ ...item }))
+        : DEFAULT_DISTRICT_SNAPSHOT.map((item) => ({ ...item }))
+
+    const priorityInitiatives =
+      parsed.data.priorityInitiatives && parsed.data.priorityInitiatives.length === DEFAULT_PRIORITY_INITIATIVES.length
+        ? parsed.data.priorityInitiatives.map((item) => ({ ...item }))
+        : DEFAULT_PRIORITY_INITIATIVES.map((item) => ({ ...item }))
+
+    const campaigns =
+      parsed.data.campaigns && parsed.data.campaigns.length === DEFAULT_CAMPAIGNS.length
+        ? parsed.data.campaigns.map((item) => ({ ...item }))
+        : DEFAULT_CAMPAIGNS.map((item) => ({ ...item }))
+
+    return {
+      districtSnapshot,
+      priorityInitiatives,
+      campaigns,
+      updatedAt: parsed.data.updatedAt || "",
+      updatedBy: parsed.data.updatedBy || "",
+    }
+  } catch (error) {
+    console.error("[homepage-settings] Failed to read from Firestore:", error)
     return cloneDefaults()
-  }
-
-  const parsed = homepageSettingsDocSchema.safeParse(doc.data() || {})
-  if (!parsed.success) {
-    console.warn("Invalid homepage settings document. Falling back to defaults.")
-    return cloneDefaults()
-  }
-
-  const districtSnapshot =
-    parsed.data.districtSnapshot && parsed.data.districtSnapshot.length === DEFAULT_DISTRICT_SNAPSHOT.length
-      ? parsed.data.districtSnapshot.map((item) => ({ ...item }))
-      : DEFAULT_DISTRICT_SNAPSHOT.map((item) => ({ ...item }))
-
-  const priorityInitiatives =
-    parsed.data.priorityInitiatives && parsed.data.priorityInitiatives.length === DEFAULT_PRIORITY_INITIATIVES.length
-      ? parsed.data.priorityInitiatives.map((item) => ({ ...item }))
-      : DEFAULT_PRIORITY_INITIATIVES.map((item) => ({ ...item }))
-
-  const campaigns =
-    parsed.data.campaigns && parsed.data.campaigns.length === DEFAULT_CAMPAIGNS.length
-      ? parsed.data.campaigns.map((item) => ({ ...item }))
-      : DEFAULT_CAMPAIGNS.map((item) => ({ ...item }))
-
-  return {
-    districtSnapshot,
-    priorityInitiatives,
-    campaigns,
-    updatedAt: parsed.data.updatedAt || "",
-    updatedBy: parsed.data.updatedBy || "",
   }
 }
 
@@ -203,3 +208,4 @@ export async function upsertHomepageSettingsInFirestore(
     ...payload,
   } satisfies HomepageSettings
 }
+

@@ -396,7 +396,19 @@ export default async function HomePage() {
             {homepageSettings.campaigns.map((campaign) => (
               <Link key={campaign.id} href={campaign.link} className="group card-shell aspect-[4/3] overflow-hidden p-0">
                 <div className="relative h-full w-full">
-                  <Image src={campaign.image} alt={campaign.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                  {campaign.image ? (
+                    <Image
+                      src={campaign.image}
+                      alt={campaign.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      onError={undefined}
+                      unoptimized={!campaign.image.startsWith("https://")}
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-tsa-green-deep to-tsa-green-mid" />
+                  )}
                   <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-tsa-green-deep/85 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-4">
                     <span className="inline-flex rounded-full bg-tsa-gold px-2.5 py-0.5 text-xs font-semibold text-white">
@@ -441,4 +453,5 @@ export default async function HomePage() {
     </>
   )
 }
+
 
