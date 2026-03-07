@@ -95,14 +95,14 @@ const BADGE_FALLBACKS: Record<string, BadgeFallback[]> = {
     {
       match: ["nyirenda", "look wide"],
       title: "Nyirenda Badge",
-      image: "/images/badges/sinia/nyirenda.jpg",
+      image: "/images/badges/sinia/nyirenda-official.jpg",
       description:
         "A higher Sinia stage that expects advanced skill application, continuous service, and role-model behavior for younger sections.",
     },
     {
       match: ["kilimanjaro"],
       title: "Kilimanjaro Badge",
-      image: "/images/badges/sinia/kilimanjaro.jpg",
+      image: "/images/badges/sinia/kilimanjaro-official.jpg",
       description:
         "The highest Sinia award, symbolizing resilience, high achievement, and readiness for major leadership and transition responsibilities.",
     },
@@ -281,5 +281,4 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
-
 
