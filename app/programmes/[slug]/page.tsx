@@ -148,7 +148,7 @@ function normalizeBadge(programmeSlug: string, badge: string | ProgrammeBadge) {
   const sourceTitle = typeof badge === "string" ? normalizePublicText(badge, "Badge") : normalizePublicText(badge.title, "Badge")
   const fallback = resolveBadgeFallback(programmeSlug, sourceTitle)
   const title = fallback?.title || sourceTitle
-  const image = typeof badge === "string" ? fallback?.image || "" : (badge.image || "").trim() || fallback?.image || ""
+  const image = fallback ? fallback.image : typeof badge === "string" ? "" : (badge.image || "").trim()
 
   const sourceDescription = typeof badge === "string" ? "" : badge.description || ""
   const description = normalizePublicText(fallback?.description || sourceDescription, "")
@@ -276,4 +276,5 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
+
 
