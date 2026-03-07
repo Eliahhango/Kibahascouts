@@ -1,11 +1,23 @@
+﻿"use client"
+
+import { useEffect } from "react"
 import Image from "next/image"
 
 export default function PublicLoading() {
+  useEffect(() => {
+    const original = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = original
+    }
+  }, [])
+
   return (
-    <main
+    <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#1e3a2f] px-4"
       role="status"
       aria-label="Loading Kibaha Scouts"
+      aria-live="polite"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
@@ -51,6 +63,6 @@ export default function PublicLoading() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   )
 }

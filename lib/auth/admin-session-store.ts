@@ -1,4 +1,4 @@
-import "server-only"
+﻿import "server-only"
 
 import { createHash } from "crypto"
 import { serverEnv } from "@/lib/env/server"
@@ -132,6 +132,11 @@ export async function createTrackedAdminSession(params: SessionWriteParams) {
     active: true,
   }
 
+  // Non-blocking cleanup - runs in background, does not delay login.
+  void purgeExpiredAdminSessions().catch((err) =>
+    console.warn("[session-store] Background purge failed:", err)
+  )
+
   await collection.doc(sessionHash).set(payload)
 }
 
@@ -168,7 +173,7 @@ export async function touchTrackedAdminSession(sessionCookie: string) {
   const nowIso = new Date().toISOString()
   const data = existing.data() as TrackedSession
   const previousSeen = data.lastSeenAt ? new Date(data.lastSeenAt).getTime() : 0
-  if (Date.now() - previousSeen < 60_000) {
+  if (Date.now() - previousSeen < 300_000) {
     return
   }
 
@@ -202,4 +207,37 @@ export async function revokeTrackedAdminSessionsByEmail(email: string, reason: s
 
 export async function revokeTrackedAdminSessionsByUid(uid: string, reason: string) {
   return revokeTrackedAdminSessionsByField({ field: "uid", value: uid.trim(), reason })
+}
+
+export async function purgeExpiredAdminSessions(): Promise<number> {
+  const collection = await getAdminSessionsCollection()
+  const now = new Date().toISOString()
+
+  const expiredSnapshot = await collection
+    .where("expiresAt", "<=", now)
+    .limit(400)
+    .get()
+
+  const revokedSnapshot = await collection
+    .where("active", "==", false)
+    .limit(400)
+    .get()
+
+  const docsToDelete = [
+    ...expiredSnapshot.docs,
+    ...revokedSnapshot.docs.filter(
+      (doc) => !expiredSnapshot.docs.some((d) => d.id === doc.id)
+    ),
+  ]
+
+  if (docsToDelete.length === 0) return 0
+
+  const writer = collection.firestore.batch()
+  for (const doc of docsToDelete) {
+    writer.delete(doc.ref)
+  }
+  await writer.commit()
+
+  console.info(`[session-store] Purged ${docsToDelete.length} expired/revoked session documents.`)
+  return docsToDelete.length
 }
