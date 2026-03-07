@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+﻿import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Manrope, Source_Serif_4 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
@@ -6,6 +6,7 @@ import { ConditionalShell } from '@/components/conditional-shell'
 import { SiteVisitTracker } from '@/components/site-visit-tracker'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { BackToTop } from '@/components/back-to-top'
 import { siteConfig } from '@/lib/site-config'
 import { getMetadataBase, getSiteUrl } from '@/lib/site-url'
 import './globals.css'
@@ -77,7 +78,10 @@ export default function RootLayout({
             {children}
           </main>
           <ConditionalShell>
-            <SiteFooter />
+            <>
+              <SiteFooter />
+              <BackToTop />
+            </>
           </ConditionalShell>
         </div>
         <Analytics />
@@ -85,3 +89,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+

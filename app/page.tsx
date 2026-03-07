@@ -1,4 +1,4 @@
-import Image from "next/image"
+﻿import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -152,7 +152,7 @@ export default async function HomePage() {
               <Link href="/join#youth" className="btn-primary">
                 Join as Youth
               </Link>
-              <Link href="/about" className="btn-secondary border-white text-white hover:bg-white hover:text-tsa-green-deep">
+              <Link href="/about" className="btn-secondary border-white text-white shadow-sm backdrop-blur-sm hover:bg-white hover:text-tsa-green-deep">
                 Learn More
               </Link>
             </div>
@@ -160,11 +160,11 @@ export default async function HomePage() {
 
           <div className="grid content-center grid-cols-2 gap-4">
             {statTiles.map((tile) => (
-              <article key={tile.label} className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+              <article key={tile.label} tabIndex={0} className="rounded-xl border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-tsa-gold text-white shadow-sm">
                   <tile.icon className="h-5 w-5 stroke-[1.5]" />
                 </span>
-                <p className="mt-3 text-2xl font-bold text-white">{tile.value}</p>
+                <p className="mt-3 text-3xl font-black text-white">{tile.value}</p>
                 <p className="mt-1 text-sm text-white/85">{tile.label}</p>
               </article>
             ))}
@@ -321,7 +321,7 @@ export default async function HomePage() {
                     <div className="min-w-0">
                       <h3 className="line-clamp-2 text-lg font-semibold text-foreground">{resource.title}</h3>
                       <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {resource.fileType} • {resource.fileSize}
+                        {resource.fileType} â€¢ {resource.fileSize}
                       </p>
                       <span className="mt-2 inline-flex rounded-full bg-tsa-green-deep/10 px-2.5 py-0.5 text-xs font-semibold text-tsa-green-deep">
                         {resource.category}
@@ -432,7 +432,7 @@ export default async function HomePage() {
             <Link href="/join#youth" className="btn-primary">
               Join as Youth
             </Link>
-            <Link href="/join#volunteer" className="btn-secondary border-white text-white hover:bg-white hover:text-tsa-green-deep">
+            <Link href="/join#volunteer" className="btn-secondary border-white text-white shadow-sm backdrop-blur-sm hover:bg-white hover:text-tsa-green-deep">
               Volunteer as Leader
             </Link>
           </div>
@@ -441,3 +441,4 @@ export default async function HomePage() {
     </>
   )
 }
+

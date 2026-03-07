@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+﻿@import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'leaflet/dist/leaflet.css';
 
@@ -163,7 +163,11 @@
 
 @layer utilities {
   .card-shell {
-    @apply rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md;
+    @apply rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+  
+  .card-featured {
+    @apply rounded-2xl border-2 border-tsa-gold/30 bg-card shadow-md transition-all duration-200 hover:border-tsa-gold/60 hover:shadow-lg;
   }
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-widest text-tsa-green-deep;
@@ -339,3 +343,8 @@
 body {
   top: 0 !important;
 }
+
+
+
+
+

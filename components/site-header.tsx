@@ -180,60 +180,42 @@ export function SiteHeader() {
         Skip to main content
       </a>
 
-      <div className="border-b border-tsa-green-mid bg-gradient-to-r from-tsa-green-deep via-tsa-green-mid to-tsa-gold text-primary-foreground">
-        <div
-          className="mx-auto flex max-w-[92rem] flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none px-4 py-2.5 sm:px-6 lg:gap-4 lg:px-8"
-          aria-label={utilityLabel}
-        >
-          <div className="inline-flex items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2.5 py-1 text-xs font-medium text-tsa-green-deep shadow-sm">
-            <MapPin className="h-3.5 w-3.5" />
-            Kibaha District
+      <div className="border-b border-tsa-green-mid/60 bg-tsa-green-deep text-primary-foreground">
+        <div className="mx-auto flex max-w-[92rem] items-center gap-4 px-4 py-2 sm:px-6 lg:px-8" aria-label={utilityLabel}>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80">
+              <MapPin className="h-3 w-3 text-tsa-gold" />
+              Kibaha District, Tanzania
+            </span>
+            <span className="text-xs text-white/30">|</span>
+            <a
+              href={branding.wosmUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden items-center gap-1.5 text-xs font-medium text-white/80 transition-colors hover:text-white sm:inline-flex"
+            >
+              <Image src={branding.wosmBadge} alt="" width={14} height={14} className="h-3.5 w-3.5 rounded-full" />
+              WOSM Member
+            </a>
           </div>
 
-          <a
-            href={branding.wosmUrl}
-            target="_blank"
-            rel="noreferrer"
-            title="Member of the World Organization of the Scout Movement"
-            className="hidden items-center gap-1.5 rounded-md border border-tsa-green-mid bg-tsa-warm-white px-2 py-1 shadow-sm sm:inline-flex"
-          >
-            <Image
-              src={branding.wosmBadge}
-              alt="WOSM Member"
-              width={16}
-              height={16}
-              className="h-4 w-4 rounded-full object-contain"
-            />
-            <span className="text-[10px] font-semibold text-tsa-green-deep">WOSM Member</span>
-          </a>
-
-          <div className="hidden flex-1 md:block">
+          <div className="mx-auto hidden max-w-xl flex-1 md:block">
             <SafeClientBoundary>
               <GlobalSearch />
             </SafeClientBoundary>
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
-            <div className="min-w-0 shrink">
-              <SafeClientBoundary>
-                <GoogleTranslator />
-              </SafeClientBoundary>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-primary-foreground text-primary-foreground transition hover:bg-tsa-green-mid md:hidden"
-              aria-label="Open search"
-            >
-              <Search className="h-4 w-4" />
-            </button>
+          <div className="ml-auto min-w-0 shrink">
+            <SafeClientBoundary>
+              <GoogleTranslator />
+            </SafeClientBoundary>
           </div>
         </div>
       </div>
 
       <header
         ref={navRef}
-        className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}
+        className={`sticky top-0 z-40 border-b border-border bg-background transition-shadow ${scrolled ? "shadow-sm ring-1 ring-black/5" : ""}`}
         role="banner"
       >
         <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-2 sm:px-6 md:py-3 lg:px-8">
@@ -258,10 +240,11 @@ export function SiteHeader() {
               className="flex flex-col rounded focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`${name} - Home`}
             >
-              <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
-              <span className="hidden text-xs leading-tight text-muted-foreground md:block lg:hidden">TSA</span>
+              <span className="whitespace-nowrap text-[0.9375rem] font-extrabold leading-tight tracking-tight text-foreground">{name}</span>
             </Link>
           </div>
+
+          <div className="mx-2 hidden h-8 w-px bg-border lg:block" />
 
           <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0 pl-2 lg:flex xl:pl-4" aria-label="Main navigation">
             {navItems.map((item) => {
@@ -284,7 +267,7 @@ export function SiteHeader() {
                       setActiveMenu((current) => (current === item.label ? null : item.label))
                     }}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:px-1.5 lg:text-xs xl:px-2.5 2xl:text-sm ${
+                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:px-2 lg:text-xs xl:px-3 xl:text-[0.8125rem] 2xl:text-sm ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
@@ -300,9 +283,13 @@ export function SiteHeader() {
                     )}
                   </Link>
 
-                  {item.children && isExpanded && (
+                  {item.children ? (
                     <div
-                      className="absolute left-0 top-full z-50 mt-2 w-max min-w-[36rem] max-w-[min(44rem,calc(100vw-1rem))] rounded-2xl border border-border bg-card p-6 shadow-xl ring-1 ring-black/5"
+                      className={`absolute left-0 top-full z-50 mt-2 w-max min-w-[36rem] max-w-[min(44rem,calc(100vw-1rem))] origin-top rounded-2xl border border-border bg-white p-6 shadow-xl ring-1 ring-black/5 transition-all duration-150 ${
+                        isExpanded
+                          ? "visible pointer-events-auto opacity-100 scale-100 animate-in fade-in-0 zoom-in-95"
+                          : "invisible pointer-events-none opacity-0 scale-95"
+                      }`}
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}
@@ -321,7 +308,7 @@ export function SiteHeader() {
                               <Link
                                 key={child.href}
                                 href={child.href}
-                                className="group flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-all hover:bg-tsa-green-deep/8 hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
+                                className="group flex items-center gap-2 rounded-lg px-3 py-3 text-[0.8125rem] font-medium text-foreground transition-all hover:bg-tsa-green-deep/8 hover:text-tsa-green-deep focus-visible:ring-2 focus-visible:ring-ring"
                                 role="menuitem"
                                 onClick={() => setActiveMenu(null)}
                               >
@@ -333,7 +320,7 @@ export function SiteHeader() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               )
             })}
@@ -391,7 +378,10 @@ function MobileNav({
     >
       <nav className="mx-auto max-h-[calc(100dvh-var(--header-height,4.5rem))] max-w-[92rem] overflow-y-auto px-4 py-4 sm:px-6 lg:px-8" aria-label="Mobile navigation">
         <div className="mb-1 flex items-center justify-between border-b border-border pb-3">
-          <p className="text-sm font-semibold text-foreground">Navigation</p>
+          <div className="flex items-center gap-2">
+            <span className="h-5 w-1 rounded-full bg-tsa-gold" />
+            <p className="text-sm font-bold text-foreground">Menu</p>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -449,10 +439,13 @@ function MobileNav({
             </div>
           )
         })}
+
+        <div className="mt-4 border-t border-border pt-4">
+          <Link href="/join" onClick={onClose} className="btn-primary w-full justify-center text-sm">
+            Join Kibaha Scouts
+          </Link>
+        </div>
       </nav>
     </div>
   )
 }
-
-
-
