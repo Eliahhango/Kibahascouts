@@ -63,7 +63,7 @@ type NavigationSettingsResponse = {
 }
 
 export function SiteHeader() {
-  const { branding, name, organization } = siteConfig
+  const { branding, name } = siteConfig
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -260,7 +260,6 @@ export function SiteHeader() {
             >
               <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
               <span className="hidden text-xs leading-tight text-muted-foreground md:block lg:hidden">TSA</span>
-              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground xl:block">{organization}</span>
             </Link>
           </div>
 
@@ -454,5 +453,6 @@ function MobileNav({
     </div>
   )
 }
+
 
 
