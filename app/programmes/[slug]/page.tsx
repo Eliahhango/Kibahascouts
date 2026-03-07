@@ -5,6 +5,7 @@ import { Award, CheckCircle2, Shirt, TrendingUp } from "lucide-react"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
 import { getSiteContentSettingsFromCms } from "@/lib/cms"
+import { programmes as programmeDocumentReference } from "@/lib/data"
 import { normalizePublicText } from "@/lib/public-text"
 import type { ProgrammeBadge } from "@/lib/types"
 
@@ -179,6 +180,10 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
   const prog = siteContent.programmesList.find((programme) => programme.slug === slug)
   if (!prog) notFound()
 
+  const docsProgramme = programmeDocumentReference.find((programme) => programme.slug === prog.slug)
+  const displayObjectives = docsProgramme?.objectives?.length ? docsProgramme.objectives : prog.objectives
+  const displayActivities = docsProgramme?.activities?.length ? docsProgramme.activities : prog.activities
+
   return (
     <>
       <PageHero
@@ -187,10 +192,10 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
         breadcrumbs={[{ label: "Programmes", href: "/programmes" }, { label: prog.title }]}
       />
 
-      {prog.objectives.length > 0 ? (
+      {displayObjectives.length > 0 ? (
         <SectionShell eyebrow="Objectives" title="Learning Objectives" tone="background">
           <div className="grid gap-4 md:grid-cols-2">
-            {prog.objectives.map((obj, index) => (
+            {displayObjectives.map((obj, index) => (
               <article key={`objective-${index}`} className="card-shell flex items-start gap-3 p-4">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-tsa-green-deep" />
                 <p className="text-base leading-relaxed text-foreground">{normalizePublicText(obj)}</p>
@@ -200,10 +205,10 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
         </SectionShell>
       ) : null}
 
-      {prog.activities.length > 0 ? (
+      {displayActivities.length > 0 ? (
         <SectionShell eyebrow="Activities" title="Programme Activities" tone="white">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {prog.activities.map((act, index) => (
+            {displayActivities.map((act, index) => (
               <article key={`activity-${index}`} className="card-shell p-4">
                 <p className="text-base font-medium text-foreground">{normalizePublicText(act)}</p>
               </article>
@@ -276,5 +281,4 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
-
 

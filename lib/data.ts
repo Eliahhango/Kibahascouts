@@ -352,14 +352,16 @@ export const programmes: Programme[] = [
     description:
       "Kabu is the foundational youth section for children aged 5 to 10. It introduces scout values, discipline, teamwork, and the first badge pathway.",
     objectives: [
-      "Build strong foundation in scout values and good conduct.",
-      "Develop confidence, teamwork, and responsibility at early age.",
-      "Begin formal badge progression through Kabu stages.",
+      "Introduce the Scout Promise, Law, salute, and positive conduct through age-appropriate guidance.",
+      "Support whole-child growth across mental, physical, social, and spiritual development.",
+      "Build confidence, communication, teamwork, and personal responsibility in small-group settings.",
+      "Start formal progression from Membership through the Kabu star pathway with clear skill milestones.",
     ],
     activities: [
-      "Age-appropriate outdoor and nature activities.",
-      "Basic practical scout skills and supervised group tasks.",
-      "Simple service and good-turn activities in the community.",
+      "Guided outdoor play, nature observation, and simple exploration games.",
+      "Introductory campcraft, hygiene routines, and supervised practical tasks.",
+      "Creative learning through songs, stories, drawing, and role-play exercises.",
+      "Simple good-turn and community service actions focused on cleanliness and care.",
     ],
     badges: [
       {
@@ -401,14 +403,16 @@ export const programmes: Programme[] = [
     description:
       "Junia is for young scouts aged 11 to 14, focusing on practical scouting skills, patrol discipline, and progressive advancement through class and special badges.",
     objectives: [
-      "Strengthen practical scout skills and self-reliance.",
-      "Build patrol teamwork, leadership habits, and discipline.",
-      "Advance through class badges and structured scout challenges.",
+      "Strengthen patrol-based discipline, teamwork, and personal self-reliance.",
+      "Develop practical competence in campcraft, safety, communication, and problem solving.",
+      "Deepen citizenship values through service, environmental care, and community responsibility.",
+      "Progress through Membership, Second Class, First Class, and Torch badge standards.",
     ],
     activities: [
-      "Patrol-based training and outdoor skills practice.",
-      "Community service and district scout assignments.",
-      "Badge-based exercises and section progression tasks.",
+      "Patrol-led training drills, pioneering tasks, and structured outdoor practice.",
+      "Camp activities including planning, setup, and multi-day field participation.",
+      "Health, first-aid, communication, and observation exercises with practical assessment.",
+      "Community and environmental service projects linked to badge progression.",
     ],
     badges: [
       {
@@ -450,14 +454,16 @@ export const programmes: Programme[] = [
     description:
       "Sinia is the senior youth section for ages 15 to 17, emphasizing higher responsibility, advanced scouting standards, and preparation for Rover level.",
     objectives: [
-      "Develop advanced scouting competence and maturity.",
-      "Prepare youth for high-level service and mentorship roles.",
-      "Progress through senior badges and national-level standards.",
+      "Develop mature leadership, discipline, and ethical decision-making in Scouting life.",
+      "Advance technical field competence in camp management, planning, and responsibility.",
+      "Prepare members to mentor younger sections and lead meaningful service initiatives.",
+      "Progress through Senior, Nyirenda, and Kilimanjaro standards with higher performance expectations.",
     ],
     activities: [
-      "Advanced field activities and leadership exercises.",
-      "Service projects with greater responsibility in units and district.",
-      "Senior badge preparation and assessment activities.",
+      "Advanced camps, field assignments, and practical expedition-style tasks.",
+      "Leadership rotations in planning, directing teams, and evaluating outcomes.",
+      "Applied community projects in health, environment, and social responsibility.",
+      "Structured preparation, assessment, and reflection for upper Sinia badge requirements.",
     ],
     badges: [
       {
@@ -499,14 +505,16 @@ export const programmes: Programme[] = [
     description:
       "Rova is the young adult scout section for ages 18 to 26, focused on advanced leadership, service, and high-level badge achievements.",
     objectives: [
-      "Build strong leadership and mentorship capacity in scouting.",
-      "Deliver impactful community service and district support.",
-      "Complete advanced Rova badge pathway and personal development.",
+      "Form young adult leaders with strong civic responsibility and service values.",
+      "Build advanced life and leadership skills in planning, teamwork, and communication.",
+      "Strengthen mentorship capacity for supporting younger Scout sections and district programmes.",
+      "Complete Impeesa, Chief Scout, and President's Scout progression through measurable impact.",
     ],
     activities: [
-      "Leadership and service projects at unit and district level.",
-      "Mentoring younger sections and supporting training events.",
-      "Advanced progression activities aligned to Rova badges.",
+      "High-responsibility field activities, advanced campcraft, and expedition-style challenges.",
+      "Community-impact projects with planning, implementation, and reporting phases.",
+      "Mentorship support to Kabu, Junia, and Sinia sections during trainings and events.",
+      "Service and advocacy engagements in health, environment, and youth development priorities.",
     ],
     badges: [
       {
