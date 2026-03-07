@@ -65,7 +65,7 @@ const BADGE_FALLBACKS: Record<string, BadgeFallback[]> = {
     {
       match: ["daraja la kwanza", "cheo cha kwanza", "first class"],
       title: "First Class Badge",
-      image: "/images/badges/junia/daraja-la-kwanza.jpg",
+      image: "/images/badges/junia/first-class-official.jpg",
       description:
         "An advanced Junia class badge requiring stronger leadership behavior, wider practical skill competence, and patrol-level responsibility.",
     },
@@ -281,4 +281,5 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
+
 
