@@ -362,10 +362,30 @@ export const programmes: Programme[] = [
       "Simple service and good-turn activities in the community.",
     ],
     badges: [
-      "Nishani ya Uanachama (Membership Badge)",
-      "Nyota ya Kwanza (First Star Badge)",
-      "Nyota ya Pili (Second Star Badge)",
-      "Nyota Kuu (Grand Star Badge)",
+      {
+        title: "Nishani ya Uanachama (Membership Badge)",
+        image: "/images/badges/kabu/uanachama.jpg",
+        description:
+          "Huanzisha rasmi Kabu katika sehemu ya Skauti. Mwongozo unaonyesha msingi wake ni umri wa miaka 5-10, hadithi ya Mowgli, saluti, ahadi na sheria za Kabu.",
+      },
+      {
+        title: "Nyota ya Kwanza (First Star Badge)",
+        image: "/images/badges/kabu/nyota-ya-kwanza.jpg",
+        description:
+          "Hatua ya kwanza ya maendeleo ya Kabu yenye majaribio ya stadi za msingi, nidhamu, na kujitambua katika mazingira ya nyumbani na shule.",
+      },
+      {
+        title: "Nyota ya Pili (Second Star Badge)",
+        image: "/images/badges/kabu/nyota-ya-pili.jpg",
+        description:
+          "Huongeza kiwango cha uwajibikaji kwa Kabu kupitia mazoezi zaidi ya huduma, ustadi wa vitendo, na ufuatiliaji wa maendeleo binafsi.",
+      },
+      {
+        title: "Nyota Kuu (Grand Star Badge)",
+        image: "/images/badges/kabu/nyota-kuu.jpg",
+        description:
+          "Tuzo ya juu ya Kabu. Kulingana na mwongozo, hutolewa baada ya kumaliza Nyota ya Pili na kukidhi mahitaji ya nishani za ustadi.",
+      },
     ],
     progression: [
       "Membership Badge -> First Star Badge -> Second Star Badge -> Grand Star Badge",
@@ -391,10 +411,30 @@ export const programmes: Programme[] = [
       "Badge-based exercises and section progression tasks.",
     ],
     badges: [
-      "Nishani ya Uanachama (Membership Badge)",
-      "Nishani ya Daraja la Pili (Second Class Badge)",
-      "Nishani ya Daraja la Kwanza (First Class Badge)",
-      "Nishani ya Mwenge (Mwenge Badge)",
+      {
+        title: "Nishani ya Uanachama (Membership Badge)",
+        image: "/images/badges/junia/uanachama.jpg",
+        description:
+          "Nishani ya kuingizwa rasmi kwa Junia (miaka 11-14), ikisisitiza ahadi, sheria, na utamaduni wa patrol kabla ya mapito ya madaraja.",
+      },
+      {
+        title: "Nishani ya Daraja la Pili (Second Class Badge)",
+        image: "/images/badges/junia/daraja-la-pili.jpg",
+        description:
+          "Hatua ya mwanzo ya daraja la Junia inayopima stadi za msingi za ujasusi, kujitegemea, na ushiriki wa huduma kwa jamii.",
+      },
+      {
+        title: "Nishani ya Daraja la Kwanza (First Class Badge)",
+        image: "/images/badges/junia/daraja-la-kwanza.jpg",
+        description:
+          "Daraja la juu zaidi kabla ya Mwenge, likihitaji uelewa mpana wa stadi za skauti, maadili ya uongozi, na utekelezaji wa majukumu ya patrol.",
+      },
+      {
+        title: "Nishani ya Mwenge (Mwenge Badge)",
+        image: "/images/badges/junia/mwenge.jpg",
+        description:
+          "Nishani ya juu ya Junia inayohusishwa na uzalendo, huduma kwa jamii, na maandalizi ya kuhamia sehemu ya Sinia.",
+      },
     ],
     progression: [
       "Membership Badge -> Second Class Badge -> First Class Badge -> Mwenge Badge",
@@ -420,13 +460,33 @@ export const programmes: Programme[] = [
       "Senior badge preparation and assessment activities.",
     ],
     badges: [
-      "Nishani ya Uanachama (Membership Badge)",
-      "Nishani ya Sinia (Senior Badge)",
-      "Look Wide Badge",
-      "Nishani ya Kilimanjaro (Kilimanjaro Badge)",
+      {
+        title: "Nishani ya Uanachama (Membership Badge)",
+        image: "/images/badges/sinia/uanachama.jpg",
+        description:
+          "Hutambua kuapishwa kwa Sinia na uthibitisho wa kufuata ahadi, sheria, na misingi ya sehemu ya vijana wa miaka 15-17.",
+      },
+      {
+        title: "Nishani ya Sinia (Senior Badge)",
+        image: "/images/badges/sinia/sinia.jpg",
+        description:
+          "Hatua kuu ya kati ya Sinia inayojenga ukomavu, nidhamu ya uongozi, na uwezo wa kutekeleza majukumu ya juu ya skauti.",
+      },
+      {
+        title: "Nishani ya Nyirenda (Nyirenda Badge)",
+        image: "/images/badges/sinia/nyirenda.jpg",
+        description:
+          "Nishani ya maendeleo ya juu ndani ya Sinia inayohitaji stadi za juu, huduma endelevu, na utayari wa kuwa mfano kwa makundi madogo.",
+      },
+      {
+        title: "Nishani ya Kilimanjaro (Kilimanjaro Badge)",
+        image: "/images/badges/sinia/kilimanjaro.jpg",
+        description:
+          "Nishani ya juu kabisa ya Sinia; mwongozo unaifananisha na uthubutu wa kufikia kilele cha Kilimanjaro na kubeba dhamira ya Mwenge wa Uhuru.",
+      },
     ],
     progression: [
-      "Membership Badge -> Senior Badge -> Look Wide Badge -> Kilimanjaro Badge",
+      "Membership Badge -> Senior Badge -> Nyirenda Badge -> Kilimanjaro Badge",
     ],
     uniformGuidance:
       "Sinia scouts are expected to uphold full uniform standards and present proper insignia according to badge level.",
@@ -449,13 +509,33 @@ export const programmes: Programme[] = [
       "Advanced progression activities aligned to Rova badges.",
     ],
     badges: [
-      "Nishani ya Uanachama (Membership Badge)",
-      "Impessa Badge",
-      "Nishani ya Scout Mkuu",
-      "Nishani ya Raisi",
+      {
+        title: "Nishani ya Uanachama (Membership Badge)",
+        image: "/images/badges/rova/uanachama.jpg",
+        description:
+          "Nishani ya kuingizwa rasmi Rova (miaka 18-26), ikiweka msingi wa maadili, utumishi, na uwajibikaji wa skauti kijana.",
+      },
+      {
+        title: "Nishani ya Impeesa (Impeesa Badge)",
+        image: "/images/badges/rova/impeesa.jpg",
+        description:
+          "Hatua ya kwanza ya mapito ya Rova, ikihusishwa na historia ya uanaskauti na uthibitisho wa stadi za msingi za uongozi na utumishi.",
+      },
+      {
+        title: "Nishani ya Scout Mkuu",
+        image: "/images/badges/rova/scout-mkuu.jpg",
+        description:
+          "Nishani ya juu ya kati kwa Rova inayohitaji kukamilisha nishani za ustadi kwa maendeleo binafsi na huduma kwa jamii.",
+      },
+      {
+        title: "Nishani ya Raisi",
+        image: "/images/badges/rova/raisi.jpg",
+        description:
+          "Tuzo ya juu kabisa ya Rova. Mwongozo unaieleza kama kilele cha mapito ya Rova, ikiwa na utambuzi wa kitaifa na cheti cha heshima.",
+      },
     ],
     progression: [
-      "Membership Badge -> Impessa Badge -> Scout Mkuu Badge -> Raisi Badge",
+      "Membership Badge -> Impeesa Badge -> Scout Mkuu Badge -> Raisi Badge",
     ],
     uniformGuidance:
       "Rova members should wear approved rover uniform and official insignia during all formal scout functions.",
@@ -578,3 +658,4 @@ export const mainNavItems = [
   },
   { label: "Contact", href: "/contact" },
 ]
+

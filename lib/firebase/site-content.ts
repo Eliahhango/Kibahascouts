@@ -30,6 +30,11 @@ const timelineItemSchema = z.object({
   description: z.string().trim().min(1).max(500),
 })
 
+const badgeItemSchema = z.object({
+  title: textLineSchema,
+  image: z.string().trim().min(1).max(500).optional(),
+  description: textParagraphSchema.optional(),
+})
 const programmeSchema = z.object({
   slug: z.string().trim().min(1).regex(slugPattern, "Programme slug must be lowercase and use hyphens."),
   title: z.string().trim().min(1).max(120),
@@ -37,7 +42,7 @@ const programmeSchema = z.object({
   description: textParagraphSchema,
   objectives: z.array(textLineSchema).min(1).max(20),
   activities: z.array(textLineSchema).min(1).max(20),
-  badges: z.array(textLineSchema).min(1).max(30),
+  badges: z.array(z.union([textLineSchema, badgeItemSchema])).min(1).max(30),
   progression: z.array(textLineSchema).min(1).max(30),
   uniformGuidance: textParagraphSchema,
   image: z.string().trim().min(1).max(500),

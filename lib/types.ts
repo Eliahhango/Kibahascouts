@@ -267,10 +267,16 @@ export interface Programme {
   description: string
   objectives: string[]
   activities: string[]
-  badges: string[]
+  badges: Array<string | ProgrammeBadge>
   progression: string[]
   uniformGuidance: string
   image: string
+}
+
+export interface ProgrammeBadge {
+  title: string
+  image?: string
+  description?: string
 }
 
 export interface FAQ {
@@ -292,3 +298,4 @@ export type SearchResult = {
 }
 
 export type SearchFilter = "all" | "news" | "event" | "resource" | "unit"
+
