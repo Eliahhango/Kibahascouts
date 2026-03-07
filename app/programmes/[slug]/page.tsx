@@ -10,6 +10,7 @@ import type { ProgrammeBadge } from "@/lib/types"
 
 type BadgeFallback = {
   match: string[]
+  title: string
   image: string
   description: string
 }
@@ -17,106 +18,122 @@ type BadgeFallback = {
 const BADGE_FALLBACKS: Record<string, BadgeFallback[]> = {
   kabu: [
     {
-      match: ["uanachama"],
+      match: ["uanachama", "membership"],
+      title: "Membership Badge",
       image: "/images/badges/kabu/uanachama.jpg",
       description:
-        "Huanzisha rasmi Kabu katika sehemu ya Skauti. Mwongozo unaonyesha msingi wake ni umri wa miaka 5-10, hadithi ya Mowgli, saluti, ahadi na sheria za Kabu.",
+        "This badge marks official entry into Kabu Scouting. It introduces the Promise, Law, salute, and foundational identity for children aged 5 to 10.",
     },
     {
-      match: ["nyota ya kwanza"],
+      match: ["nyota ya kwanza", "first star"],
+      title: "First Star Badge",
       image: "/images/badges/kabu/nyota-ya-kwanza.jpg",
       description:
-        "Hatua ya kwanza ya maendeleo ya Kabu yenye majaribio ya stadi za msingi, nidhamu, na kujitambua katika mazingira ya nyumbani na shule.",
+        "The first development level for Kabu members, focused on basic practical skills, discipline, confidence, and everyday responsibility.",
     },
     {
-      match: ["nyota ya pili"],
+      match: ["nyota ya pili", "second star"],
+      title: "Second Star Badge",
       image: "/images/badges/kabu/nyota-ya-pili.jpg",
       description:
-        "Huongeza kiwango cha uwajibikaji kwa Kabu kupitia mazoezi zaidi ya huduma, ustadi wa vitendo, na ufuatiliaji wa maendeleo binafsi.",
+        "Builds on the first star stage with stronger self-reliance, service habits, and improved application of Scouting values in daily life.",
     },
     {
-      match: ["nyota kuu"],
+      match: ["nyota kuu", "grand star"],
+      title: "Grand Star Badge",
       image: "/images/badges/kabu/nyota-kuu.jpg",
       description:
-        "Tuzo ya juu ya Kabu. Kulingana na mwongozo, hutolewa baada ya kumaliza Nyota ya Pili na kukidhi mahitaji ya nishani za ustadi.",
+        "The highest Kabu award, granted after completing earlier star requirements and meeting the expected special-skill standards.",
     },
   ],
   junia: [
     {
-      match: ["uanachama"],
+      match: ["uanachama", "membership"],
+      title: "Membership Badge",
       image: "/images/badges/junia/uanachama.jpg",
       description:
-        "Nishani ya kuingizwa rasmi kwa Junia (miaka 11-14), ikisisitiza ahadi, sheria, na utamaduni wa patrol kabla ya mapito ya madaraja.",
+        "Confirms formal admission into Junia Scouting (ages 11 to 14), with emphasis on Promise, Law, patrol identity, and section discipline.",
     },
     {
-      match: ["daraja la pili", "cheo cha pili"],
+      match: ["daraja la pili", "cheo cha pili", "second class"],
+      title: "Second Class Badge",
       image: "/images/badges/junia/daraja-la-pili.jpg",
       description:
-        "Hatua ya mwanzo ya daraja la Junia inayopima stadi za msingi za ujasusi, kujitegemea, na ushiriki wa huduma kwa jamii.",
+        "The first class-level progression in Junia, assessing core fieldcraft, personal initiative, and consistent participation in unit and community tasks.",
     },
     {
-      match: ["daraja la kwanza", "cheo cha kwanza"],
+      match: ["daraja la kwanza", "cheo cha kwanza", "first class"],
+      title: "First Class Badge",
       image: "/images/badges/junia/daraja-la-kwanza.jpg",
       description:
-        "Daraja la juu zaidi kabla ya Mwenge, likihitaji uelewa mpana wa stadi za skauti, maadili ya uongozi, na utekelezaji wa majukumu ya patrol.",
+        "An advanced Junia class badge requiring stronger leadership behavior, wider practical skill competence, and patrol-level responsibility.",
     },
     {
-      match: ["mwenge"],
+      match: ["mwenge", "torch"],
+      title: "Torch (Mwenge) Badge",
       image: "/images/badges/junia/mwenge.jpg",
       description:
-        "Nishani ya juu ya Junia inayohusishwa na uzalendo, huduma kwa jamii, na maandalizi ya kuhamia sehemu ya Sinia.",
+        "The top Junia badge, recognizing readiness for higher section progression through service, commitment, and national values.",
     },
   ],
   sinia: [
     {
-      match: ["uanachama"],
+      match: ["uanachama", "membership"],
+      title: "Membership Badge",
       image: "/images/badges/sinia/uanachama.jpg",
       description:
-        "Hutambua kuapishwa kwa Sinia na uthibitisho wa kufuata ahadi, sheria, na misingi ya sehemu ya vijana wa miaka 15-17.",
+        "Marks formal induction into Sinia Scouting and confirms commitment to the section standards for ages 15 to 17.",
     },
     {
       match: ["nishani ya sinia", "senior badge"],
+      title: "Senior Badge",
       image: "/images/badges/sinia/sinia.jpg",
       description:
-        "Hatua kuu ya kati ya Sinia inayojenga ukomavu, nidhamu ya uongozi, na uwezo wa kutekeleza majukumu ya juu ya skauti.",
+        "A core Sinia advancement badge focused on maturity, leadership discipline, and dependable service performance.",
     },
     {
       match: ["nyirenda", "look wide"],
+      title: "Nyirenda Badge",
       image: "/images/badges/sinia/nyirenda.jpg",
       description:
-        "Nishani ya maendeleo ya juu ndani ya Sinia inayohitaji stadi za juu, huduma endelevu, na utayari wa kuwa mfano kwa makundi madogo.",
+        "A higher Sinia stage that expects advanced skill application, continuous service, and role-model behavior for younger sections.",
     },
     {
       match: ["kilimanjaro"],
+      title: "Kilimanjaro Badge",
       image: "/images/badges/sinia/kilimanjaro.jpg",
       description:
-        "Nishani ya juu kabisa ya Sinia; mwongozo unaifananisha na uthubutu wa kufikia kilele cha Kilimanjaro na kubeba dhamira ya Mwenge wa Uhuru.",
+        "The highest Sinia award, symbolizing resilience, high achievement, and readiness for major leadership and transition responsibilities.",
     },
   ],
   "rova-scouts": [
     {
-      match: ["uanachama"],
+      match: ["uanachama", "membership"],
+      title: "Membership Badge",
       image: "/images/badges/rova/uanachama.jpg",
       description:
-        "Nishani ya kuingizwa rasmi Rova (miaka 18-26), ikiweka msingi wa maadili, utumishi, na uwajibikaji wa skauti kijana.",
+        "Confirms official admission into Rova Scouting (ages 18 to 26), with a focus on values, responsibility, and service identity.",
     },
     {
       match: ["impeesa", "impessa"],
+      title: "Impeesa Badge",
       image: "/images/badges/rova/impeesa.jpg",
       description:
-        "Hatua ya kwanza ya mapito ya Rova, ikihusishwa na historia ya uanaskauti na uthibitisho wa stadi za msingi za uongozi na utumishi.",
+        "The first major Rova progression badge, linked to Scouting heritage and practical leadership readiness.",
     },
     {
-      match: ["scout mkuu", "skauti mkuu"],
+      match: ["scout mkuu", "skauti mkuu", "chief scout"],
+      title: "Chief Scout Badge",
       image: "/images/badges/rova/scout-mkuu.jpg",
       description:
-        "Nishani ya juu ya kati kwa Rova inayohitaji kukamilisha nishani za ustadi kwa maendeleo binafsi na huduma kwa jamii.",
+        "An advanced Rova distinction requiring completion of higher-level personal development and community-service skill pathways.",
     },
     {
-      match: ["raisi", "rais"],
+      match: ["raisi", "rais", "president"],
+      title: "President's Scout Badge",
       image: "/images/badges/rova/raisi.jpg",
       description:
-        "Tuzo ya juu kabisa ya Rova. Mwongozo unaieleza kama kilele cha mapito ya Rova, ikiwa na utambuzi wa kitaifa na cheti cha heshima.",
+        "The highest Rova recognition, awarded for outstanding completion of progression requirements, leadership, and national-level merit.",
     },
   ],
 }
@@ -128,12 +145,13 @@ function resolveBadgeFallback(programmeSlug: string, title: string) {
 }
 
 function normalizeBadge(programmeSlug: string, badge: string | ProgrammeBadge) {
-  const title = typeof badge === "string" ? normalizePublicText(badge, "Badge") : normalizePublicText(badge.title, "Badge")
-  const fallback = resolveBadgeFallback(programmeSlug, title)
+  const sourceTitle = typeof badge === "string" ? normalizePublicText(badge, "Badge") : normalizePublicText(badge.title, "Badge")
+  const fallback = resolveBadgeFallback(programmeSlug, sourceTitle)
+  const title = fallback?.title || sourceTitle
   const image = typeof badge === "string" ? fallback?.image || "" : (badge.image || "").trim() || fallback?.image || ""
 
-  const baseDescription = typeof badge === "string" ? "" : badge.description || ""
-  const description = normalizePublicText(baseDescription || fallback?.description || "", "")
+  const sourceDescription = typeof badge === "string" ? "" : badge.description || ""
+  const description = normalizePublicText(fallback?.description || sourceDescription, "")
 
   return {
     title,
@@ -196,23 +214,29 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
 
       {prog.badges.length > 0 ? (
         <SectionShell eyebrow="Badges" title="Official Badge Pathways" tone="background">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
             {prog.badges.map((badge, index) => {
               const item = normalizeBadge(prog.slug, badge)
               return (
-                <article key={`badge-${index}`} className="card-shell flex h-full flex-col p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-tsa-green-deep/15 bg-white">
-                      {item.image ? (
-                        <Image src={item.image} alt={item.title} fill sizes="56px" className="object-contain p-1.5" />
-                      ) : (
-                        <Award className="h-6 w-6 text-tsa-green-deep" />
-                      )}
-                    </div>
-                    <h3 className="text-sm font-semibold leading-tight text-foreground">{item.title}</h3>
+                <article key={`badge-${index}`} className="card-shell flex h-full flex-col p-6 sm:p-7">
+                  <div className="relative mx-auto h-36 w-36 overflow-hidden rounded-2xl border border-tsa-green-deep/20 bg-white shadow-sm sm:h-44 sm:w-44 lg:h-48 lg:w-48">
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 144px, (max-width: 1024px) 176px, 192px"
+                        className="object-contain p-2.5"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Award className="h-10 w-10 text-tsa-green-deep" />
+                      </div>
+                    )}
                   </div>
+                  <h3 className="mt-4 text-center text-lg font-semibold leading-tight text-foreground">{item.title}</h3>
                   {item.description ? (
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                    <p className="mt-3 text-center text-base leading-relaxed text-muted-foreground">{item.description}</p>
                   ) : null}
                 </article>
               )
@@ -252,4 +276,3 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
-
