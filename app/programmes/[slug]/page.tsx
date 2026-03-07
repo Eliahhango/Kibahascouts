@@ -71,9 +71,9 @@ const BADGE_FALLBACKS: Record<string, BadgeFallback[]> = {
     {
       match: ["mwenge", "torch"],
       title: "Torch (Mwenge) Badge",
-      image: "/images/badges/junia/mwenge.jpg",
+      image: "",
       description:
-        "The top Junia badge, recognizing readiness for higher section progression through service, commitment, and national values.",
+        "The top Junia badge, recognizing readiness for higher section progression through service, commitment, and national values. Official image pending upload.",
     },
   ],
   sinia: [
@@ -276,3 +276,4 @@ export default async function ProgrammeDetailPage({ params }: { params: Promise<
     </>
   )
 }
+

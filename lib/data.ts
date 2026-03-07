@@ -431,9 +431,9 @@ export const programmes: Programme[] = [
       },
       {
         title: "Torch (Mwenge) Badge",
-        image: "/images/badges/junia/mwenge.jpg",
+        image: "",
         description:
-          "The top Junia badge, recognizing readiness for higher section progression through service, commitment, and national values.",
+          "The top Junia badge, recognizing readiness for higher section progression through service, commitment, and national values. Official image pending upload.",
       },
     ],
     progression: [
@@ -658,5 +658,4 @@ export const mainNavItems = [
   },
   { label: "Contact", href: "/contact" },
 ]
-
 
