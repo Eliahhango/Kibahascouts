@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
@@ -162,7 +162,7 @@ export function SiteHeader() {
   }
 
   const handleMenuLeave = () => {
-    menuTimeoutRef.current = setTimeout(() => setActiveMenu(null), 140)
+    menuTimeoutRef.current = setTimeout(() => setActiveMenu(null), 200)
   }
 
   const utilityLabel = useMemo(
@@ -237,7 +237,7 @@ export function SiteHeader() {
         role="banner"
       >
         <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-2 sm:px-6 md:py-3 lg:px-8">
-          <div className="relative z-10 flex shrink-0 items-center gap-3 pr-4 2xl:min-w-[17.5rem]">
+          <div className="relative z-10 flex shrink-0 items-center gap-3 pr-2 lg:pr-4">
             <Link
               href="/"
               className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-tsa-gold shadow-lg focus-visible:ring-2 focus-visible:ring-ring"
@@ -260,11 +260,11 @@ export function SiteHeader() {
             >
               <span className="whitespace-nowrap text-sm font-bold leading-tight text-foreground">{name}</span>
               <span className="hidden text-xs leading-tight text-muted-foreground md:block lg:hidden">TSA</span>
-              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground lg:block">{organization}</span>
+              <span className="hidden whitespace-nowrap text-xs leading-tight text-muted-foreground xl:block">{organization}</span>
             </Link>
           </div>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 pl-4 lg:flex xl:pl-6" aria-label="Main navigation">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0 pl-2 lg:flex xl:pl-4" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
               const childColumns = item.children ? splitIntoColumns(item.children) : [[], []]
@@ -279,8 +279,13 @@ export function SiteHeader() {
                 >
                   <Link
                     href={item.href}
+                    onClick={(event) => {
+                      if (!item.children) return
+                      event.preventDefault()
+                      setActiveMenu((current) => (current === item.label ? null : item.label))
+                    }}
                     onFocus={() => item.children && setActiveMenu(item.label)}
-                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:px-2 lg:text-xs 2xl:px-3 2xl:text-sm ${
+                    className={`relative inline-flex h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[0.93rem] font-medium leading-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:px-1.5 lg:text-xs xl:px-2.5 2xl:text-sm ${
                       isActive || isExpanded
                         ? "bg-secondary text-tsa-green-deep"
                         : "text-foreground hover:bg-secondary hover:text-tsa-green-deep"
@@ -298,7 +303,7 @@ export function SiteHeader() {
 
                   {item.children && isExpanded && (
                     <div
-                      className="absolute left-0 top-full z-50 mt-2 min-w-[22rem] w-max max-w-[min(44rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-6 shadow-xl ring-1 ring-black/5"
+                      className="absolute left-0 top-full z-50 mt-2 w-max min-w-[36rem] max-w-[min(44rem,calc(100vw-1rem))] rounded-2xl border border-border bg-card p-6 shadow-xl ring-1 ring-black/5"
                       role="menu"
                       onMouseEnter={() => handleMenuEnter(item.label)}
                       onMouseLeave={handleMenuLeave}
@@ -449,3 +454,5 @@ function MobileNav({
     </div>
   )
 }
+
+

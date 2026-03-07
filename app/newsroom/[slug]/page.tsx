@@ -1,11 +1,13 @@
-import type { Metadata } from "next"
+﻿import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { ArrowRight, Clock3, Tag, User } from "lucide-react"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
+import { ShareButtons } from "@/components/public/share-buttons"
 import { getNewsFromCms } from "@/lib/cms"
+import { siteConfig } from "@/lib/site-config"
 import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
 
 export async function generateStaticParams() {
@@ -56,6 +58,7 @@ export default async function NewsArticlePage({
     .filter(Boolean)
   const lastUpdated = article.updatedAt || article.date
   const authorInitial = (article.author || "A").trim().charAt(0).toUpperCase()
+  const shareUrl = `${siteConfig.siteUrl.replace(/\/+$/, "")}/newsroom/${article.slug}`
 
   return (
     <>
@@ -129,6 +132,10 @@ export default async function NewsArticlePage({
               ))}
             </div>
           ) : null}
+
+          <div className="mt-8 rounded-xl border border-border bg-secondary/40 p-4">
+            <ShareButtons url={shareUrl} title={article.title} summary={article.summary} />
+          </div>
         </article>
       </SectionShell>
 
@@ -150,3 +157,5 @@ export default async function NewsArticlePage({
     </>
   )
 }
+
+

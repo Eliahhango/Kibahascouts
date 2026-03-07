@@ -1,4 +1,4 @@
-import { publicEnv } from "@/lib/env/public"
+﻿import { publicEnv } from "@/lib/env/public"
 
 export type FooterSocialIcon = "facebook" | "instagram" | "youtube"
 
@@ -27,7 +27,7 @@ export const siteConfig = {
   name: "KIBAHA SCOUTS",
   shortName: "Kibaha District",
   organization: "Tanzania Scouts Association \u2013 Kibaha District Local Association",
-  siteUrl: publicEnv.NEXT_PUBLIC_SITE_URL || "https://kibahascouts.vercel.app",
+  siteUrl: publicEnv.NEXT_PUBLIC_SITE_URL || "https://kibahascoutes.org",
   description:
     "Official website of Kibaha Scouts with district updates, events, resources, and safeguarding information.",
   contact: {
@@ -167,5 +167,6 @@ export const siteConfig = {
 } as const
 
 export const getCurrentYear = () => new Date().getFullYear()
+
 
 

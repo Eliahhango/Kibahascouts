@@ -1,11 +1,13 @@
-import type { Metadata } from "next"
+﻿import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CalendarDays, Clock3, Download, MapPin } from "lucide-react"
 import { EventLocationMap } from "@/components/events/event-location-map"
 import { PageHero } from "@/components/public/page-hero"
 import { SectionShell } from "@/components/public/section-shell"
+import { ShareButtons } from "@/components/public/share-buttons"
 import { getEventsFromCms } from "@/lib/cms"
+import { siteConfig } from "@/lib/site-config"
 import { hasValidCoordinates } from "@/lib/maps"
 import { hasRichTextMarkup, sanitizeRichTextHtml } from "@/lib/rich-text"
 
@@ -58,6 +60,7 @@ export default async function EventDetailPage({
   })
   const sanitizedDescriptionHtml = sanitizeRichTextHtml(event.descriptionHtml || event.description)
   const hasRichDescription = hasRichTextMarkup(sanitizedDescriptionHtml)
+  const shareUrl = `${siteConfig.siteUrl.replace(/\/+$/, "")}/events/${event.slug}`
 
   return (
     <>
@@ -80,6 +83,10 @@ export default async function EventDetailPage({
                 <p>{event.description}</p>
               </div>
             )}
+
+            <div className="mt-8 rounded-xl border border-border bg-secondary/40 p-4">
+              <ShareButtons url={shareUrl} title={event.title} summary={event.description} />
+            </div>
           </article>
 
           <aside className="card-shell space-y-3 bg-tsa-green-deep/5 p-5">
@@ -166,3 +173,4 @@ export default async function EventDetailPage({
     </>
   )
 }
+
