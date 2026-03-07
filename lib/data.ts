@@ -346,63 +346,119 @@ export const campaigns: Campaign[] = [
 
 export const programmes: Programme[] = [
   {
-    slug: "cub-scouts",
-    title: "Cub Scouts",
-    ageRange: "7 - 11 years",
-    description: "Programme details are under review. Replace with verified district guidance.",
+    slug: "kabu",
+    title: "Kabu",
+    ageRange: "5 - 10 years",
+    description:
+      "Kabu is the foundational youth section for children aged 5 to 10. It introduces scout values, discipline, teamwork, and the first badge pathway.",
     objectives: [
-      "Develop teamwork and confidence",
-      "Encourage curiosity and practical learning",
-      "Build positive social habits",
+      "Build strong foundation in scout values and good conduct.",
+      "Develop confidence, teamwork, and responsibility at early age.",
+      "Begin formal badge progression through Kabu stages.",
     ],
     activities: [
-      "Guided outdoor activities",
-      "Basic life-skill practice",
-      "Community-focused projects",
+      "Age-appropriate outdoor and nature activities.",
+      "Basic practical scout skills and supervised group tasks.",
+      "Simple service and good-turn activities in the community.",
     ],
-    badges: ["[CONFIRM BADGE LIST]"],
-    progression: ["[CONFIRM PROGRESSION PATH]"],
-    uniformGuidance: "[CONFIRM UNIFORM GUIDANCE]",
+    badges: [
+      "Nishani ya Uanachama (Membership Badge)",
+      "Nyota ya Kwanza (First Star Badge)",
+      "Nyota ya Pili (Second Star Badge)",
+      "Nyota Kuu (Grand Star Badge)",
+    ],
+    progression: [
+      "Membership Badge -> First Star Badge -> Second Star Badge -> Grand Star Badge",
+    ],
+    uniformGuidance:
+      "Wear the approved Kabu uniform during meetings, training sessions, and district scout activities.",
     image: "/images/programmes/cubs.jpg",
   },
   {
-    slug: "scouts",
-    title: "Scouts",
-    ageRange: "12 - 17 years",
-    description: "Programme details are under review. Replace with verified district guidance.",
+    slug: "junia",
+    title: "Junia",
+    ageRange: "11 - 14 years",
+    description:
+      "Junia is for young scouts aged 11 to 14, focusing on practical scouting skills, patrol discipline, and progressive advancement through class and special badges.",
     objectives: [
-      "Strengthen leadership and responsibility",
-      "Develop practical outdoor skills",
-      "Promote service and citizenship",
+      "Strengthen practical scout skills and self-reliance.",
+      "Build patrol teamwork, leadership habits, and discipline.",
+      "Advance through class badges and structured scout challenges.",
     ],
     activities: [
-      "Patrol-based activities",
-      "Service initiatives",
-      "Skills development sessions",
+      "Patrol-based training and outdoor skills practice.",
+      "Community service and district scout assignments.",
+      "Badge-based exercises and section progression tasks.",
     ],
-    badges: ["[CONFIRM BADGE LIST]"],
-    progression: ["[CONFIRM PROGRESSION PATH]"],
-    uniformGuidance: "[CONFIRM UNIFORM GUIDANCE]",
+    badges: [
+      "Nishani ya Uanachama (Membership Badge)",
+      "Nishani ya Daraja la Pili (Second Class Badge)",
+      "Nishani ya Daraja la Kwanza (First Class Badge)",
+      "Nishani ya Mwenge (Mwenge Badge)",
+    ],
+    progression: [
+      "Membership Badge -> Second Class Badge -> First Class Badge -> Mwenge Badge",
+    ],
+    uniformGuidance:
+      "Junia members should maintain full approved scout uniform and appear properly dressed in all official unit and district programmes.",
     image: "/images/programmes/scouts.jpg",
   },
   {
-    slug: "rovers",
-    title: "Rover Scouts",
-    ageRange: "18 - 25 years",
-    description: "Programme details are under review. Replace with verified district guidance.",
+    slug: "sinia",
+    title: "Sinia",
+    ageRange: "15 - 17 years",
+    description:
+      "Sinia is the senior youth section for ages 15 to 17, emphasizing higher responsibility, advanced scouting standards, and preparation for Rover level.",
     objectives: [
-      "Support community leadership development",
-      "Build life and service skills",
-      "Strengthen mentoring within scouting",
+      "Develop advanced scouting competence and maturity.",
+      "Prepare youth for high-level service and mentorship roles.",
+      "Progress through senior badges and national-level standards.",
     ],
     activities: [
-      "Community projects",
-      "Leadership workshops",
-      "District support activities",
+      "Advanced field activities and leadership exercises.",
+      "Service projects with greater responsibility in units and district.",
+      "Senior badge preparation and assessment activities.",
     ],
-    badges: ["[CONFIRM BADGE LIST]"],
-    progression: ["[CONFIRM PROGRESSION PATH]"],
-    uniformGuidance: "[CONFIRM UNIFORM GUIDANCE]",
+    badges: [
+      "Nishani ya Uanachama (Membership Badge)",
+      "Nishani ya Sinia (Senior Badge)",
+      "Look Wide Badge",
+      "Nishani ya Kilimanjaro (Kilimanjaro Badge)",
+    ],
+    progression: [
+      "Membership Badge -> Senior Badge -> Look Wide Badge -> Kilimanjaro Badge",
+    ],
+    uniformGuidance:
+      "Sinia scouts are expected to uphold full uniform standards and present proper insignia according to badge level.",
+    image: "/images/programmes/scouts.jpg",
+  },
+  {
+    slug: "rova-scouts",
+    title: "Rova",
+    ageRange: "18 - 26 years",
+    description:
+      "Rova is the young adult scout section for ages 18 to 26, focused on advanced leadership, service, and high-level badge achievements.",
+    objectives: [
+      "Build strong leadership and mentorship capacity in scouting.",
+      "Deliver impactful community service and district support.",
+      "Complete advanced Rova badge pathway and personal development.",
+    ],
+    activities: [
+      "Leadership and service projects at unit and district level.",
+      "Mentoring younger sections and supporting training events.",
+      "Advanced progression activities aligned to Rova badges.",
+    ],
+    badges: [
+      "Nishani ya Uanachama (Membership Badge)",
+      "Impessa Badge",
+      "Nishani ya Scout Mkuu",
+      "Nishani ya Raisi",
+    ],
+    progression: [
+      "Membership Badge -> Impessa Badge -> Scout Mkuu Badge -> Raisi Badge",
+    ],
+    uniformGuidance:
+      "Rova members should wear approved rover uniform and official insignia during all formal scout functions.",
     image: "/images/programmes/rovers.jpg",
   },
 ]
@@ -459,9 +515,10 @@ export const mainNavItems = [
     href: "/programmes",
     children: [
       { label: "Overview", href: "/programmes" },
-      { label: "Cub Scouts (7-11)", href: "/programmes/cub-scouts" },
-      { label: "Scouts (12-17)", href: "/programmes/scouts" },
-      { label: "Rover Scouts (18-25)", href: "/programmes/rovers" },
+      { label: "Kabu (5-10)", href: "/programmes/kabu" },
+      { label: "Junia (11-14)", href: "/programmes/junia" },
+      { label: "Sinia (15-17)", href: "/programmes/sinia" },
+      { label: "Rova (18-26)", href: "/programmes/rova-scouts" },
     ],
   },
   {

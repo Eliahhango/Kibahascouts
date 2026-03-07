@@ -219,7 +219,7 @@ const defaultSiteContentSettings: SiteContentSettings = {
   programmesPage: {
     title: "Scout Programmes",
     description:
-      "Kibaha Scouts offers three progressive sections for young people aged 7 to 25. Each programme is designed to develop skills, build character, and foster a love of adventure and service.",
+      "Kibaha Scouts offers four progressive sections for young people aged 5 to 26: Kabu, Junia, Sinia, and Rova. Each programme includes a clear badge pathway and age-appropriate development.",
   },
   programmesList: programmes.map((programme) => ({
     ...programme,
@@ -374,6 +374,49 @@ function cloneDefaults(): SiteContentSettings {
   }
 }
 
+function cloneProgrammeListFromDefaults() {
+  return defaultSiteContentSettings.programmesList.map((programme) => ({
+    ...programme,
+    objectives: [...programme.objectives],
+    activities: [...programme.activities],
+    badges: [...programme.badges],
+    progression: [...programme.progression],
+  }))
+}
+
+function normalizeLegacyProgrammeContent(
+  programmesPage: SiteContentSettings["programmesPage"],
+  programmesList: SiteContentSettings["programmesList"],
+) {
+  const legacySlugs = new Set(["cub-scouts", "scouts", "rovers"])
+  const isLegacyList = programmesList.length === 3 && programmesList.every((programme) => legacySlugs.has(programme.slug))
+
+  if (!isLegacyList) {
+    return {
+      programmesPage: { ...programmesPage },
+      programmesList: programmesList.map((programme) => ({
+        ...programme,
+        objectives: [...programme.objectives],
+        activities: [...programme.activities],
+        badges: [...programme.badges],
+        progression: [...programme.progression],
+      })),
+    }
+  }
+
+  return {
+    programmesPage: {
+      ...defaultSiteContentSettings.programmesPage,
+      title: programmesPage.title || defaultSiteContentSettings.programmesPage.title,
+      description:
+        programmesPage.description.includes("three progressive sections")
+          ? defaultSiteContentSettings.programmesPage.description
+          : programmesPage.description,
+    },
+    programmesList: cloneProgrammeListFromDefaults(),
+  }
+}
+
 export function getDefaultSiteContentSettings() {
   return cloneDefaults()
 }
@@ -397,6 +440,8 @@ export async function getSiteContentFromFirestore(): Promise<SiteContentSettings
   }
 
   const settings = parsed.data
+  const normalizedProgrammes = normalizeLegacyProgrammeContent(settings.programmesPage, settings.programmesList)
+
   return {
     ...settings,
     about: {
@@ -405,14 +450,8 @@ export async function getSiteContentFromFirestore(): Promise<SiteContentSettings
       valuesItems: [...settings.about.valuesItems],
       partnerItems: [...settings.about.partnerItems],
     },
-    programmesPage: { ...settings.programmesPage },
-    programmesList: settings.programmesList.map((programme) => ({
-      ...programme,
-      objectives: [...programme.objectives],
-      activities: [...programme.activities],
-      badges: [...programme.badges],
-      progression: [...programme.progression],
-    })),
+    programmesPage: normalizedProgrammes.programmesPage,
+    programmesList: normalizedProgrammes.programmesList,
     unitsPage: { ...settings.unitsPage },
     safetyPage: { ...settings.safetyPage, codeItems: [...settings.safetyPage.codeItems] },
     joinPage: {
@@ -453,3 +492,4 @@ export async function upsertSiteContentInFirestore(
     ...payload,
   } satisfies SiteContentSettings
 }
+

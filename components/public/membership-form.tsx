@@ -195,9 +195,10 @@ export function MembershipForm({ defaultRole = "youth", showRoleSelector = true 
           <span className="font-semibold text-foreground">Preferred Section</span>
           <select value={form.unitType} onChange={(event) => update("unitType", event.target.value)} className="admin-input mt-1">
             <option value="">Select section...</option>
-            <option value="Cub Scouts">Cub Scouts (Ages 8-11)</option>
-            <option value="Scouts">Scouts (Ages 11-17)</option>
-            <option value="Rover Scouts">Rover Scouts (Ages 18-25)</option>
+            <option value="Kabu">Kabu (Ages 5-10)</option>
+            <option value="Junia">Junia (Ages 11-14)</option>
+            <option value="Sinia">Sinia (Ages 15-17)</option>
+            <option value="Rova">Rova (Ages 18-26)</option>
             {role === "volunteer" ? <option value="Leader">Scout Leader</option> : null}
           </select>
         </label>
@@ -238,3 +239,4 @@ export function MembershipForm({ defaultRole = "youth", showRoleSelector = true 
     </div>
   )
 }
+

@@ -91,6 +91,40 @@ function normalizeItems(items: NavigationItem[]) {
   }))
 }
 
+function normalizeLegacyProgrammeNavigation(items: NavigationItem[]) {
+  return items.map((item) => {
+    if (item.label !== "Programmes") {
+      return item
+    }
+
+    const childHrefs = new Set((item.children || []).map((child) => child.href))
+    const hasLegacyLinks =
+      childHrefs.has("/programmes/cub-scouts") &&
+      childHrefs.has("/programmes/scouts") &&
+      childHrefs.has("/programmes/rovers")
+    const hasNewLinks =
+      childHrefs.has("/programmes/kabu") ||
+      childHrefs.has("/programmes/junia") ||
+      childHrefs.has("/programmes/sinia") ||
+      childHrefs.has("/programmes/rova-scouts")
+
+    if (!hasLegacyLinks || hasNewLinks) {
+      return item
+    }
+
+    return {
+      ...item,
+      children: [
+        { label: "Overview", href: "/programmes" },
+        { label: "Kabu (5-10)", href: "/programmes/kabu" },
+        { label: "Junia (11-14)", href: "/programmes/junia" },
+        { label: "Sinia (15-17)", href: "/programmes/sinia" },
+        { label: "Rova (18-26)", href: "/programmes/rova-scouts" },
+      ],
+    }
+  })
+}
+
 export async function getNavigationSettingsFromFirestore(): Promise<NavigationSettings> {
   const docRef = await getNavigationSettingsDocRef()
   const doc = await docRef.get()
@@ -106,7 +140,7 @@ export async function getNavigationSettingsFromFirestore(): Promise<NavigationSe
   }
 
   return {
-    mainNavItems: normalizeItems(parsed.data.mainNavItems),
+    mainNavItems: normalizeLegacyProgrammeNavigation(normalizeItems(parsed.data.mainNavItems)),
     updatedAt: parsed.data.updatedAt || "",
     updatedBy: parsed.data.updatedBy || "",
   }

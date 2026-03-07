@@ -112,9 +112,10 @@ export const siteConfig = {
       {
         title: "Programmes",
         links: [
-          { label: "Cub Scouts", href: "/programmes/cub-scouts" },
-          { label: "Scouts", href: "/programmes/scouts" },
-          { label: "Rover Scouts", href: "/programmes/rovers" },
+          { label: "Kabu (5-10)", href: "/programmes/kabu" },
+          { label: "Junia (11-14)", href: "/programmes/junia" },
+          { label: "Sinia (15-17)", href: "/programmes/sinia" },
+          { label: "Rova (18-26)", href: "/programmes/rova-scouts" },
           { label: "Scout Units", href: "/units" },
         ],
       },
@@ -166,4 +167,5 @@ export const siteConfig = {
 } as const
 
 export const getCurrentYear = () => new Date().getFullYear()
+
 

@@ -8,7 +8,7 @@ import { normalizePublicText } from "@/lib/public-text"
 
 export const metadata: Metadata = {
   title: "Programmes",
-  description: "Explore Kibaha Scouts programmes for Cub Scouts, Scouts, and Rover Scouts.",
+  description: "Explore Kibaha Scouts programmes for Kabu, Junia, Sinia, and Rova sections.",
 }
 
 export default async function ProgrammesPage() {
@@ -22,7 +22,7 @@ export default async function ProgrammesPage() {
         title={normalizePublicText(pageContent.title, "Scout Programmes")}
         subtitle={normalizePublicText(
           pageContent.description,
-          "Kibaha Scouts offers progressive sections designed to build character, leadership, and service from youth to young adults.",
+          "Kibaha Scouts offers four progressive sections (Kabu, Junia, Sinia, and Rova) for members aged 5 to 26, with clear badge progression at each stage.",
         )}
         breadcrumbs={[{ label: "Programmes" }]}
       />
@@ -64,3 +64,4 @@ export default async function ProgrammesPage() {
     </>
   )
 }
+
